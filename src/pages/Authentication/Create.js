@@ -2,15 +2,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
 import { withRouter, Link } from 'react-router-dom';
 import { Row, Col, CardBody, Card, Alert,Container, Label } from "reactstrap";
+import ErrorMessage from '../../components/Common/ErrorMessage';
 import { AvForm, AvField, AvGroup, AvInput, AvFeedback, AvRadioGroup, AvRadio, AvCheckboxGroup, AvCheckbox } from 'availity-reactstrap-validation';
+import { withTranslation } from 'react-i18next';
+import stateWrapper from "../../containers/provider";
 import "../../styles/Login.scss";
-import logo from "../../assets/images/stadium logo neon.png";
+import logo from "../../assets/images/jumga logo.png";
 import team1 from "../../assets/images/team1.png";
 import team2 from "../../assets/images/team2.png";
 import team3 from "../../assets/images/team3.png";
 import team4 from "../../assets/images/team4.png";
 import team5 from "../../assets/images/team5.png";
-import stadium from "../../assets/images/stadium.png";
+import stadium from "../../assets/images/stadium.jpg";
 import instance from '../../helpers/axiosly';
 import { configParams } from '../../config';
 
@@ -20,7 +23,7 @@ import { configParams } from '../../config';
         error: {
             email: 'Email is required',
             password: 'Password is required',
-            username: 'Username is required',
+            username: 'Store name is required',
             watch: {
                 email: '',
                 password: '',
@@ -30,9 +33,13 @@ import { configParams } from '../../config';
         email: '',
         password: '',
         username: '',
+        doesStoreNameExists: true,
+        doesEmailExists: true,
         imageFile: null,
         imageSrc: null,
-        userType: 'Admin'
+        userType: 'Business',
+        postSubmitError: false,
+        postSubmitMessage: ''
     });
 
     const form = useRef();
@@ -40,31 +47,28 @@ import { configParams } from '../../config';
     const callImageInput = () => {
         document.getElementById("imageFile").click();
     }
-  function  handleValidSubmit(event, values) {
+  async function  handleValidSubmit(event, values) {
     event.preventDefault();
+    let doesEmailExists = await processEmail(state.email);
+    let doesStoreNameExists = await processStoreName(state.username);
+
+
+    if (doesEmailExists || doesStoreNameExists) return;
     let newValues = {
         ...values,
         imageFile: state.imageFile,
-        userType: state.userType
+        userType: state.userType,
+        downloadURL: null
     }
-    console.log(newValues);
-    let formData = new FormData();
-    formData.append("username", newValues.username);
-    formData.append("email", newValues.email);
-    formData.append("password", newValues.password);
-    formData.append("userType", newValues.userType);
-    formData.append("userFile", newValues.userFile);
-    instance.post(`admin/auth/`,formData).then(data => {
-        if (!data.data.isSuccess) {
-            change(data.data);
-            return;
-        }
 
-        props.history.push("/store/login");
-    }).catch(e => {
-        console.log(e);
-       change();
-    })
+    if (!_.isNull(newValues.imageFile)) {
+        await props.userStore.uploadImage(newValues.imageFile, (snaps) => {
+            newValues.downloadURL = snaps?.downloadURL;
+        });
+    }
+    //TODO: sign up here
+    props.userStore.signUp(newValues, checkError);
+    props.history.push('/store/checkout')
   }
   const showPreviewAndSetValue = (e) => {
     if(e.target.files && e.target.files[0]) {
@@ -95,35 +99,83 @@ import { configParams } from '../../config';
         })
     }
   }
-  const change =(e) => {
-      console.log(e);
+  const checkError =(e) => {
+    console.log(e);
     setState({
         ...state,
-        error: {
-            ...state.error,
-            watch: {
-                email: e? String(e.message).includes("Email") ? e.message : "" : "",
-                password: e? e.errors != null ? (e?.errors.length > 0) ? e?.errors[0] : "" : "" : "",
-                username: "",
-            }
-        }
+        postSubmitError: true,
+        postSubmitMessage: e
     });
   }
+  const processStoreName = async (e) => {
+    let checker = await props.userStore.checkIfStoreNameExists(e);
+    if (checker?.status) {
+        let error = state.error;
+        error.watch = {
+            ...error.watch,
+            username: `A store already has this name. We recommend ${checker?.recommendation}`
+        }
+        await setState({
+            ...state, 
+            doesStoreNameExists: checker?.status, 
+            error
+        });
+        return checker?.status;
+    }
+
+    await setState({...state, doesStoreNameExists: checker?.status});
+    return checker?.status;
+  }
+  const processEmail = async (e) => {
+
+    let checker = await props.userStore.checkIfEmailExists(e);
+    if (checker?.status) {
+        let error = state.error;
+        error.watch = {
+            ...error.watch,
+            email: `This email already exists`
+        }
+        await setState({
+            ...state, 
+            doesEmailExists: checker?.status, 
+            error
+        });
+        return checker?.status;
+    }
+
+    await setState({ ...state, doesEmailExists: checker?.status});
+    return checker?.status;
+  }
+
+  useEffect(() => {
+        if (state.postSubmitError) {
+            setTimeout(() => {setState({...state, postSubmitError: false, postSubmitMessage: ''})}, 10000);
+        }
+    }, [state.postSubmitError]);
     return (
-        <React.Fragment>            
+        <React.Fragment> 
+            <div onClick={() => {setState({...state, postSubmitMessage: '', postSubmitError: false})}}>
+                <ErrorMessage isError={state.postSubmitError} message={state.postSubmitMessage} />
+            </div>
             <div>
                 <Link to="/">
-                    <img className="logo" src={logo} alt="logo" />
+                    <img className="logo d-none d-md-inline-block" src={logo} alt="logo" />
+                    <img className="logo-small d-md-none" src={logo} alt="logo" />
                 </Link>
             </div>
             <div className="account-pages my-5 pt-sm-5">
                 <Container>
                     <div>
-                        <img className="avatar  team1" src={team1} alt="team1" />
-                        <img className="avatar team2" src={team2} alt="team2" />
-                        <img className="avatar team3" src={team3} alt="team3" />
-                        <img className="avatar team4" src={team4} alt="team4" />
-                        <img className="avatar team5" src={team5} alt="team5" />
+                        <img className="avatar  team1 d-none d-md-inline-block" src={team1} alt="team1" />
+                        <img className="avatar team2 d-none d-md-inline-block" src={team2} alt="team2" />
+                        <img className="avatar team3 d-none d-md-inline-block" src={team3} alt="team3" />
+                        <img className="avatar team4 d-none d-md-inline-block" src={team4} alt="team4" />
+                        <img className="avatar team5 d-none d-md-inline-block" src={team5} alt="team5" />
+                        <img className="avatar  team1-small d-md-none" src={team1} alt="team1" />
+                        <img className="avatar team2-small d-md-none" src={team2} alt="team2" />
+                        <img className="avatar team3-small d-md-none" src={team3} alt="team3" />
+                        <img className="avatar team4-small d-md-none" src={team4} alt="team4" />
+                        <img className="avatar team5-small d-md-none" src={team5} alt="team5" />
                     </div>
                     <Row className="justify-content-center overflow-hidden">
                         <Col className="box" style={{padding:0}} lg={9} md={12} sm={12}>
@@ -143,6 +195,7 @@ import { configParams } from '../../config';
                                                 <div className="p-2">
 
                                                     <AvForm ref={form} className="form-horizontal" onValidSubmit={(e,v) => { handleValidSubmit(e,v) }}>
+                                                        <div className="business-logo">Business logo</div>
                                                         <center  className="avatar-container">
                                                             <div 
                                                                 onClick={callImageInput} 
@@ -212,8 +265,7 @@ import { configParams } from '../../config';
                                                         <AvGroup>
                                                             <Label className="form-label" for="email">EMAIL</Label>
                                                             <AvInput 
-                                                                onChange={e =>
-                                                                    setState({
+                                                                onChange={e =>  setState({
                                                                     ...state, 
                                                                     email: e.target.value,
                                                                     error: {
@@ -234,22 +286,21 @@ import { configParams } from '../../config';
                                                         </AvGroup>
 
                                                         <AvGroup>
-                                                            <Label className="form-label" for="username">USERNAME</Label>
+                                                            <Label className="form-label" for="username">STORE NAME</Label>
                                                             <AvInput 
-                                                                onChange={e =>
-                                                                    setState({
+                                                                onChange={e => setState({
                                                                     ...state, 
-                                                                    email: e.target.value,
+                                                                    username: e.target.value,
                                                                     error: {
                                                                         ...state.error,
                                                                         watch: {
                                                                             ...state.error.watch,
-                                                                            email: ''
+                                                                            username: ''
                                                                         }
                                                                     }
                                                                 })} 
                                                                 validate={{
-                                                                    minLength: { value: 5, errorMessage: "Username must be more than 5 letters"}
+                                                                    minLength: { value: 3, errorMessage: "Username must be more than 3 letters"}
                                                                 }}
                                                                 name="username" 
                                                                 id="username" 
@@ -277,7 +328,9 @@ import { configParams } from '../../config';
                                                                         }
                                                                     })
                                                                 } 
-                                                                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"
+                                                                validate={{
+                                                                    minLength: { value: 6, errorMessage: "Password must be more than 5 letters"}
+                                                                }}
                                                                 name="password" 
                                                                 id="password" 
                                                                 required 
@@ -299,12 +352,14 @@ import { configParams } from '../../config';
 
                                                         <div className="mt-3">
                                                             <button
-                                                                disabled={state.loading} className="btn btn-primary btn-block waves-effect waves-light btn-dark" type="submit">
-                                                                Create Admin
+                                                                disabled={state.loading} className="btn btn-primary btn-block waves-effect waves-light btn-dark" type="submit"
+                                                                style={{backgroundColor: '#EE5C43', borderColor: '#EE5C43'}}
+                                                            >
+                                                                Submit
                                                             </button>
                                                         </div>
                                                         <div className="mt-4 link-ext">
-                                                            Have an account?<Link to="/login" className="text-muted link"><i className="mdi mdi-lock mr-1"></i> Signin</Link>
+                                                            Have an account?<Link to="/login" className="link text-primary">Login</Link>
                                                         </div>
                                                     </AvForm>
                                                 </div>
@@ -313,6 +368,11 @@ import { configParams } from '../../config';
                                     </Col> 
                                 <Col md={6} lg={6} xl={6} sm={12}>
                                     <img className="stadium stadium-create" src={stadium} alt="stadium" />
+                                    <div className="writing">
+                                        <div className="text-to-show">
+                                            A market place for all
+                                        </div>
+                                    </div>
                                 </Col>
                             </Row>
                         </Col>
@@ -323,4 +383,4 @@ import { configParams } from '../../config';
      );
     }
 
-export default withRouter(Create)
+export default withRouter(withTranslation()(stateWrapper(Create)))

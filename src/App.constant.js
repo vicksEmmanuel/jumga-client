@@ -1,6 +1,9 @@
 const CONSTANTS = {
     FLUTTERWAVEAPIBASE: "https://api.flutterwave.com/v3",
     SESSIONSTORE: "jumga--xx-xx-xx-10/20/20--authUser",
-    SESSIONBEARER: "jumgaJWToken"
+    SESSIONBEARER: "jumgaJWToken",
+    SCHEMA: {
+        USER: 'users',
+    }
 }
 export default CONSTANTS;

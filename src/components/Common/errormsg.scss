@@ -1,0 +1,12 @@
+.error {
+    box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
+    transform: translatey(0px);
+    border-radius: 10px;
+    z-index: 100;
+    padding: 20px;
+    color: black;
+    background-color: rgb(241, 33, 33);
+    position: fixed;
+    top: 10%;
+    left: 35%;
+}

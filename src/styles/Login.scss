@@ -10,7 +10,13 @@
     padding-left: 10px;
     padding-right: 10px;
   }
-
+.business-logo {
+    align-self: center;
+    font-size: 14px;
+    font-family: 'Sriracha', cursive;
+    color: darkblue;
+    padding: 20px;
+}
   @keyframes float {
     0% {
       box-shadow: 0 5px 15px 0px rgba(0,0,0,0.6);
@@ -34,7 +40,6 @@
     z-index: 10;
     height: 20px;
     border-radius: 50%;
-    background-color: gray;
   }
   .error-field {
     margin-top: .25rem;
@@ -53,6 +58,20 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+  }
+
+  .writing {
+    justify-content: center;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+  }
+  .text-to-show {
+    align-self: center;
+    font-size: 90px;
+    font-family: 'Sriracha', cursive;
+    color: white;
+    padding: 20px;
   }
 
   .team1 {
@@ -81,6 +100,32 @@
     left: 80%;
   }
 
+  .team1-small {
+    position: absolute;
+    top: 13%;
+    left: 40%;
+  }
+  .team2-small {
+    position: absolute;
+    top: 10%;
+    left: 20%;
+  }
+  .team3-small {
+    position: absolute;
+    top: 14%;
+    left: 5%;
+  }
+  .team4-small {
+    position: absolute;
+    top: 17%;
+    left: 65%;
+  }
+  .team5-small {
+    position: absolute;
+    top: 10%;
+    left: 90%;
+  }
+
   body::-webkit-scrollbar {
     display: none;
   }
@@ -94,7 +139,7 @@
     border-bottom-right-radius: 20px;
   }
   .stadium-create {
-    height: 510px;
+    height: 580px;
   }
   .avatar-icon {
     width: 30px;
@@ -110,7 +155,13 @@
   }
 
   .logo {
-    width: 90px;
+    width: 150px;
+    height: 54px;
+    margin: 30px;
+  }
+
+  .logo-small {
+    width: 100px;
     height: 44px;
     margin: 30px;
   }

@@ -2,20 +2,26 @@ import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
 import { withRouter, Link } from 'react-router-dom';
 import { Row, Col, CardBody, Card, Alert,Container, Label } from "reactstrap";
+import { withTranslation } from 'react-i18next';
 import { AvForm, AvField, AvGroup, AvInput, AvFeedback, AvRadioGroup, AvRadio, AvCheckboxGroup, AvCheckbox } from 'availity-reactstrap-validation';
 import "../../styles/Login.scss";
-import logo from "../../assets/images/stadium logo neon.png";
+import logo from "../../assets/images/jumga logo.png";
 import team1 from "../../assets/images/team1.png";
 import team2 from "../../assets/images/team2.png";
 import team3 from "../../assets/images/team3.png";
 import team4 from "../../assets/images/team4.png";
 import team5 from "../../assets/images/team5.png";
-import stadium from "../../assets/images/stadium.png";
+import stadium from "../../assets/images/stadium.jpg";
 import stateWrapper from '../../containers/provider';
+import ErrorMessage from '../../components/Common/ErrorMessage';
+
 
  const Login = (props) => {
     const [state, setState] = useState({
         loading: false,
+        doesEmailExists: true,
+        postSubmitError: false,
+        postSubmitMessage: '',
         error: {
             email: 'Email is required',
             password: 'Password is required',
@@ -27,41 +33,80 @@ import stateWrapper from '../../containers/provider';
         email: '',
         password: ''
     });
-
     const form = useRef();
-    // handleValidSubmit
-  function  handleValidSubmit(event, values) {
-    event.preventDefault();
-    props.userStore.signIn(values, change, props);
-  }
-
-  const change =() => {
-    setState({
-        ...state,
-        error: {
-            ...state.error,
-            watch: {
-                email: "Provide an admin email",
-                password: "Provide an admin password"
-            }
+    async function  handleValidSubmit(event, values) {
+        event.preventDefault();
+        console.log(values);
+        let doesEmailExists = await processEmail(state.email);
+        if (!doesEmailExists) return;
+        let done = await props.userStore.signIn(values, props);
+        if (!done.status) {
+            await checkError(done?.message);
+            return;
         }
-    });
-  }
+
+        props.history.push('/');
+    }
+
+    useEffect(() => {
+        if (state.postSubmitError) {
+            setTimeout(() => {setState({...state, postSubmitError: false, postSubmitMessage: ''})}, 10000);
+        }
+    }, [state.postSubmitError]);
+
+    const processEmail = async (e) => {
+
+        let checker = await props.userStore.checkIfEmailExists(e);
+        if (!checker?.status) {
+            let error = state.error;
+            error.watch = {
+                ...error.watch,
+                email: `This email does not exist`
+            }
+            await setState({
+                ...state, 
+                doesEmailExists: !checker?.status, 
+                error
+            });
+            return checker?.status;
+        }
+    
+        await setState({ ...state, doesEmailExists: !checker?.status});
+        return checker?.status;
+      }
+
+    const checkError = async (e) => {
+        await setState({
+            ...state,  
+            postSubmitError: true,
+            postSubmitMessage: e,
+        });
+    }
+
     return (
-        <React.Fragment>            
+        <React.Fragment>  
+            <div onClick={() => {setState({...state, postSubmitMessage: '', postSubmitError: false})}}>
+                <ErrorMessage isError={state.postSubmitError} message={state.postSubmitMessage} />
+            </div>
             <div>
                 <Link to="/">
-                    <img className="logo" src={logo} alt="logo" />
+                    <img className="logo d-none d-md-inline-block" src={logo} alt="logo" />
+                    <img className="logo-small d-md-none" src={logo} alt="logo" />
                 </Link>
             </div>
             <div className="account-pages my-5 pt-sm-5">
                 <Container>
                     <div>
-                        <img className="avatar  team1" src={team1} alt="team1" />
-                        <img className="avatar team2" src={team2} alt="team2" />
-                        <img className="avatar team3" src={team3} alt="team3" />
-                        <img className="avatar team4" src={team4} alt="team4" />
-                        <img className="avatar team5" src={team5} alt="team5" />
+                        <img className="avatar  team1 d-none d-md-inline-block" src={team1} alt="team1" />
+                        <img className="avatar team2 d-none d-md-inline-block" src={team2} alt="team2" />
+                        <img className="avatar team3 d-none d-md-inline-block" src={team3} alt="team3" />
+                        <img className="avatar team4 d-none d-md-inline-block" src={team4} alt="team4" />
+                        <img className="avatar team5 d-none d-md-inline-block" src={team5} alt="team5" />
+                        <img className="avatar  team1-small d-md-none" src={team1} alt="team1" />
+                        <img className="avatar team2-small d-md-none" src={team2} alt="team2" />
+                        <img className="avatar team3-small d-md-none" src={team3} alt="team3" />
+                        <img className="avatar team4-small d-md-none" src={team4} alt="team4" />
+                        <img className="avatar team5-small d-md-none" src={team5} alt="team5" />
                     </div>
                     <Row className="justify-content-center overflow-hidden">
                         <Col className="box" style={{padding:0}} lg={9} md={12} sm={12}>
@@ -123,6 +168,9 @@ import stateWrapper from '../../containers/provider';
                                                                     })
                                                                 } 
                                                                 name="password" 
+                                                                validate={{
+                                                                    minLength: { value: 6, errorMessage: "Password must be more than 5 letters"}
+                                                                }}
                                                                 id="password" 
                                                                 required 
                                                                 type="password"
@@ -136,12 +184,12 @@ import stateWrapper from '../../containers/provider';
                                                         </div>
                                                         <div className="mt-3">
                                                             <button
-                                                                disabled={state.loading} className="btn btn-primary btn-block waves-effect waves-light btn-dark" type="submit">
+                                                                disabled={state.loading} className="btn btn-primary btn-block waves-effect waves-light btn-dark" type="submit" style={{backgroundColor: '#EE5C43', borderColor: '#EE5C43'}}>
                                                                 Login
                                                             </button>
                                                         </div>
                                                         <div className="mt-4 link-ext">
-                                                            Need an account?<Link to="/store/register" className="text-muted link"><i className="mdi mdi-lock mr-1"></i> Register</Link>
+                                                            Need an account?<Link to="/store/register" className="link text-primary"> Register</Link>
                                                         </div>
                                                     </AvForm>
                                                 </div>
@@ -150,6 +198,11 @@ import stateWrapper from '../../containers/provider';
                                     </Col> 
                                 <Col md={6} lg={6} xl={6} sm={12}>
                                     <img className="stadium" src={stadium} alt="stadium" />
+                                    <div className="writing">
+                                        <div className="text-to-show">
+                                            A market place for all
+                                        </div>
+                                    </div>
                                 </Col>
                             </Row>
                         </Col>
@@ -160,4 +213,4 @@ import stateWrapper from '../../containers/provider';
      );
     }
 
-export default withRouter(stateWrapper(Login))
+export default withRouter(withTranslation()(stateWrapper(Login)))
