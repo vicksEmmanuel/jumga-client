@@ -45,8 +45,13 @@ import ErrorMessage from '../../components/Common/ErrorMessage';
             return;
         }
 
-        props.history.push('/');
+        props.history.push('/store/front');
     }
+
+    // useEffect(() => {
+    //     props.userStore.logOut(props);
+    //     console.log('jerr')
+    // }, [])
 
     useEffect(() => {
         if (state.postSubmitError) {

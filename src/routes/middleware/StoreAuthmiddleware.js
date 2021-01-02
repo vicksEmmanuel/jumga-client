@@ -14,10 +14,31 @@ import "firebase/storage";
 import "firebase/remote-config";
 import CONSTANTS from '../../App.constant';
 
-const Authmiddleware = (superProps) => {
+const StoreAuthmiddleware = (superProps) => {
 	const Layout = superProps?.layout;
 	const Component = superProps?.component;
 	const path = superProps?.path;
+	const checkifApproved = () => {
+		let user = superProps?.userStore?.state?.user;
+		if (!_.isNull(user)) {
+			if (user?.approved) return true;
+			return false;
+		}
+		return false;
+		// let user = localStorage.getItem(CONSTANTS.SESSIONSTORE);
+		// if (user) {
+		// 	let email = JSON.parse(user).email;
+		// 	const userCollection = CONSTANTS.SCHEMA.USER;
+        //     const userDetailsRef = firebase.firestore().doc(`${userCollection}/${email}`);
+        //     const userDoc = await userDetailsRef.get();
+        //     if(userDoc.exists) {
+		// 		if (userDoc.data()?.approved) return true;
+		// 		return false;
+        //     }
+		// 	return false;
+		// }
+		// return false;
+	}
 	return (
 		<Route
 			path={path}
@@ -30,6 +51,13 @@ const Authmiddleware = (superProps) => {
 					);
 				}
 
+				if (!checkifApproved()) {
+					return (
+						<Redirect to={{ pathname: "/store/get-approved", state: { from: props.location } }} />
+					);
+				}
+
+
 				return <Layout>
 					<Component {...props} />
 				</Layout>;
@@ -38,5 +66,5 @@ const Authmiddleware = (superProps) => {
 	);
 }
 
-export default withRouter(withTranslation()(stateWrapper(Authmiddleware)));
+export default withRouter(withTranslation()(stateWrapper(StoreAuthmiddleware)));
 

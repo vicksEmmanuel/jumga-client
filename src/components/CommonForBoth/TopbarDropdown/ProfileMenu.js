@@ -10,7 +10,6 @@ import { withRouter, Link } from 'react-router-dom';
 
 
 // users
-import user1 from '../../../assets/images/users/avatar-1.jpg';
 import  {firebaseConfigParams} from '../../../config';
 
 const configParams = firebaseConfigParams;
@@ -18,19 +17,19 @@ const configParams = firebaseConfigParams;
 const ProfileMenu = (props) => {
    // Declare a new state variable, which we'll call "menu"
    const [menu, setMenu] = useState(false);
-   const [username, setusername] = useState("Admin");
-   const [image, setImage] = useState(user1);
+   const [username, setusername] = useState("User");
+   const [image, setImage] = useState(null);
 
    useEffect(() => {
-       let user = props.userStore.getUser();
+       let user = props.userStore.state.user;
 
-       if (!_.isEmpty(user)) {
-            setusername(user.username);
-            if(String(user.imageName).length >0 || user.imageName != null) {
-                setImage(`${configParams.appDomain}Images/AdminProfile/${user.imageName}`);
+       if (!_.isNull(user)) {
+            setusername(String(user?.username).split(' ')[0]);
+            if(String(user?.downloadURL).length >0 || user?.downloadURL != null) {
+                setImage(user?.downloadURL);
             }
        }
-   },[])
+   },[props.userStore.state.user]);
 
    const logOut = (e) => {
         e.preventDefault();
@@ -41,8 +40,23 @@ const ProfileMenu = (props) => {
     <React.Fragment>
                 <Dropdown isOpen={menu} toggle={() => setMenu(!menu)} className="d-inline-block" >
                     <DropdownToggle className="btn header-item waves-effect" id="page-header-user-dropdown" tag="button">
-                        <img className="rounded-circle header-profile-user " src={image} alt="" />
-                        <span className="d-none d-xl-inline-block ml-2 mr-1">{username}</span>
+                        {_.isNull(image) ? 
+                            < div 
+                                style={{
+                                    color: 'white', 
+                                    backgroundColor: 'rgba(230,0,103, 1)', 
+                                    borderRadius: '50%',
+                                    fontWeight: 'bold',
+                                    paddingTop: 5,
+                                    width: 30,
+                                    height: 30,
+                                    textAlign: 'center'
+                                }}
+                            >
+                                {String(username).substring(0,2).toUpperCase()}
+                            </div> :
+                            <img className="rounded-circle header-profile-user " src={image} alt="" />
+                        }
                         <i className="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                     </DropdownToggle>
                     <DropdownMenu right>

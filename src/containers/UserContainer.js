@@ -27,6 +27,7 @@ class UserContainer extends Container {
             firebase.auth().onAuthStateChanged(user => {
               if (user) {
                 localStorage.setItem(CONSTANTS.SESSIONSTORE, JSON.stringify(user));
+                this.getUserDataFromFirebase();
               } else {
                 localStorage.removeItem(CONSTANTS.SESSIONSTORE);
               }
@@ -45,16 +46,41 @@ class UserContainer extends Container {
         props.history.goBack();
     }
 
-    uploadImage = async (image, callback) => {
+    checkIfUserHasPaid = async (email) => {
+        return false;
+    }
+
+    uploadImage = async (image, callback = async () => {}) => {
        try {
         if (!String(image?.type).includes("image")) {
             return;
         }
         var storageRef = firebase.storage().ref();
         let ref = storageRef.child(uuidv4());
-        ref.put(image).then(snaps => {
-            callback(snaps);
-        });
+        let uploadTask = ref.put(image);
+        uploadTask.on('state_changed', function(snapshot){
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+              case firebase.storage.TaskState.PAUSED: // or 'paused'
+                console.log('Upload is paused');
+                break;
+              case firebase.storage.TaskState.RUNNING: // or 'running'
+                console.log('Upload is running');
+                break;
+            }
+          }, function(error) {
+            // Handle unsuccessful uploads
+          }, function() {
+            // Handle successful uploads on complete
+            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+            uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+              console.log('File available at', downloadURL);
+              callback(downloadURL);
+            });
+          });
        } catch(e) {
            this._handleError(e);
        }
@@ -66,9 +92,10 @@ class UserContainer extends Container {
         username,
         userType,
         downloadURL,
-        approved = false,
+        approved = true,
         createdAt = Date.now(),
-        paymentDates = []
+        paymentDates = [],
+        stores = []
     }, checkError = () => {}) => {
         try {
             let auth = firebase.auth();
@@ -77,7 +104,8 @@ class UserContainer extends Container {
             const userDetailsRef = firebase.firestore().doc(`${userCollection}/${email}`);
             await userDetailsRef.set({
                 email,
-                store: [username],
+                username,
+                stores,
                 userType,
                 downloadURL,
                 approved,
@@ -85,7 +113,7 @@ class UserContainer extends Container {
                 paymentDates
             });
 
-            this.signIn({email, password});
+            await this.signIn({email, password});
         } catch(err) {
             console.log(err);
             checkError(err?.message);
@@ -139,14 +167,13 @@ class UserContainer extends Container {
             let user = await firebase.auth().signOut();
             localStorage.removeItem(CONSTANTS.SESSIONBEARER);
             localStorage.removeItem(CONSTANTS.SESSIONSTORE);
-            props.history.push("/login");
+            props.history.push("/store/login");
         } catch(err) {
             this._handleError(err);
         }
     }
 
     getUserDataFromFirebase = async () => {
-        console.log("ehre");
         const auth = firebase.auth();
         const user = await auth.currentUser;
 

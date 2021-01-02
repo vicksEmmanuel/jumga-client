@@ -14,7 +14,7 @@ import "firebase/storage";
 import "firebase/remote-config";
 import CONSTANTS from '../../App.constant';
 
-const Authmiddleware = (superProps) => {
+const Storemiddleware = (superProps) => {
 	const Layout = superProps?.layout;
 	const Component = superProps?.component;
 	const path = superProps?.path;
@@ -38,5 +38,5 @@ const Authmiddleware = (superProps) => {
 	);
 }
 
-export default withRouter(withTranslation()(stateWrapper(Authmiddleware)));
+export default withRouter(withTranslation()(stateWrapper(Storemiddleware)));
 

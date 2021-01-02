@@ -7,7 +7,7 @@ class LayoutContainer extends Container {
         this.state = {
             layoutType: "vertical",
             layoutWidth: "fluid",
-            leftSideBarTheme: "dark",
+            leftSideBarTheme: "light",
             leftSideBarType: "default",
             topbarTheme: "light",
             isPreloader: false,

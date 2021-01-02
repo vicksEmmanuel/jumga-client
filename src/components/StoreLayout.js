@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
+import StoreHeader from './StoreHeader';
 
-class NonAuthLayout extends Component {
+class StoreLayout extends Component {
     constructor(props) {
         super(props);
         this.state={};
@@ -20,9 +21,12 @@ class NonAuthLayout extends Component {
     }
     render() {
         return <React.Fragment>
-            {this.props.children}
+            <div id="layout-wrapper">
+                <StoreHeader/>
+                {this.props.children}
+            </div>
         </React.Fragment>;
     }
 }
 
-export default (withRouter(NonAuthLayout));
+export default (withRouter(StoreLayout));

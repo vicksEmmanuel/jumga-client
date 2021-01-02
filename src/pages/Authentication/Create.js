@@ -50,10 +50,10 @@ import { configParams } from '../../config';
   async function  handleValidSubmit(event, values) {
     event.preventDefault();
     let doesEmailExists = await processEmail(state.email);
-    let doesStoreNameExists = await processStoreName(state.username);
+    // let doesStoreNameExists = await processStoreName(state.username);
 
 
-    if (doesEmailExists || doesStoreNameExists) return;
+    if (doesEmailExists) return;
     let newValues = {
         ...values,
         imageFile: state.imageFile,
@@ -61,14 +61,22 @@ import { configParams } from '../../config';
         downloadURL: null
     }
 
-    if (!_.isNull(newValues.imageFile)) {
-        await props.userStore.uploadImage(newValues.imageFile, (snaps) => {
-            newValues.downloadURL = snaps?.downloadURL;
-        });
+    let create = async () => {
+            console.log(newValues);
+            await props.userStore.signUp(newValues, checkError);
+            props.history.push('/store/front');
     }
-    //TODO: sign up here
-    props.userStore.signUp(newValues, checkError);
-    props.history.push('/store/checkout')
+
+    if (_.isNull(newValues.imageFile)) {
+        await create();
+        return;
+    }
+    await props.userStore.uploadImage(newValues.imageFile, async (snaps) => {
+        console.log(snaps);
+        newValues.downloadURL = snaps;
+        await create();
+    });
+    return;
   }
   const showPreviewAndSetValue = (e) => {
     if(e.target.files && e.target.files[0]) {
@@ -107,25 +115,25 @@ import { configParams } from '../../config';
         postSubmitMessage: e
     });
   }
-  const processStoreName = async (e) => {
-    let checker = await props.userStore.checkIfStoreNameExists(e);
-    if (checker?.status) {
-        let error = state.error;
-        error.watch = {
-            ...error.watch,
-            username: `A store already has this name. We recommend ${checker?.recommendation}`
-        }
-        await setState({
-            ...state, 
-            doesStoreNameExists: checker?.status, 
-            error
-        });
-        return checker?.status;
-    }
+//   const processStoreName = async (e) => {
+//     let checker = await props.userStore.checkIfStoreNameExists(e);
+//     if (checker?.status) {
+//         let error = state.error;
+//         error.watch = {
+//             ...error.watch,
+//             username: `A store already has this name. We recommend ${checker?.recommendation}`
+//         }
+//         await setState({
+//             ...state, 
+//             doesStoreNameExists: checker?.status, 
+//             error
+//         });
+//         return checker?.status;
+//     }
 
-    await setState({...state, doesStoreNameExists: checker?.status});
-    return checker?.status;
-  }
+//     await setState({...state, doesStoreNameExists: checker?.status});
+//     return checker?.status;
+//   }
   const processEmail = async (e) => {
 
     let checker = await props.userStore.checkIfEmailExists(e);
@@ -286,7 +294,7 @@ import { configParams } from '../../config';
                                                         </AvGroup>
 
                                                         <AvGroup>
-                                                            <Label className="form-label" for="username">STORE NAME</Label>
+                                                            <Label className="form-label" for="username">FULL NAME</Label>
                                                             <AvInput 
                                                                 onChange={e => setState({
                                                                     ...state, 
@@ -358,8 +366,11 @@ import { configParams } from '../../config';
                                                                 Submit
                                                             </button>
                                                         </div>
+                                                        <div className="mt-3 link-ext">
+                                                            By clicking the “Submit” button, you agree to Jumga’s <Link to="/terms-and-condition" className="link text-pprimary">terms of acceptable use</Link>.
+                                                        </div>
                                                         <div className="mt-4 link-ext">
-                                                            Have an account?<Link to="/login" className="link text-primary">Login</Link>
+                                                            Have an account?<Link to="/store/login" className="link text-primary">Login</Link>
                                                         </div>
                                                     </AvForm>
                                                 </div>
