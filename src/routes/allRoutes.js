@@ -6,6 +6,7 @@ import Login from "../pages/Authentication/Login";
 import Create from "../pages/Authentication/Create";
 import StoreCheckout from "../pages/Store/store-checkout";
 import Store from "../pages/Store/StoreListing";
+import StoreDetails from "../pages/Store/StoreDetails";
 
 
 const userRoutes = [
@@ -20,7 +21,7 @@ const storeRoutes  = [
 ];
 
 const storeAuthRoutes = [
-
+	{ path: "/store/front/:id", component: StoreDetails},
 ];
 
 const authRoutes = [

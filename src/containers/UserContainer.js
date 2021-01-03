@@ -18,7 +18,8 @@ class UserContainer extends Container {
     constructor(firebaseConfig) {
         super();
         this.state = {
-            user: null
+            user: null,
+            stores: []
         }
 
         if (firebaseConfig) {
@@ -120,6 +121,69 @@ class UserContainer extends Container {
         }
     }
 
+    getUserStore = async () => {
+        const storeCollection = CONSTANTS.SCHEMA.STORES;
+        const storeDetailsRef = firebase.firestore().collection(storeCollection);
+        const query = storeDetailsRef.where('userEmail', '==', this.state.user.email);
+        const docs = await query.get();
+
+        if (docs.empty) return null;
+
+        let x = [];
+
+        docs.forEach(doc => {
+            const store = doc.data();
+            x.push(store);
+        });
+
+        this.setState({
+            stores: x
+        });
+
+        return x;
+    }
+
+    createStore = async ({
+        store,
+        categories = [],
+        storeId,
+        paymentDates = [],
+        approved = false,
+        userEmail,
+        dispatchRiders = null,
+        createdDate = Date.now(),
+        dateVisited = Date.now(),
+    }, props) => {
+        const storeCollection = CONSTANTS.SCHEMA.STORES;
+        const userCollection = CONSTANTS.SCHEMA.USER;
+        const storeDetailsRef = firebase.firestore().doc(`${storeCollection}/${store}`);
+        const userDetailsRef = firebase.firestore().doc(`${userCollection}/${userEmail}`);
+        const userData = await userDetailsRef.get();
+        const storeData = await storeDetailsRef.get();
+        if (storeData.exists) {
+            storeId = `${storeId}${Date.now()}`;
+        }
+
+        await storeDetailsRef.set({
+            store,
+            categories,
+            storeId,
+            paymentDates,
+            approved,
+            userEmail,
+            dispatchRiders,
+            createdDate,
+            dateVisited
+        });
+
+        let user = {...userData.data()};
+        user.stores.push(storeId);
+        await userDetailsRef.update(user);
+        await this.getUserStore();
+        
+        props.history.push('/store/get-approved');
+    }
+
     getUser = () => {
         let user = localStorage.getItem(CONSTANTS.SESSIONSTORE);
         if (user) {
@@ -131,9 +195,10 @@ class UserContainer extends Container {
 
     checkIfStoreNameExists = async (storename) => {
         let db = this.firebase.firestore();
-        const user = db.collection(CONSTANTS.SCHEMA.USER);
-        const query = user.where("store", 'array-contains', storename);
+        const store = db.collection(CONSTANTS.SCHEMA.STORES);
+        const query = store.where("storeId", '==', storename);
         const docs = await query.get();
+        console.log(docs.empty);
         if (docs.empty) {
             return {
                 status: false,
@@ -142,7 +207,7 @@ class UserContainer extends Container {
 
         return {
             status: true,
-            recommendation: `${storename}${String(uuidv4()).substring(0, Math.random(3, 10))}`
+            recommendation: `${storename}${String(uuidv4()).substring(0, Math.random(3, 10))}`.trim().replace(/\s/g,'-').replace(/\w/g, '').toLowerCase()
         }
     }
 
@@ -174,6 +239,7 @@ class UserContainer extends Container {
     }
 
     getUserDataFromFirebase = async () => {
+        if (!_.isNull(this.state.user)) return;
         const auth = firebase.auth();
         const user = await auth.currentUser;
 
@@ -184,6 +250,8 @@ class UserContainer extends Container {
             if(userDoc.exists) {
                 await this.setState({
                     user: userDoc.data()
+                }, () => {
+                    this.getUserStore();
                 });
             }
         }

@@ -32,6 +32,7 @@ class MasterContainer extends Container {
         }
 
         this.asyncgetAllRemoteConfigs();
+        this.getAllCategories();
         
     }
 
@@ -71,29 +72,31 @@ class MasterContainer extends Container {
 
     asyncgetAllRemoteConfigs = async () => {
         let config = await this.getAllRemoteConfigs(this.state);
-        console.log(config)
         this.setState({
             ...this.state,
             remoteConfigs: config.remoteConfigs
         }, () => {
-        console.log(this.state);
+            
         });
         return config;
     }
 
     getAllCategories = async () => {
+        if (this.state.categories.length > 0) return this.state.categories;
         const categoriesCollection = CONSTANTS.SCHEMA.CATEGORIES;
         const categoriesDetailsRef = firebase.firestore().collection(categoriesCollection);
         const snapshot = await categoriesDetailsRef.get();
         let cat = [];
         snapshot.forEach(doc => {
-            console.log(doc.data());
             cat[doc.id] = doc.data();
         });
 
         this.setState({
+            ...this.state,
             categories: cat
         });
+
+        return this.state.categories;
     }
 }
 

@@ -115,25 +115,6 @@ import { configParams } from '../../config';
         postSubmitMessage: e
     });
   }
-//   const processStoreName = async (e) => {
-//     let checker = await props.userStore.checkIfStoreNameExists(e);
-//     if (checker?.status) {
-//         let error = state.error;
-//         error.watch = {
-//             ...error.watch,
-//             username: `A store already has this name. We recommend ${checker?.recommendation}`
-//         }
-//         await setState({
-//             ...state, 
-//             doesStoreNameExists: checker?.status, 
-//             error
-//         });
-//         return checker?.status;
-//     }
-
-//     await setState({...state, doesStoreNameExists: checker?.status});
-//     return checker?.status;
-//   }
   const processEmail = async (e) => {
 
     let checker = await props.userStore.checkIfEmailExists(e);
@@ -272,7 +253,7 @@ import { configParams } from '../../config';
 
                                                         <AvGroup>
                                                             <Label className="form-label" for="email">EMAIL</Label>
-                                                            <AvInput 
+                                                            <AvInput
                                                                 onChange={e =>  setState({
                                                                     ...state, 
                                                                     email: e.target.value,

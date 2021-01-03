@@ -4,7 +4,8 @@ const CONSTANTS = {
     SESSIONBEARER: "jumgaJWToken",
     SCHEMA: {
         USER: 'users',
-        CATEGORIES: 'categories'
+        CATEGORIES: 'categories',
+        STORES: 'stores',
     }
 }
 export default CONSTANTS;

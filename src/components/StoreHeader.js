@@ -96,7 +96,7 @@ const StoreHeader = (props) => {
                                 {
                                     Object.keys(cat).map((item, id) => {
                                         return (
-                                            <div className="list-unstyled megamenu-list">
+                                            <div key={id} className="list-unstyled megamenu-list">
                                                 <Link to={`/categories/${trimAndReplaceSpaces(item)}`}>
                                                     <h5 className="font-size-14 mt-0">{props.t(item)}</h5>
                                                 </Link>
@@ -104,12 +104,12 @@ const StoreHeader = (props) => {
                                                     Object.keys(cat[item]).map((item2, idx) => {
                                                         let x = cat[item];
                                                         return (
-                                                            <div style={{float: 'left', margin: 20}}>
+                                                            <div key={idx} style={{float: 'left', margin: 20}}>
                                                                 <Link to={`/categories/${trimAndReplaceSpaces(item2)}`}><h6 className="font-size-14 mt-0">{props.t(item2)}</h6></Link>
                                                                 <div style={{width: '100%', borderColor: 'black', borderWidth: 1, height: 1, backgroundColor: 'slategray'}}>&nbsp;</div>
-                                                                {_.isArray(x[item2])? x[item2].map(val => {
+                                                                {_.isArray(x[item2])? x[item2].map((val, valKey) => {
                                                                     return (
-                                                                        <Link to={`/categories/${trimAndReplaceSpaces(val)}`}><div className="font-size-14">{val}</div></Link>
+                                                                        <Link key={valKey} to={`/categories/${trimAndReplaceSpaces(val)}`}><div className="font-size-14">{val}</div></Link>
                                                                     )
                                                                 }) : <></>}
                                                             </div>

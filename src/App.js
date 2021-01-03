@@ -3,7 +3,7 @@ import { Switch, BrowserRouter as Router,Route } from "react-router-dom";
 import { Provider, Subscribe } from "unstated";
 
 import allStores from './containers';
-import { userRoutes , authRoutes, storeRoutes } from "./routes/allRoutes";
+import { userRoutes , authRoutes, storeRoutes, storeAuthRoutes } from "./routes/allRoutes";
 import Authmiddleware from "./routes/middleware/Authmiddleware";
 import Storemiddleware from "./routes/middleware/Storemiddleware";
 import NonAuthmiddleware from "./routes/middleware/NonAuthMiddleware";
@@ -12,6 +12,7 @@ import StoreLayout from './components/StoreLayout';
 import Layout from "./components/Layout";
 
 import "./assets/scss/theme.scss";
+import StoreAuthmiddleware from './routes/middleware/StoreAuthmiddleware';
 // import TestingSpeech from './components/TestingSpeech';
 
 class App extends Component{
@@ -33,6 +34,15 @@ class App extends Component{
 							component={route.component}
 							key={idx}
 							layout={NonAuthLayout}
+						/>
+					))}
+
+					{storeAuthRoutes.map((route, idx) => (
+						<StoreAuthmiddleware
+							path={route.path}
+							component={route.component}
+							key={idx}
+							layout={Layout}
 						/>
 					))}
 

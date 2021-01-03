@@ -25,19 +25,6 @@ const StoreAuthmiddleware = (superProps) => {
 			return false;
 		}
 		return false;
-		// let user = localStorage.getItem(CONSTANTS.SESSIONSTORE);
-		// if (user) {
-		// 	let email = JSON.parse(user).email;
-		// 	const userCollection = CONSTANTS.SCHEMA.USER;
-        //     const userDetailsRef = firebase.firestore().doc(`${userCollection}/${email}`);
-        //     const userDoc = await userDetailsRef.get();
-        //     if(userDoc.exists) {
-		// 		if (userDoc.data()?.approved) return true;
-		// 		return false;
-        //     }
-		// 	return false;
-		// }
-		// return false;
 	}
 	return (
 		<Route
