@@ -19,6 +19,7 @@ class MasterContainer extends Container {
         super();
         this.state = {
             categories: [],
+            remoteConfigLoading: true,
             remoteConfigs: {
                 store_cost: 20,
                 currency: '$',
@@ -74,7 +75,8 @@ class MasterContainer extends Container {
         let config = await this.getAllRemoteConfigs(this.state);
         this.setState({
             ...this.state,
-            remoteConfigs: config.remoteConfigs
+            remoteConfigs: config.remoteConfigs,
+            remoteConfigLoading: false
         }, () => {
             
         });

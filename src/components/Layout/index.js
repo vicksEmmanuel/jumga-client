@@ -45,7 +45,7 @@ class Layout extends Component {
     let currentage = this.capitalizeFirstLetter(this.props.location.pathname);
 
     document.title =
-      currentage + " | Stadium";
+      currentage + " | Jumga";
 
       if (this.layoutProps.state.leftSideBarTheme) {
         this.layoutProps._changeSidebarTheme(this.layoutProps.state.leftSideBarTheme);

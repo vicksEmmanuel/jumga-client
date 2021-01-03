@@ -28,6 +28,9 @@ const StoreListing = (props) => {
         setStores(props.userStore.state.stores);
     }, [props.userStore.state.stores]);
 
+    useEffect(() => {
+    }, [props.masterStore.state.remoteConfig]);
+
     const bigScreen = (children) => (
         <div style={{width: '70%'}} className="d-none d-md-block">
             {children}

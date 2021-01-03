@@ -96,15 +96,18 @@ const CreateStore = (props) => {
     }
 
       const processStoreName = async (e) => {
-        let checker = await props.userStore.checkIfStoreNameExists(String(e).trim().replace(/\s/g, '-').replace(/\w/g, '').toLowerCase());
+        let checker = await props.userStore.checkIfStoreNameExists(props.userStore.storeNameCleanUp(e));
+        console.log(checker);
         if (checker?.status) {
             await setState({
                 ...state, 
                 storeId: checker?.recommendation,
             });
+            return;
         }
 
-        await setState({...state, storeId: String(e).trim().replace(/\s/g, '-').toLowerCase()});
+        await setState({...state, storeId: props.userStore.storeNameCleanUp(e)});
+        return;
     }
 
     const screen = (

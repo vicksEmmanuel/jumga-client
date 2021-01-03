@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Route,Redirect,withRouter } from "react-router-dom";
 import { withTranslation } from 'react-i18next';
 import * as _ from 'lodash';
@@ -17,15 +17,8 @@ import CONSTANTS from '../../App.constant';
 const StoreAuthmiddleware = (superProps) => {
 	const Layout = superProps?.layout;
 	const Component = superProps?.component;
-	const path = superProps?.path;
-	const checkifApproved = () => {
-		let user = superProps?.userStore?.state?.user;
-		if (!_.isNull(user)) {
-			if (user?.approved) return true;
-			return false;
-		}
-		return false;
-	}
+    const path = superProps?.path;
+
 	return (
 		<Route
 			path={path}
@@ -35,12 +28,6 @@ const StoreAuthmiddleware = (superProps) => {
 				if (!localStorage.getItem(CONSTANTS.SESSIONSTORE)) {
 					return (
 						<Redirect to={{ pathname: "/store/login", state: { from: props.location } }} />
-					);
-				}
-
-				if (!checkifApproved()) {
-					return (
-						<Redirect to={{ pathname: "/store/get-approved", state: { from: props.location } }} />
 					);
 				}
 

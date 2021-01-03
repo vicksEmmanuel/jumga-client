@@ -26,7 +26,7 @@ const storeAuthRoutes = [
 
 const authRoutes = [
 	{ path: "/store/login", component: Login },
-	{ path: "/store/get-approved", component: StoreCheckout},
+	{ path: "/store/get-approved/:id", component: StoreCheckout},
 	{ path: "/store/register", component: Create},
 ];
 

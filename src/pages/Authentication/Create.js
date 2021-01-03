@@ -17,6 +17,9 @@ import stadium from "../../assets/images/stadium.jpg";
 import instance from '../../helpers/axiosly';
 import { configParams } from '../../config';
 
+/**
+ * TODO: Add terms and condition
+ */
  const Create = (props) => {
     const [state, setState] = useState({
         loading: false,

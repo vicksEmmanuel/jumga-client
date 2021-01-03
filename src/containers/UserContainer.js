@@ -19,7 +19,8 @@ class UserContainer extends Container {
         super();
         this.state = {
             user: null,
-            stores: []
+            stores: [],
+            storeLoaded: false,
         }
 
         if (firebaseConfig) {
@@ -137,10 +138,20 @@ class UserContainer extends Container {
         });
 
         this.setState({
-            stores: x
+            stores: x,
+            storeLoaded: true
         });
 
         return x;
+    }
+
+    checkifApproved = (storeId) => {
+        let checkApproval = this.state.stores.filter(item => {
+            return item.storeId == storeId && item.approved == true
+        });
+
+        if (checkApproval.length > 0) return true;
+        return false;
     }
 
     createStore = async ({
@@ -156,7 +167,7 @@ class UserContainer extends Container {
     }, props) => {
         const storeCollection = CONSTANTS.SCHEMA.STORES;
         const userCollection = CONSTANTS.SCHEMA.USER;
-        const storeDetailsRef = firebase.firestore().doc(`${storeCollection}/${store}`);
+        const storeDetailsRef = firebase.firestore().doc(`${storeCollection}/${storeId}`);
         const userDetailsRef = firebase.firestore().doc(`${userCollection}/${userEmail}`);
         const userData = await userDetailsRef.get();
         const storeData = await storeDetailsRef.get();
@@ -193,21 +204,25 @@ class UserContainer extends Container {
         return {}
     }
 
+    storeNameCleanUp = name => {
+        return String(name).trim().replace(/\s/g, '-').replace(/[\@\"\']+/g, '').toLowerCase();
+    }
+
     checkIfStoreNameExists = async (storename) => {
         let db = this.firebase.firestore();
         const store = db.collection(CONSTANTS.SCHEMA.STORES);
         const query = store.where("storeId", '==', storename);
         const docs = await query.get();
-        console.log(docs.empty);
         if (docs.empty) {
             return {
                 status: false,
             }
         }
+        let x = uuidv4();
 
         return {
             status: true,
-            recommendation: `${storename}${String(uuidv4()).substring(0, Math.random(3, 10))}`.trim().replace(/\s/g,'-').replace(/\w/g, '').toLowerCase()
+            recommendation: this.storeNameCleanUp(`${storename}${String(x).substring(0, parseInt(_.random(3, x.length)))}`)
         }
     }
 
