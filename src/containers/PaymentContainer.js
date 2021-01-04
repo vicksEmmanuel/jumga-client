@@ -23,8 +23,7 @@ class PaymentContainer extends Container {
         try {
             const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.PROCESSPAYMENT);
             const response = await callable(paymentDetails);
-            console.log(response);
-            return response;
+            return response.data;
         } catch(e) {
             console.log(e);
         }

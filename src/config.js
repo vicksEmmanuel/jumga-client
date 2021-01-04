@@ -13,4 +13,5 @@ export const firebaseConfigParams = {
   appId: (isStaging) ? process.env.REACT_APP_APPID_STAGING : process.env.REACT_APP_APPID_PROD,
   flwPubKey: (isStaging) ? process.env.REACT_APP_FLUTTERWAVEPUBKEY_STAGING : process.env.REACT_APP_FLUTTERWAVEPUBKEY_PROD,
   flwSecretKey: (isStaging) ? process.env.REACT_APP_FLUTTERWAVESECRETKEY_STAGING : process.env.REACT_APP_FLUTTERWAVESECRETKEY_PROD,
+  storePaymentPlanID: (isStaging) ? parseInt(process.env.REACT_APP_STORE_PAYMENT_PLAN_ID_STAGING) : parseInt(process.env.REACT_APP_STORE_PAYMENT_PLAN_ID_PROD),
 }

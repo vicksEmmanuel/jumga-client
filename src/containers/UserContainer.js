@@ -272,6 +272,13 @@ class UserContainer extends Container {
         }
     }
 
+    trackApproval = async (storeId, callback) => {
+        const doc = firebase.firestore().collection(CONSTANTS.SCHEMA.STORES).doc(storeId);
+        doc.onSnapshot(docSnapShot => {
+            callback(docSnapShot.data());
+        });
+    }
+
     signIn = async ({
         email,
         password
