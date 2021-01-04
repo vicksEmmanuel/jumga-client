@@ -6,6 +6,9 @@ const CONSTANTS = {
         USER: 'users',
         CATEGORIES: 'categories',
         STORES: 'stores',
+    },
+    FUNCNTIONS: {
+        PROCESSPAYMENT: 'flutterwaveProcessPayment'
     }
 }
 export default CONSTANTS;

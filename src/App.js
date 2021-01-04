@@ -22,6 +22,7 @@ class App extends Component{
 		this.layoutStore = allStores[0];
 		this.userStore = allStores[2];
 		this.masterStore = allStores[3];
+		this.paymentStore = allStores[4];
 	}
 
 	appScreen = (layout) => 
