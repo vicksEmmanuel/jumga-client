@@ -22,7 +22,6 @@ class PaymentContainer extends Container {
     initiatePayment = async (paymentDetails) => {
         try {
             const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.PROCESSPAYMENT);
-            const callable = firebase.functions().useFunctionsEmulator('http://localhost:5001/jumga-staging/us-central1/flutterwaveProcessPayment');
             const response = await callable(paymentDetails);
             console.log(response);
             return response;

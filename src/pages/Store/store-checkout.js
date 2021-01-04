@@ -34,8 +34,16 @@ const StoreCheckout = (props) => {
         remoteConfigCheck: !props.masterStore.state.remoteConfigLoading,
         bgColor: 'white',
         color: 'rgb(22, 46, 88)',
-        clicked: false
+        clicked: false,
+        user: props.userStore.state.user
     });
+
+    useEffect(() => {
+        if (_.isNull(props.userStore.state.user)) return;
+        setState({
+           user: props.userStore.state.user
+        });
+    }, [props.userStore.state.user])
 
     useEffect(() => {
         let { remoteConfigs, remoteConfigLoading } = props.masterStore.state;
@@ -108,7 +116,7 @@ const StoreCheckout = (props) => {
                                                             <button
                                                                 disabled={!(state.remoteConfigCheck == true && state.storeCheck == true) || state.clicked}
                                                                 onClick={async () => {
-                                                                    if (!(state.remoteConfigCheck == true && state.storeCheck == true)) {
+                                                                    if (!(state.remoteConfigCheck == true && state.storeCheck == true) || state.clicked) {
                                                                         setState({...state, isError: true, errMsg: 'Wait for the loading to be completed'});
                                                                     }
                                                                     setState({
@@ -119,8 +127,8 @@ const StoreCheckout = (props) => {
                                                                     });
                                                                     console.log(props);
                                                                     let payment = await  props.paymentStore.initiatePayment({
-                                                                        email: props.userStore.state.user.email,
-                                                                        name: props.userStore.state.user.username,
+                                                                        email: state.user?.email,
+                                                                        name: state.user?.username,
                                                                         paymentTitle: `Payment for access to ${storeId}`,
                                                                         description: `${props.userStore.state.user.username} is to pay ${state.currency}${state.store_cost} to have access to ${storeId} store`
                                                                     });
