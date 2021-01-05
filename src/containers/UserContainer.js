@@ -122,7 +122,7 @@ class UserContainer extends Container {
         }
     }
 
-    getUserStore = async () => {
+    getUserStore = async (callback = () => {}) => {
         const storeCollection = CONSTANTS.SCHEMA.STORES;
         const storeDetailsRef = firebase.firestore().collection(storeCollection);
         const query = storeDetailsRef.where('userEmail', '==', this.state.user.email);
@@ -140,7 +140,7 @@ class UserContainer extends Container {
         this.setState({
             stores: x,
             storeLoaded: true
-        });
+        }, callback);
 
         return x;
     }
@@ -190,9 +190,7 @@ class UserContainer extends Container {
         let user = {...userData.data()};
         user.stores.push(storeId);
         await userDetailsRef.update(user);
-        await this.getUserStore();
-        
-        props.history.push('/store/get-approved');
+        await this.getUserStore(() => {props.history.push('/store/get-approved')});
     }
 
     getUser = () => {
@@ -247,6 +245,11 @@ class UserContainer extends Container {
             let user = await firebase.auth().signOut();
             localStorage.removeItem(CONSTANTS.SESSIONBEARER);
             localStorage.removeItem(CONSTANTS.SESSIONSTORE);
+            this.setState({
+                user: null,
+                stores: [],
+                storeLoaded: false,
+            })
             props.history.push("/store/login");
         } catch(err) {
             this._handleError(err);

@@ -22,7 +22,7 @@ class MasterContainer extends Container {
             remoteConfigLoading: true,
             remoteConfigs: {
                 store_cost: 20,
-                currency: '$',
+                currency: 'USD',
                 // facebook_url: 'https://www.facebook.com/jumga',
                 // instagram_url: 'https://www.instagram.com/jumga/?hl=en',
                 // contact_email1: 'info@jumga.com',

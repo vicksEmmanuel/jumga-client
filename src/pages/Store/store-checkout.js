@@ -16,7 +16,33 @@ import CONSTANTS from '../../App.constant';
 
 const StoreCheckout = (props) => {
     const storeId = props.match.params.id;
-    
+
+    const processCurrency = async () => {
+        let { remoteConfigs, remoteConfigLoading } = props.masterStore.state;
+        if (_.isEmpty(remoteConfigs)) return;
+        if (state.currencyLoaded) return;
+        await (async () => {
+            try {
+                // state.currency TODO: Change back to this
+                let result = await props.paymentStore.convertToLocalCurrency(props.masterStore.state.remoteConfigs?.store_cost,'USD');
+                setState({
+                    ...state,
+                    currencyLoaded: true,
+                    store_cost: result?.store_cost,
+                    currency: result?.currency,
+                    currencyPricePerDollar: result?.currencyPricePerDollar,
+                    remoteConfigCheck: !remoteConfigLoading
+                });
+            } catch(err) {
+                setState({
+                    ...state,
+                    isError: true,
+                    errMsg: 'Something went wrong when trying to load currency',
+                });
+            }
+        })();
+    }
+
     const checkIfStoreExists = (storeId) => {
         let isExists = props.userStore.state.stores.filter(item => {
             return item.storeId == storeId
@@ -33,9 +59,11 @@ const StoreCheckout = (props) => {
     }
 
     const [state, setState] = useState({
+        currencyLoaded: false,
         isOpen: true,
-        store_cost: props.masterStore.state.remoteConfigs?.store_cost,
-        currency: props.masterStore.state.remoteConfigs?.currency,
+        store_cost: null,
+        currency: null,
+        currencyPricePerDollar: 0,
         isError: false,
         errMsg: '',
         storeCheck: !checkifApproved(storeId),
@@ -43,8 +71,15 @@ const StoreCheckout = (props) => {
         bgColor: 'white',
         color: 'rgb(22, 46, 88)',
         clicked: false,
+        currencyLoadedTimes: 1,
         user: props.userStore.state.user
     });
+
+    useEffect(() => {
+        (async () => {
+            await processCurrency();
+        })();
+    }, [props.masterStore.state.remoteConfigs]);
 
     useEffect(() => {
         if (_.isNull(props.userStore.state.user)) return;
@@ -53,16 +88,6 @@ const StoreCheckout = (props) => {
            user: props.userStore.state.user
         });
     }, [props.userStore.state.user])
-
-    useEffect(() => {
-        let { remoteConfigs, remoteConfigLoading } = props.masterStore.state;
-        setState({
-            ...state,
-            store_cost: remoteConfigs.store_cost,
-            currency: remoteConfigs.currency,
-            remoteConfigCheck: !remoteConfigLoading
-        });
-    },[props.masterStore.state.remoteConfigs])
 
     useEffect(() => {
         if (!props.userStore.state.storeLoaded) return;
@@ -95,14 +120,20 @@ const StoreCheckout = (props) => {
             clicked: true
         });
         try {
-            let payment = await  props.paymentStore.initiatePayment({
+            const options = {
                 email: state.user?.email,
                 name: state.user?.username,
                 storename: storeId,
                 payment_plan: firebaseConfigParams.storePaymentPlanID,
                 paymentTitle: `Payment for access to ${storeId}`,
-                description: `${props.userStore.state.user.username} is to pay ${state.currency}${state.store_cost} to have access to ${storeId} store`
-            });
+                description: `${props.userStore.state.user.username} is to pay ${state.store_cost} to have access to ${storeId} store`,
+                currency: state.currency,
+                currencyPricePerDollar: state.currencyPricePerDollar
+            };
+
+            console.log(options);
+
+            let payment = await  props.paymentStore.initiatePayment(options);
             const { link } = payment?.data?.data;
             openNewWindow(link);
             setState({
@@ -172,7 +203,7 @@ const StoreCheckout = (props) => {
                                                 <Row>
                                                     <Col md="12">
                                                         <h5 className="font-size-25 text-uppercase" style={{color: 'white', fontSize: 25}}>
-                                                            {state.currency == null ? "": state.currency}{state.store_cost == null ? "" : state.store_cost}
+                                                            {state.store_cost == null ? "" : state.store_cost}
                                                         </h5>
                                                     </Col>
                                                 </Row>
