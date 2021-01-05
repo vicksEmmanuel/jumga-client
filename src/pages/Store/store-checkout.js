@@ -159,6 +159,7 @@ const StoreCheckout = (props) => {
             if (_.isUndefined(result)) return;
             if (result.approved == true) {
                (async () => {
+                if (_.isNull(props.userStore.state.user)) return;
                 await props.userStore.getUserStore();
                 if (!_.isNull(windowRef)) windowRef.close();
                 props.history.push(`/store/front/${storeId}`);

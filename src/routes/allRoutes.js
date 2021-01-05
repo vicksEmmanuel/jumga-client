@@ -7,6 +7,7 @@ import Create from "../pages/Authentication/Create";
 import StoreCheckout from "../pages/Store/store-checkout";
 import Store from "../pages/Store/StoreListing";
 import StoreDetails from "../pages/Store/StoreDetails";
+import PaymentClose from "../pages/Utility/payment-close";
 
 
 const userRoutes = [
@@ -28,6 +29,7 @@ const authRoutes = [
 	{ path: "/store/login", component: Login },
 	{ path: "/store/get-approved/:id", component: StoreCheckout},
 	{ path: "/store/register", component: Create},
+	{ path: "/payment/close", component: PaymentClose}
 ];
 
 export { userRoutes, authRoutes, storeRoutes, storeAuthRoutes };
