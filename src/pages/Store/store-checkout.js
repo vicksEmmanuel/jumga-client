@@ -124,7 +124,7 @@ const StoreCheckout = (props) => {
                 email: state.user?.email,
                 name: state.user?.username,
                 storename: storeId,
-                payment_plan: firebaseConfigParams.storePaymentPlanID,
+                // payment_plan: firebaseConfigParams.storePaymentPlanID,
                 paymentTitle: `Payment for access to ${storeId}`,
                 description: `${props.userStore.state.user.username} is to pay ${state.store_cost} to have access to ${storeId} store`,
                 currency: state.currency,
