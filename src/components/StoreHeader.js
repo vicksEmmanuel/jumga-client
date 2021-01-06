@@ -18,13 +18,6 @@ import megamenuImg from "../assets/images/megamenu-img.png";
 
 
 
-// import images
-import github from "../assets/images/brands/github.png";
-import bitbucket from "../assets/images/brands/bitbucket.png";
-import dribbble from "../assets/images/brands/dribbble.png";
-import dropbox from "../assets/images/brands/dropbox.png";
-import mail_chimp from "../assets/images/brands/mail_chimp.png";
-import slack from "../assets/images/brands/slack.png";
 
 //i18n
 import { withTranslation } from 'react-i18next';

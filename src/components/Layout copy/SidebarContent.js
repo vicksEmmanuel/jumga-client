@@ -9,8 +9,7 @@ import { Link } from "react-router-dom";
 import { withTranslation } from 'react-i18next';
 
 const SidebarContent = (props) => {
-
-    const storeId = props.match.params?.id;
+        
     // Use ComponentDidMount and ComponentDidUpdate method symultaniously
      useEffect(() => {
 
@@ -68,47 +67,25 @@ const SidebarContent = (props) => {
                  <div id="sidebar-menu">
                 <ul className="metismenu list-unstyled" id="side-menu">
                      <li>
-                        <Link to={`/store/front/${storeId}/overview`} className="waves-effect">
-                            <i className="fas fa-clipboard-list text-primary"></i>
+                        <Link to="/home" className="waves-effect">
+                            <i className="fas fa-clipboard-list"></i>
                             <span>{props.t('Overview') }</span>
                         </Link>
                      </li>
                      <li>
-                         <Link to={`/store/front/${storeId}/products`} className="waves-effect">
-                            <i className="bx bx-add-to-queue text-primary"></i>
-                            <span>{props.t('Add Products') }</span>
+                         <Link to="/#" className="has-arrow waves-effect">
+                            <i className="bx bx-football"></i>
+                            <span>{props.t('Football') }</span>
                         </Link>
-                     </li> 
-                     <li>
-                         <Link to={`/store/front/${storeId}/orders`} className="waves-effect">
-                            <i className="bx bxs-shopping-bags text-primary"></i>
-                            <span>{props.t('Orders') }</span>
-                        </Link>
-                     </li>         
-                     <li>
-                         <Link to={`/store/front/${storeId}/customers`} className="waves-effect">
-                            <i className="bx bx-group text-primary"></i>
-                            <span>{props.t('Customers') }</span>
-                        </Link>
-                     </li>    
-                     <li>
-                         <Link to={`/store/front/${storeId}/settings`} className="waves-effect">
-                            <i className="dripicons-gear text-primary"></i>
-                            <span>{props.t('Settings') }</span>
-                        </Link>
-                     </li> 
-                     <li>
-                         <Link to={`/store/front/${storeId}/account`} className="waves-effect">
-                            <i className="bx bxs-bank text-primary"></i>
-                            <span>{props.t('Account') }</span>
-                        </Link>
-                     </li>
-                     <li>
-                         <Link to={`/store/front/${storeId}/analysis`} className="waves-effect">
-                            <i className="bx bxs-network-chart text-primary"></i>
-                            <span>{props.t('Analysis') }</span>
-                        </Link>
-                     </li>      
+                        <ul className="sub-menu" aria-expanded="false">
+                            <li>
+                                <Link to="/football-competitions" className="waves-effect">{props.t('Competitions') }</Link>
+                            </li>
+                            <li>
+                                <Link to="/football-teams" className="waves-effect">{props.t('Teams') }</Link>
+                            </li>
+                        </ul>
+                     </li>                
                 </ul>
             </div>
             </React.Fragment>

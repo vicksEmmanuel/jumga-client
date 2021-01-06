@@ -8,6 +8,7 @@ import StoreCheckout from "../pages/Store/store-checkout";
 import Store from "../pages/Store/StoreListing";
 import StoreDetails from "../pages/Store/StoreDetails";
 import PaymentClose from "../pages/Utility/payment-close";
+import ComingSoon from "../pages/Utility/comin-soon";
 
 
 const userRoutes = [
@@ -22,6 +23,13 @@ const storeRoutes  = [
 ];
 
 const storeAuthRoutes = [
+	{ path: "/store/front/:id/overview", component: ComingSoon},
+	{ path: "/store/front/:id/analysis", component: ComingSoon},
+	{ path: "/store/front/:id/account", component: ComingSoon},
+	{ path: "/store/front/:id/settings", component: ComingSoon},
+	{ path: "/store/front/:id/customers", component: ComingSoon},
+	{ path: "/store/front/:id/orders", component: ComingSoon},
+	{ path: "/store/front/:id/products", component: ComingSoon},
 	{ path: "/store/front/:id", component: StoreDetails},
 ];
 
