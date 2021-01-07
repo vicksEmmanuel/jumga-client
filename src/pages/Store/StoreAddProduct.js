@@ -186,7 +186,7 @@ const  StoreAddProduct = (props) => {
             values['images'] = images;
             let result = await props.userStore.createProduct(values);
             cancel();
-            props.history.push(`/store/front/${storeId}/products/${result}`);
+            props.history.push(`/${result}`);
 
         } catch(err) {
             console.log(err);

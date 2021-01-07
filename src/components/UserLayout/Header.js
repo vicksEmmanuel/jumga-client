@@ -54,7 +54,7 @@ const Header = (props) => {
           <div className="navbar-header">
             <div className="d-flex">
               <div className="navbar-brand-box">
-                <Link to="/store/front" className="logo logo-dark">
+                <Link to="/" className="logo logo-dark">
                   <span className="logo-sm" style={{position: 'relative', left: '-60%'}}>
                     <img src={logo} alt="" height="30" />
                   </span>

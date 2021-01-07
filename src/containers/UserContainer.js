@@ -232,7 +232,8 @@ class UserContainer extends Container {
             userEmail,
             dispatchRiders,
             createdDate,
-            dateVisited
+            dateVisited,
+            wallentBalance: 0.00
         });
 
         let user = {...userData.data()};

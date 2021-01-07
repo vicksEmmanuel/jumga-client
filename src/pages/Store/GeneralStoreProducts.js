@@ -22,7 +22,7 @@ import product6 from "../../assets/images/product/img-6.png";
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
-class EcommerceProducts extends Component {
+class GeneralStoreProducts extends Component {
     constructor() {
         super();
         this.state = {
@@ -178,7 +178,7 @@ class EcommerceProducts extends Component {
                                 <Row>
                                     {
                                         this.state.Products.map((product, key) =>
-                                            <Col xl="4" sm="6" key={"_col_" + key}>
+                                            <Col xl="3" sm="3" key={"_col_" + key}>
                                                 <Card>
                                                     <CardBody>
                                                         <div className="product-img position-relative">
@@ -262,4 +262,4 @@ class EcommerceProducts extends Component {
     }
 }
 
-export default EcommerceProducts;
+export default GeneralStoreProducts;

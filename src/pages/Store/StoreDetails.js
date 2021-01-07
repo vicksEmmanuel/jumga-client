@@ -53,7 +53,7 @@ const StoreDetails = (props) => {
                             </div>
                         </div>
                     ) : (
-                        <div>Details goes here</div>
+                        <div></div>
                     )
                 }
             </React.Fragment>

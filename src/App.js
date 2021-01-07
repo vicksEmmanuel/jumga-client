@@ -3,16 +3,18 @@ import { Switch, BrowserRouter as Router,Route } from "react-router-dom";
 import { Provider, Subscribe } from "unstated";
 
 import allStores from './containers';
-import { userRoutes , authRoutes, storeRoutes, storeAuthRoutes } from "./routes/allRoutes";
+import { userRoutes , authRoutes, storeRoutes, storeAuthRoutes, userAuthRoutes } from "./routes/allRoutes";
 import Authmiddleware from "./routes/middleware/Authmiddleware";
 import Storemiddleware from "./routes/middleware/Storemiddleware";
 import NonAuthmiddleware from "./routes/middleware/NonAuthMiddleware";
 import NonAuthLayout from './components/NonAuthLayout';
 import StoreLayout from './components/StoreLayout';
 import Layout from "./components/Layout";
+import UserLayout from "./components/UserLayout";
 
 import "./assets/scss/theme.scss";
 import StoreAuthmiddleware from './routes/middleware/StoreAuthmiddleware';
+import UserMiddleware from './routes/middleware/UserMiddleware';
 // import TestingSpeech from './components/TestingSpeech';
 
 class App extends Component{
@@ -29,6 +31,15 @@ class App extends Component{
 		<React.Fragment>
 			<Router>
 				<Switch>
+					{userAuthRoutes.map((route, idx) => (
+						<NonAuthmiddleware
+							path={route.path}
+							component={route.component}
+							key={idx}
+							layout={NonAuthLayout}
+						/>
+					))}
+					
 					{authRoutes.map((route, idx) => (
 						<NonAuthmiddleware
 							path={route.path}
@@ -57,11 +68,11 @@ class App extends Component{
 					))}
 
 					{userRoutes.map((route, idx) => (
-						<Authmiddleware
+						<UserMiddleware
 							path={route.path}
 							component={route.component}
 							key={idx}
-							layout={Layout}
+							layout={UserLayout}
 						/>
 					))}
 				</Switch>

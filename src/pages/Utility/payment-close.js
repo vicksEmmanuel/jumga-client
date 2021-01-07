@@ -19,7 +19,7 @@ class PaymentClose extends Component {
                                 <div className="text-center mb-5">
                                     <h1 className="display-2 font-weight-medium">Thank y<i className="bx bx-buoy bx-spin text-primary display-3"></i>u</h1>
                                     <div className="mt-5 text-center">
-                                        <Link className="btn btn-success waves-effect waves-light" to="/store/front">Go Back</Link>
+                                        <Link className="btn btn-success waves-effect waves-light" to="/">Go Home</Link>
                                     </div>
                                 </div>
                             </Col>
