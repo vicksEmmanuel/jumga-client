@@ -26,7 +26,12 @@ import product6 from "../../assets/images/product/img-6.png";
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
 const StoreProducts = props => {
-
+    const [products, setProducts] = useState([]);
+    const [totalSize, setTotalSize] = useState(0);
+    const calculatePercentage = (newPrice, oldPrice) => {
+        const difference = Number(oldPrice) - Number(newPrice);
+        return Math.round((difference / oldPrice) * 100);
+    }
     const storeId = props.match.params?.id;
     useEffect(() => {
         if (!props.userStore.state.storeLoaded) return;
@@ -60,7 +65,8 @@ const StoreProducts = props => {
             let result = await props.masterStore.getProducts({
                 storeId: storeId
             });
-
+            setProducts(result.data)
+            setTotalSize(result?.totalSize);
             console.log(result);
             console.log("Properties of this component", props);
         })();
@@ -137,28 +143,33 @@ const StoreProducts = props => {
                             </Row>
                             <Row>
                                 {
-                                    state.Products.map((product, key) =>
+                                    products.length <= 0
+                                      ? (
+                                        <div>
+                                            No items to display
+                                        </div>
+                                      ) : products.map((product, key) =>
                                         <Col xl="4" sm="6" key={"_col_" + key}>
                                             <Card>
                                                 <CardBody>
                                                     <div className="product-img position-relative">
                                                         {
-                                                            product.isOffer
+                                                            Number(product?.currentprice) < Number(product?.pastprice)
                                                                 ? <div className="avatar-sm product-ribbon">
                                                                     <span className="avatar-title rounded-circle  bg-primary">
-                                                                        {product.offer + "%"}
+                                                                        {calculatePercentage(product?.currentprice, product?.pastprice) + "%"}
                                                                     </span>
                                                                 </div>
                                                                 : null
                                                         }
 
-                                                        <img src={product.image} alt="" className="img-fluid mx-auto d-block" />
+                                                        <img src={product?.images[1]} alt="" className="img-fluid mx-auto d-block" />
                                                     </div>
                                                     <div className="mt-4 text-center">
-                                                        <h5 className="mb-3 text-truncate"><Link to={"/ecommerce-product-detail/" + product.id} className="text-dark">{product.name} </Link></h5>
+                                                        <h5 className="mb-3 text-truncate"><Link to={"/ecommerce-product-detail/" + product?.id} className="text-dark">{product?.productname} </Link></h5>
                                                         <div className="text-muted mb-3">
                                                             <StarRatings
-                                                                rating={product.rating}
+                                                                rating={product?.starRating}
                                                                 starRatedColor="#F1B44C"
                                                                 starEmptyColor="#2D363F"
                                                                 numberOfStars={5}
@@ -167,7 +178,7 @@ const StoreProducts = props => {
                                                                 starSpacing="3px"
                                                             />
                                                         </div>
-                                                        <h5 className="my-0"><span className="text-muted mr-2"><del>${product.oldPrice}</del></span> <b>${product.newPrice}</b></h5>
+                                                        <h5 className="my-0"><span className="text-muted mr-2"><del>${product?.pastprice}</del></span> <b>${product?.currentprice}</b></h5>
                                                     </div>
                                                 </CardBody>
                                             </Card>
@@ -175,7 +186,15 @@ const StoreProducts = props => {
                                     )
                                 }
                             </Row>
-
+                            <Row>
+                                <div className="flex-center">{
+                                    totalSize > 0 ? (
+                                      <span className="w-100">
+                                          Displaying 1 {products.length === 1 ? null : `to ${products.length}`} of {totalSize} item(s)
+                                      </span>
+                                    ) : null
+                                }</div>
+                            </Row>
                             <Row>
                                 <Col lg="12">
                                     <Pagination className="pagination pagination-rounded justify-content-center">
