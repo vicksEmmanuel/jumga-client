@@ -19,9 +19,6 @@ import stateWrapper from '../../containers/provider';
 
 
 const Header = (props) => {
-
-  console.log(props);
-
   const [search, setsearch] = useState(false);
   const [megaMenu, setmegaMenu] = useState(false);
   const [socialDrp, setsocialDrp] = useState(false);

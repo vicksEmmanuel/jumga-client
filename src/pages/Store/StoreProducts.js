@@ -55,6 +55,17 @@ const StoreProducts = props => {
         });
     }, []);
 
+    useEffect(() => {
+        (async () => {
+            let result = await props.masterStore.getProducts({
+                storeId: storeId
+            });
+
+            console.log(result);
+            console.log("Properties of this component", props);
+        })();
+    }, []);
+
     const [state, setState] = useState({
         FilterClothes: [
             { id: 1, name: "T-shirts", link: "#" },

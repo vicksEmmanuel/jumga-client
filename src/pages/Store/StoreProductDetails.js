@@ -1,7 +1,9 @@
 import React, { Component, useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
 import { Container, Row, Col, Card, CardBody, Button, Nav, NavItem, NavLink, TabContent, TabPane, Table, Media } from "reactstrap";
 import classnames from 'classnames';
+import stateWrapper from '../../containers/provider';
+import { withRouter, Link } from 'react-router-dom';
+import { withTranslation } from 'react-i18next';
 
 //Import Star Ratings
 import StarRatings from 'react-star-ratings';
@@ -19,7 +21,18 @@ import avatar5 from "../../assets/images/users/avatar-5.jpg";
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
 const StoreProductDetail = props => {
-    console.log(props);
+    const productId = props.match.params?.productId;
+    useEffect(() => {
+        (async () => {
+            let result = await props.masterStore.getProduct({
+                id: productId, //If the value is '' it would return all the products
+            });
+
+            console.log(result);
+            console.log("Properties of this component", props);
+        })();
+    }, []);
+
     const [state, setState] = useState({
         comments: [
             { id: 1, img: avatar2, name: "Brian", description: "If several languages coalesce, the grammar of the resulting language.", date: "5 hrs ago" },
@@ -341,4 +354,4 @@ const StoreProductDetail = props => {
     );
 }
 
-export default StoreProductDetail;
+export default withRouter(withTranslation()(stateWrapper(StoreProductDetail)));

@@ -9,7 +9,10 @@ const CONSTANTS = {
         PRODUCTS: 'products',
     },
     FUNCNTIONS: {
-        PROCESSPAYMENT: 'flutterwaveProcessPayment'
+        PROCESSPAYMENT: 'flutterwaveProcessPayment',
+        SEARCHPRODUCT: 'jumgaOnSearch',
+        GETPRODUCTS: 'jumgaGetProductList',
+        GETPRODUCT: 'jumgaGetProduct',
     }
 }
 export default CONSTANTS;

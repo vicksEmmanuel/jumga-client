@@ -83,6 +83,57 @@ class MasterContainer extends Container {
         return config;
     }
 
+    searchForId = async (searchDetails = {
+      id: '',
+      filter: false,
+      filterPriceMinRange: 0,
+      filterPriceMaxRange: 1000000000,
+      filterDiscountRate: 50,
+      filterCustomerRating: 5,
+      startAt: 0,
+      limit: 10,
+  }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.SEARCHPRODUCT);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    getProducts = async (searchDetails = {
+      storeId: '',
+      startAt: 0,
+      limit: 10,
+  }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETPRODUCTS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    getProduct = async (searchDetails = {
+      id: '',
+  }) => {
+      try {
+        if (!_.isObject(searchDetails)) return {};
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETPRODUCT);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
     getAllCategories = async () => {
         if (this.state.categories.length > 0) return this.state.categories;
         const categoriesCollection = CONSTANTS.SCHEMA.CATEGORIES;
