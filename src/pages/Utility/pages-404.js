@@ -17,7 +17,7 @@ class Pages404 extends Component {
                                     <h1 className="display-2 font-weight-medium">4<i className="bx bx-buoy bx-spin text-primary display-3"></i>4</h1>
                                     <h4 className="text-uppercase">Sorry, page not found</h4>
                                     <div className="mt-5 text-center">
-                                        <Link className="btn btn-success waves-effect waves-light" to="/dashboard">Go Home</Link>
+                                        <Link className="btn btn-success waves-effect waves-light" to="/">Go Home</Link>
                                     </div>
                                 </div>
                             </Col>
