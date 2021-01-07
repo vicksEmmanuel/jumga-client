@@ -72,7 +72,8 @@ const StoreCheckout = (props) => {
         color: 'rgb(22, 46, 88)',
         clicked: false,
         currencyLoadedTimes: 1,
-        user: props.userStore.state.user
+        user: props.userStore.state.user,
+        url: null
     });
 
     useEffect(() => {
@@ -105,7 +106,7 @@ const StoreCheckout = (props) => {
     let windowRef = null;
 
     const openNewWindow = (url) => {
-        windowRef = window.open(url, 'Payment', 'statusbar=no,height=600,width=400');
+        windowRef = window.open(url, 'Payment', 'statusbar=no,height=600,width=400');    
     }
 
     const handlePayment = async () => {
@@ -131,17 +132,16 @@ const StoreCheckout = (props) => {
                 currencyPricePerDollar: state.currencyPricePerDollar
             };
 
-            console.log(options);
-
             let payment = await  props.paymentStore.initiatePayment(options);
             const { link } = payment?.data?.data;
-            openNewWindow(link);
             setState({
                 ...state,
                 bgColor: 'white',
                 color: 'rgb(22, 46, 88)',
-                clicked: false
+                clicked: false,
+                url: link
             });
+            openNewWindow(link);
         } catch(e) {
             setState({
                 ...state,
@@ -232,6 +232,20 @@ const StoreCheckout = (props) => {
                                                                     ): <></>}
                                                                 </button>
                                                             </div>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col md="12">
+                                                        <div align="left">
+                                                            {
+                                                                _.isNull(state.url) ? <></> : (
+                                                                    <span style={{color: 'white', fontSize: '12'}}>
+                                                                        If window does not open click this  
+                                                                        <a target="_blank" style={{color: 'dodgerblue'}} href={state.url}>Link</a>
+                                                                    </span>
+                                                                )
+                                                            }
+                                                        </div>
                                                     </Col>
                                                 </Row>
                                             </div>

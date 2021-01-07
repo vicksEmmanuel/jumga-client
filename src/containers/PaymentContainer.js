@@ -13,6 +13,7 @@ import { Container } from "unstated";
 import CONSTANTS from "../App.constant";
 import axios from 'axios';
 import { firebaseConfigParams } from '../config';
+import { get } from "lodash";
 
 class PaymentContainer extends Container {
 
@@ -34,27 +35,13 @@ class PaymentContainer extends Container {
     convertToLocalCurrency = async (price, currency) => {
         try {
             if (_.isNull(currency) || _.isNull(price)) return;
-            let result = await axios.get(firebaseConfigParams.geolocationRoute);
-            if (result.data?.status === 'success') {
-                let newCurrency = result.data?.currency;
-                if (newCurrency === currency) {
-                    const formatter = new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: newCurrency,
-                        minimumFractionDigits: 2
-                    });
-    
-                    return {
-                        store_cost: formatter.format(price),
-                        currency: newCurrency,
-                        currencyPricePerDollar: 1,
-                    };
-                }
-                let newExchange = await axios.get(`https://free.currconv.com/api/v7/convert?q=${currency}_${newCurrency}&compact=ultra&apiKey=${firebaseConfigParams.currencyExchangeApiKey}`);
-                if(_.isEmpty(newExchange.data)) throw new Error('Something went wrong with currency exchange');
-                let x = Object.keys(newExchange.data).map(i => {
-                    return newExchange.data[i];
-                });
+            let ip = await axios.get(firebaseConfigParams.geolocationIpRoute);
+            let result = await axios.get(`${firebaseConfigParams.geolocationRoute}&ip=${ip.data.ip}`);
+            // if (result.data?.status === 'success') {
+                
+            // }
+            let newCurrency = result.data?.currency?.code;
+            if (newCurrency === currency) {
                 const formatter = new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: newCurrency,
@@ -62,12 +49,28 @@ class PaymentContainer extends Container {
                 });
 
                 return {
-                    store_cost: formatter.format(x[0] * price),
+                    store_cost: formatter.format(price),
                     currency: newCurrency,
-                    currencyPricePerDollar: x[0]
+                    currencyPricePerDollar: 1,
                 };
             }
-            throw new Error(`${result.data?.status} ${result.data?.message}`);
+            let newExchange = await axios.get(`https://free.currconv.com/api/v7/convert?q=${currency}_${newCurrency}&compact=ultra&apiKey=${firebaseConfigParams.currencyExchangeApiKey}`);
+            if(_.isEmpty(newExchange.data)) throw new Error('Something went wrong with currency exchange');
+            let x = Object.keys(newExchange.data).map(i => {
+                return newExchange.data[i];
+            });
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: newCurrency,
+                minimumFractionDigits: 2
+            });
+
+            return {
+                store_cost: formatter.format(x[0] * price),
+                currency: newCurrency,
+                currencyPricePerDollar: x[0]
+            };
+            // throw new Error(`${result.data?.status} ${result.data?.message}`);
         } catch(err) {
             throw new Error(err);
         }

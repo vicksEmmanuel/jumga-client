@@ -33,7 +33,6 @@ const StoreHeader = (props) => {
   const [socialDrp, setsocialDrp] = useState(false);
   const searchFor = (e) => {
     e.preventDefault();
-    console.log(searchtext);
   }
 
   const trimAndReplaceSpaces = (text) => {

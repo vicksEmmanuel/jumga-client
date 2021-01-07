@@ -5,8 +5,6 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import CreateStore, {Backdrop} from './CreateStore';
 import { Container, Row, Col, Button, Card, CardBody, CardTitle, Modal, ModalHeader, ModalBody, ModalFooter, Media, Table } from "reactstrap";
 import stateWrapper from '../../containers/provider';
-import storefront from "../../assets/images/store-umbrella.png";
-import storefront2 from "../../assets/images/store-umbrella1.png";
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import './store.scss';
@@ -39,6 +37,8 @@ const StoreDetails = (props) => {
                 await props.userStore.getUserStore();
                 props.history.push(`/store/get-approved/${storeId}`);
                })();
+            } else {
+                props.history.push(`/store/front/${storeId}/overview`);
             }
         });
     }, []);

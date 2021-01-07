@@ -12,6 +12,7 @@ import "firebase/remote-config";
 import { Container } from "unstated";
 import instance from '../helpers/axiosly';
 import CONSTANTS from "../App.constant";
+import { resolve } from "path";
 
 class UserContainer extends Container {
     
@@ -52,40 +53,87 @@ class UserContainer extends Container {
         return false;
     }
 
-    uploadImage = async (image, callback = async () => {}) => {
-       try {
-        if (!String(image?.type).includes("image")) {
-            return;
-        }
-        var storageRef = firebase.storage().ref();
-        let ref = storageRef.child(uuidv4());
-        let uploadTask = ref.put(image);
-        uploadTask.on('state_changed', function(snapshot){
-            // Observe state change events such as progress, pause, and resume
-            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
-            switch (snapshot.state) {
-              case firebase.storage.TaskState.PAUSED: // or 'paused'
-                console.log('Upload is paused');
-                break;
-              case firebase.storage.TaskState.RUNNING: // or 'running'
-                console.log('Upload is running');
-                break;
-            }
-          }, function(error) {
-            // Handle unsuccessful uploads
-          }, function() {
-            // Handle successful uploads on complete
-            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-            uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-              console.log('File available at', downloadURL);
-              callback(downloadURL);
+    uploadImage = (image, getTransferRate = () => {}) => {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!String(image?.type).includes("image")) {
+                    return;
+                }
+                var storageRef = firebase.storage().ref();
+                let ref = storageRef.child(uuidv4());
+                let uploadTask = ref.put(image);
+                uploadTask.on('state_changed', function(snapshot){
+                    // Observe state change events such as progress, pause, and resume
+                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    getTransferRate('Upload is ' + progress + '% done');
+                    console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                      case firebase.storage.TaskState.PAUSED: // or 'paused'
+                        console.log('Upload is paused');
+                        break;
+                      case firebase.storage.TaskState.RUNNING: // or 'running'
+                        console.log('Upload is running');
+                        break;
+                    }
+                  }, function(error) {
+                    // Handle unsuccessful uploads
+                    reject();
+                  }, function() {
+                    // Handle successful uploads on complete
+                    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                    uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                      console.log('File available at', downloadURL);
+                      resolve(downloadURL);
+                    });
+                  });
+               } catch(e) {
+                   this._handleError(e);
+               }
+        });
+    }
+
+    createProduct = async ({
+        images = [],
+        productname,
+        manufacturename,
+        manufacturebrand,
+        pastprice,
+        currentprice,
+        productdesc,
+        metaname,
+        metakeywords,
+        metadescription,
+        categories,
+        storeId,
+    }) => {
+        try {
+
+            const productCollection = CONSTANTS.SCHEMA.PRODUCTS;
+            const id = `${storeId}${uuidv4()}`;
+            const productRef = firebase.firestore().doc(`${productCollection}/${id}`);
+            await productRef.set({
+                images,
+                productname,
+                manufacturename,
+                manufacturebrand,
+                pastprice,
+                currentprice,
+                productdesc,
+                metaname,
+                metakeywords,
+                metadescription,
+                categories,
+                storeId,
+                starRating: 0,
+                reviews: [],
+                createdAt: Date.now()
             });
-          });
-       } catch(e) {
-           this._handleError(e);
-       }
+            return id;
+
+        } catch(e) {
+            throw new Error(e);
+        }
     }
 
     signUp = async ({
@@ -94,7 +142,7 @@ class UserContainer extends Container {
         username,
         userType,
         downloadURL,
-        approved = true,
+        approved = false,
         createdAt = Date.now(),
         paymentDates = [],
         stores = []

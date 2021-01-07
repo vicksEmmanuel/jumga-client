@@ -9,6 +9,7 @@ import Store from "../pages/Store/StoreListing";
 import StoreDetails from "../pages/Store/StoreDetails";
 import PaymentClose from "../pages/Utility/payment-close";
 import ComingSoon from "../pages/Utility/comin-soon";
+import StoreAddProduct from "../pages/Store/StoreAddProduct";
 
 
 const userRoutes = [
@@ -29,8 +30,10 @@ const storeAuthRoutes = [
 	{ path: "/store/front/:id/settings", component: ComingSoon},
 	{ path: "/store/front/:id/customers", component: ComingSoon},
 	{ path: "/store/front/:id/orders", component: ComingSoon},
-	{ path: "/store/front/:id/products", component: ComingSoon},
-	{ path: "/store/front/:id", component: StoreDetails},
+	{ path: "/store/front/:id/add-products", component: StoreAddProduct}, //Add product
+	{ path: "/store/front/:id/products/:productId", component: ComingSoon}, //View a particular product
+	{ path: "/store/front/:id/products", component: ComingSoon}, //View all product
+	{ path: "/store/front/:id", component: StoreDetails}, //Home
 ];
 
 const authRoutes = [

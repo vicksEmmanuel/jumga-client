@@ -74,9 +74,15 @@ const SidebarContent = (props) => {
                         </Link>
                      </li>
                      <li>
-                         <Link to={`/store/front/${storeId}/products`} className="waves-effect">
+                         <Link to={`/store/front/${storeId}/add-products`} className="waves-effect">
                             <i className="bx bx-add-to-queue text-primary"></i>
                             <span>{props.t('Add Products') }</span>
+                        </Link>
+                     </li> 
+                     <li>
+                         <Link to={`/store/front/${storeId}/products`} className="waves-effect">
+                            <i className="bx bxs-store text-primary"></i>
+                            <span>{props.t('Products') }</span>
                         </Link>
                      </li> 
                      <li>

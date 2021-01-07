@@ -16,6 +16,8 @@ export const firebaseConfigParams = {
   storePaymentPlanID: (isStaging) ? parseInt(process.env.REACT_APP_STORE_PAYMENT_PLAN_ID_STAGING) : parseInt(process.env.REACT_APP_STORE_PAYMENT_PLAN_ID_PROD),
   // geolocationRoute: 'http://api.ipstack.com/41.190.2.56?access_key=881adef0d0649ce8981bbab9feb172c9',
   // geolocationRoute: 'http://ipwhois.app/json',
-  geolocationRoute: 'http://ip-api.com/json?fields=status,country,currency,message',
+  // geolocationRoute: 'http://ip-api.com/json?fields=status,country,currency,message',
+  geolocationRoute: 'https://api.ipgeolocation.io/ipgeo?apiKey=d0124bc29ad4449b9d4d318fffbe9071',
+  geolocationIpRoute: 'https://api.ipgeolocation.io/getip',
   currencyExchangeApiKey: '3f2fafa7fca1c5b86d68'
 }

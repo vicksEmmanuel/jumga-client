@@ -20,20 +20,30 @@ import stateWrapper from '../../containers/provider';
 
 const Header = (props) => {
 
-  console.log(props);
-
   const [search, setsearch] = useState(false);
   const [megaMenu, setmegaMenu] = useState(false);
   const [socialDrp, setsocialDrp] = useState(false);
 
   const storeId = props.match.params?.id;
 
+  function tToggle()
+{
+    props.layoutStore._toggleLeftmenu(!props.layoutStore.state.leftMenu);
+    if (props.layoutStore.state.leftSideBarType === "default") {
+        props.layoutStore._changeSidebarType("condensed", props.layoutStore.state.leftMenu);
+        props.layoutStore.changeLeftSidebarType({ payload: { sidebarType: "condensed", isMobile: props.layoutStore.state.leftMenu}});
+    } else if (props.layoutStore.state.leftSideBarType === "condensed") {
+      props.layoutStore.changeLeftSidebarType({ payload: { sidebarType: "default", isMobile: props.layoutStore.state.leftMenu}});
+      props.layoutStore._changeSidebarType("default", props.layoutStore.state.leftMenu);
+    }  
+}
+
   const isMobile =  /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   const processStoreListiing = () => {
     let x = props.userStore.state.stores.filter(item => {
       return item.storeId !== storeId;
-    })
+    });
 
     return x.length > 0 ? x.map((item, id) => {
       return (
@@ -64,7 +74,7 @@ const Header = (props) => {
                 </Link>
               </div>
 
-              <div>
+              <div onClick={() => {   tToggle() }}>
                   <UncontrolledDropdown>
                       <DropdownToggle href="#" className="card-drop" tag="i">
                         <span className="d-none d-lg-inline-block">Stores</span>

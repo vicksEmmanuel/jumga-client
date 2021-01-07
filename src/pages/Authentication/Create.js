@@ -74,11 +74,10 @@ import { configParams } from '../../config';
         await create();
         return;
     }
-    await props.userStore.uploadImage(newValues.imageFile, async (snaps) => {
-        console.log(snaps);
-        newValues.downloadURL = snaps;
-        await create();
-    });
+    let snaps = await props.userStore.uploadImage(newValues.imageFile, e => {});
+    console.log(snaps);
+    newValues.downloadURL = snaps;
+    await create();
     return;
   }
   const showPreviewAndSetValue = (e) => {
