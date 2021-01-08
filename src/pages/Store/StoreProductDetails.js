@@ -23,9 +23,11 @@ import avatar5 from "../../assets/images/users/avatar-5.jpg";
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
 const StoreProductDetail = props => {
-    const productId = props.match.params?.productId;
+    let productId = props.match.params?.productId;
 
-    const [state, setState] = useState({
+    console.log(productId);
+
+    const initialState = {
         extraProduct: [],
         product: {},
         is404: false,
@@ -46,10 +48,12 @@ const StoreProductDetail = props => {
         ],
         activeTab: '1',
         metaTagHolder: ''
-    })
+    }
+    const [state, setState] = useState(initialState);
 
-    useEffect(() => {
+    const loadData = () => {
         (async () => {
+            setState(initialState);
             let result = await props.masterStore.getProduct({
                 id: productId, //If the value is '' it would return all the products
             });
@@ -57,7 +61,15 @@ const StoreProductDetail = props => {
             setState({...state, product: result.product, extraProduct: result.extraProductFromStore});
             console.log(result);
         })();
+    }
+
+    useEffect(() => {
+        loadData();
     }, []);
+
+    useEffect(() => {
+        loadData();
+    }, [productId])
 
     const toggleTab = (tab) => {
         if (state.activeTab !== tab) {
@@ -305,14 +317,19 @@ const StoreProductDetail = props => {
                                                             <Col xl="4" sm="6" key={"__product__" + key}>
                                                                 <Card>
                                                                     <CardBody>
-                                                                        <Link to={`/${productId}`}>
+                                                                        <Link to={`/${product.productId}`} onClick={e => {
+                                                                            e.preventDefault();
+                                                                            window.location.href = `/${product.productId}`;
+                                                                        }}>
                                                                             <Row className="align-items-center">
                                                                                 <Col md="4">
                                                                                     <img src={product.images[0]} alt="" className="img-fluid mx-auto d-block" />
                                                                                 </Col>
                                                                                 <Col md="8">
                                                                                     <div className="text-center text-md-left pt-3 pt-md-0">
-                                                                                        <h5 className="mb-3 text-truncate"><Link to="#" className="text-dark">{product.productname}</Link></h5>
+                                                                                        <h5 className="mb-3 text-truncate">
+                                                                                            <Link to={`/${product.productId}`} className="text-dark">{product.productname}</Link>
+                                                                                        </h5>
                                                                                         <div className="text-muted mb-3">
                                                                                             <StarRatings
                                                                                                 rating={product.starRating}
@@ -328,9 +345,9 @@ const StoreProductDetail = props => {
                                                                                         <h5 className="my-0">
                                                                                             <span className="text-muted mr-2">
                                                                                                 <del>
-                                                                                                    {Number(state.product.pastprice) > Number(state.product.currentprice) ? '$'+state.product.pastprice + ' USD': ''}
+                                                                                                    {Number(product.pastprice) > Number(product.currentprice) ? '$'+ product.pastprice + ' USD': ''}
                                                                                                 </del>
-                                                                                            </span> <b>{'$'+ state.product.currentprice + ' USD'}</b>
+                                                                                            </span> <b>{'$'+ product.currentprice + ' USD'}</b>
                                                                                         </h5>
                                                                                     </div>
                                                                                 </Col>
