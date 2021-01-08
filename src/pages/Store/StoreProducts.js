@@ -93,6 +93,7 @@ const StoreProducts = props => {
     const toggleTab = (tab) => {
         if (state.activeTab !== tab) {
             setState({
+                ...state,
                 activeTab: tab
             });
         }
@@ -132,7 +133,7 @@ const StoreProducts = props => {
                                             <NavItem>
                                                 <NavLink
                                                     className={classnames({ active: state.activeTab === '2' })}
-                                                    onClick={() => { this.toggleTab('2'); }}
+                                                    onClick={() => { toggleTab('2'); }}
                                                 >
                                                     <i className="bx bx-list-ul"></i>
                                                 </NavLink>
@@ -145,11 +146,19 @@ const StoreProducts = props => {
                                 {
                                     products.length <= 0
                                       ? (
-                                        <div>
-                                            No items to display
-                                        </div>
+                                        <Row>
+                                            <Col md="3"></Col>
+                                            <Col md="6">
+                                                <Card>
+                                                <CardBody>
+                                                    <h4 className="mt-1 mb-3">No Poducts as been added</h4>
+                                                </CardBody>
+                                            </Card>
+                                            </Col>
+                                            <Col md="3"></Col>
+                                        </Row>
                                       ) : products.map((product, key) =>
-                                        <Col xl="4" sm="6" key={"_col_" + key}>
+                                        <Col xl="3" sm="4" key={"_col_" + key}>
                                             <Card>
                                                 <CardBody>
                                                     <div className="product-img position-relative">
@@ -163,7 +172,7 @@ const StoreProducts = props => {
                                                                 : null
                                                         }
 
-                                                        <img src={product?.images[1]} alt="" className="img-fluid mx-auto d-block" />
+                                                        <img src={product?.images[0]} alt="" className="img-fluid mx-auto d-block"  style={{height: 150}}/>
                                                     </div>
                                                     <div className="mt-4 text-center">
                                                         <h5 className="mb-3 text-truncate"><Link to={"/ecommerce-product-detail/" + product?.id} className="text-dark">{product?.productname} </Link></h5>
