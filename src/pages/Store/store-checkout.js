@@ -110,7 +110,11 @@ const StoreCheckout = (props) => {
     }
 
     const handlePayment = async () => {
-        if (!(state.remoteConfigCheck == true && state.storeCheck == true) || state.clicked || _.isNull(state.user)) {
+        if (
+            !state.currencyLoaded &&
+            _.isNull(props.userStore.state.user) &&
+            _.isNull(state.currency)
+        ) {
             setState({...state, isError: true, errMsg: 'Wait for the loading to be completed'});
             return;
         }
@@ -212,7 +216,7 @@ const StoreCheckout = (props) => {
                                                     <Col md="12">
                                                             <div align="right">
                                                                 <button
-                                                                    disabled={!(state.remoteConfigCheck == true && state.storeCheck == true) || state.clicked || _.isNull(state.user)}
+                                                                    disabled={state.clicked}
                                                                     onClick={handlePayment}
                                                                     style={{
                                                                         borderRadius: 20, 
