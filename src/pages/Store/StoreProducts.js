@@ -175,7 +175,7 @@ const StoreProducts = props => {
                                                         <img src={product?.images[0]} alt="" className="img-fluid mx-auto d-block"  style={{height: 150}}/>
                                                     </div>
                                                     <div className="mt-4 text-center">
-                                                        <h5 className="mb-3 text-truncate"><Link to={"/ecommerce-product-detail/" + product?.id} className="text-dark">{product?.productname} </Link></h5>
+                                                        <h5 className="mb-3 text-truncate"><Link to={"/" + product?.productId} className="text-dark">{product?.productname} </Link></h5>
                                                         <div className="text-muted mb-3">
                                                             <StarRatings
                                                                 rating={product?.starRating}
