@@ -9,6 +9,7 @@ import { withTranslation } from 'react-i18next';
 
 //Import Star Ratings
 import StarRatings from 'react-star-ratings';
+import ErrorMessage from '../../components/Common/ErrorMessage';
 
 //Import Product Images
 import img4 from "../../assets/images/product/img-4.png";
@@ -31,6 +32,8 @@ const StoreProductDetail = props => {
         extraProduct: [],
         product: {},
         is404: false,
+        errMsg: '',
+        isError: false,
         comments: [
             { id: 1, img: avatar2, name: "Brian", description: "If several languages coalesce, the grammar of the resulting language.", date: "5 hrs ago" },
             {
@@ -70,6 +73,21 @@ const StoreProductDetail = props => {
     useEffect(() => {
         loadData();
     }, [productId])
+
+    useEffect(() => {
+        if (state.isError) {
+            setTimeout(() => {setState({...state, isError: false, errMsg: ''})}, 10000);
+        }
+    }, [state.isError]);
+
+    const addToCart = () => {
+        try {
+            props.masterStore.addToCart(props.userStore.state.user, {});
+        } catch(e) {
+            console.log(e);
+            setState({...state, isError: true, errMsg: e?.message});
+        }
+    }
 
     const toggleTab = (tab) => {
         if (state.activeTab !== tab) {
@@ -127,6 +145,9 @@ const StoreProductDetail = props => {
 
     return (
         <React.Fragment>
+            <div onClick={() => {setState({...state, errMsg: '', isError: false})}}>
+               <ErrorMessage isError={state.isError} message={state.errMsg} />
+            </div>
             <div className="page-content">
                {state.is404 ? (
                    <Page404/>
@@ -178,9 +199,14 @@ const StoreProductDetail = props => {
                                                                                 }
                                                                             </TabContent>
                                                                             <div className="text-center">
-                                                                                <Button type="button" color="primary" className="btn waves-effect waves-light mt-2 mr-1">
-                                                                                    <i className="bx bx-cart mr-2"></i> Add to cart
-                                                                            </Button>
+                                                                                <Button 
+                                                                                    onClick={addToCart}
+                                                                                    type="button" 
+                                                                                    color="primary" 
+                                                                                    className="btn waves-effect waves-light mt-2 mr-1"
+                                                                                >
+                                                                                        <i className="bx bx-cart mr-2"></i> Add to cart
+                                                                                </Button>
                                                                                 <Button type="button" color="success" className="ml-1 btn waves-effect  mt-2 waves-light">
                                                                                     <i className="bx bx-shopping-bag mr-2"></i>Buy now
                                                                             </Button>

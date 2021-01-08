@@ -20,6 +20,7 @@ class MasterContainer extends Container {
         this.state = {
             categories: [],
             remoteConfigLoading: true,
+            cart: [],
             remoteConfigs: {
                 store_cost: 20,
                 currency: 'USD',
@@ -150,6 +151,32 @@ class MasterContainer extends Container {
         });
 
         return this.state.categories;
+    }
+
+    addToCart = async (user, cartItem) => {
+      try {
+        if (_.isNull(user)) {
+          let cart = this.state.cart;
+          let check = cart.filter(item => {
+            return item.productId == cartItem.productId
+          });
+  
+          if (check.length > 0) throw new Error('Already in cart');
+  
+          cart.push({
+            ...cartItem
+          });
+  
+          this.setState({
+            cart
+          });
+  
+        } else {
+          //TODO: Add to database cart
+        }
+      } catch(e) {
+        throw new Error(e?.message);
+      }
     }
 }
 

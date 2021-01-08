@@ -53,7 +53,7 @@ const StoreHeader = (props) => {
         <header id="page-topbar">
           <div className="navbar-header">
             <div className="d-flex">
-              <div className="navbar-brand-box" style={{position: 'relative', left: -30, paddingLeft: 0}}>
+              <div className="navbar-brand-box" style={{position: 'relative', left: 0, paddingLeft: 0}}>
                 <Link to="/" className="logo logo-dark">
                   <span className="logo-sm">
                     <img src={logo} alt="" height="30" />
