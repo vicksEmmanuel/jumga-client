@@ -20,6 +20,7 @@ import CreateX from "../pages/Authentication/CreateX";
 
 
 const userRoutes = [
+	{ path: "/store/:id", component: ComingSoon},
 	{ path: "/search/:id", component: GeneralStoreProducts}, //TODO:
 	{ path: "/search/", component: GeneralStoreProducts}, //TODO:
 	{ path: "/categories/:id", component: ComingSoon}, //TODO:

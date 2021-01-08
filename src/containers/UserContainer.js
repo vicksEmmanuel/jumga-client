@@ -10,9 +10,10 @@ import "firebase/storage";
 import "firebase/remote-config";
 
 import { Container } from "unstated";
-import instance from '../helpers/axiosly';
+import axios from 'axios';
 import CONSTANTS from "../App.constant";
-import { resolve } from "path";
+import { firebaseConfigParams } from '../config';
+
 
 class UserContainer extends Container {
     
@@ -223,6 +224,11 @@ class UserContainer extends Container {
             storeId = `${storeId}${Date.now()}`;
         }
 
+        let ip = await axios.get(firebaseConfigParams.geolocationIpRoute);
+        let result = await axios.get(`${firebaseConfigParams.geolocationRoute}&ip=${ip.data.ip}`);
+        let state = result.data?.state_prov;
+        let country = result.data?.country_name;
+
         await storeDetailsRef.set({
             store,
             categories,
@@ -233,7 +239,9 @@ class UserContainer extends Container {
             dispatchRiders,
             createdDate,
             dateVisited,
-            wallentBalance: 0.00
+            wallentBalance: 0.00,
+            country,
+            state,
         });
 
         let user = {...userData.data()};
