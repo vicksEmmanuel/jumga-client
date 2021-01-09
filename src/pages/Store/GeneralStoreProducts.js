@@ -26,7 +26,39 @@ import Breadcrumbs from '../../components/Common/Breadcrumb';
 
 const GeneralStoreProducts = props => {
     const searchId = props.match.params?.id || '';
+    const [products, setProducts] = useState([]);
+    const [totalSize, setTotalSize] = useState(0);
+
+    const calculatePercentage = (newPrice, oldPrice) => {
+        const difference = Number(oldPrice) - Number(newPrice);
+        return Math.round((difference / oldPrice) * 100);
+    }
+
+    console.log(searchId);
+
+    const loadData = () => {
+        (async () => {
+            let result = await props.masterStore.searchForId({
+                id: searchId, //If the value is '' it would return all the products
+            });
+
+            setProducts(result.data)
+            setTotalSize(result?.totalSize);
+            console.log(result);
+            console.log("Properties of this component", props);
+        })();
+    }
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    useEffect(() => {
+        loadData();
+    }, [searchId])
+
     const [state, setState] = useState({
+        isLoading: true,
         FilterClothes: [
             { id: 1, name: "T-shirts", link: "#" },
             { id: 2, name: "Shirts", link: "#" },
@@ -52,22 +84,11 @@ const GeneralStoreProducts = props => {
         }
     }
 
-    useEffect(() => {
-        (async () => {
-            let result = await props.masterStore.searchForId({
-                id: searchId, //If the value is '' it would return all the products
-            });
-
-            console.log(result);
-            console.log("Properties of this component", props);
-        })();
-    }, []);
-
     return (
         <React.Fragment>
             <div className="page-content">
                 <Container fluid>
-                    <Breadcrumbs title="Ecommerce" breadcrumbItem="Product" />
+                    <Breadcrumbs title="Products" breadcrumbItem={searchId} />
                     <Row>
                         <Col lg="3">
                             <Card>
@@ -148,11 +169,10 @@ const GeneralStoreProducts = props => {
                         </Col>
 
                         <Col lg="9">
-
+                            
                             <Row className="mb-3">
                                 <Col xl="4" sm="6">
                                     <div className="mt-2">
-                                        <h5>Clothes</h5>
                                     </div>
                                 </Col>
                                 <Col lg="8" sm="6">
@@ -163,11 +183,11 @@ const GeneralStoreProducts = props => {
                                                 <i className="bx bx-search-alt search-icon"></i>
                                             </div>
                                         </div>
-                                        <Nav className="product-view-nav" pills>
+                                        {/* <Nav className="product-view-nav" pills>
                                             <NavItem>
                                                 <NavLink
                                                     className={classnames({ active: state.activeTab === '1' })}
-                                                    onClick={() => { this.toggleTab('1'); }}
+                                                    onClick={() => { toggleTab('1'); }}
                                                 >
                                                     <i className="bx bx-grid-alt"></i>
                                                 </NavLink>
@@ -180,51 +200,74 @@ const GeneralStoreProducts = props => {
                                                     <i className="bx bx-list-ul"></i>
                                                 </NavLink>
                                             </NavItem>
-                                        </Nav>
+                                        </Nav> */}
                                     </Form>
                                 </Col>
                             </Row>
                             <Row>
                                 {
-                                    state.Products.map((product, key) =>
-                                        <Col xl="3" sm="3" key={"_col_" + key}>
-                                            <Card>
+                                    products.length <= 0
+                                      ? (
+                                        <Row>
+                                            <Col md="3"></Col>
+                                            <Col md="6">
+                                                <Card>
                                                 <CardBody>
-                                                    <div className="product-img position-relative">
-                                                        {
-                                                            product.isOffer
-                                                                ? <div className="avatar-sm product-ribbon">
-                                                                    <span className="avatar-title rounded-circle  bg-primary">
-                                                                        {product.offer + "%"}
-                                                                    </span>
-                                                                </div>
-                                                                : null
-                                                        }
-
-                                                        <img src={product.image} alt="" className="img-fluid mx-auto d-block" />
-                                                    </div>
-                                                    <div className="mt-4 text-center">
-                                                        <h5 className="mb-3 text-truncate"><Link to={"/ecommerce-product-detail/" + product.id} className="text-dark">{product.name} </Link></h5>
-                                                        <div className="text-muted mb-3">
-                                                            <StarRatings
-                                                                rating={product.rating}
-                                                                starRatedColor="#F1B44C"
-                                                                starEmptyColor="#2D363F"
-                                                                numberOfStars={5}
-                                                                name='rating'
-                                                                starDimension="14px"
-                                                                starSpacing="3px"
-                                                            />
-                                                        </div>
-                                                        <h5 className="my-0"><span className="text-muted mr-2"><del>${product.oldPrice}</del></span> <b>${product.newPrice}</b></h5>
-                                                    </div>
+                                                    <h4 className="mt-1 mb-3">No Poducts as been added</h4>
                                                 </CardBody>
                                             </Card>
+                                            </Col>
+                                            <Col md="3"></Col>
+                                        </Row>
+                                      ) : products.map((product, key) =>
+                                        <Col xl="3" sm="4" key={"_col_" + key}>
+                                            <Link to={`/${product?.productId}`}>
+                                                <Card>
+                                                    <CardBody>
+                                                        <div className="product-img position-relative">
+                                                            {
+                                                                Number(product?.currentprice) < Number(product?.pastprice)
+                                                                    ? <div className="avatar-sm product-ribbon">
+                                                                        <span className="avatar-title rounded-circle  bg-primary">
+                                                                            {calculatePercentage(product?.currentprice, product?.pastprice) + "%"}
+                                                                        </span>
+                                                                    </div>
+                                                                    : null
+                                                            }
+
+                                                            <img src={product?.images[0]} alt="" className="img-fluid mx-auto d-block"  style={{height: 150}}/>
+                                                        </div>
+                                                        <div className="mt-4 text-center">
+                                                            <h5 className="mb-3 text-truncate"><Link to={"/" + product?.productId} className="text-dark">{product?.productname} </Link></h5>
+                                                            <div className="text-muted mb-3">
+                                                                <StarRatings
+                                                                    rating={product?.starRating}
+                                                                    starRatedColor="#F1B44C"
+                                                                    starEmptyColor="#2D363F"
+                                                                    numberOfStars={5}
+                                                                    name='rating'
+                                                                    starDimension="14px"
+                                                                    starSpacing="3px"
+                                                                />
+                                                            </div>
+                                                            <h5 className="my-0"><span className="text-muted mr-2"><del>${product?.pastprice}</del></span> <b>${product?.currentprice}</b></h5>
+                                                        </div>
+                                                    </CardBody>
+                                                </Card>
+                                            </Link>
                                         </Col>
                                     )
                                 }
                             </Row>
-
+                            <Row>
+                                <div className="flex-center">{
+                                    totalSize > 0 ? (
+                                      <span className="w-100">
+                                          Displaying 1 {products.length === 1 ? null : `to ${products.length}`} of {totalSize} item(s)
+                                      </span>
+                                    ) : null
+                                }</div>
+                            </Row>
                             <Row>
                                 <Col lg="12">
                                     <Pagination className="pagination pagination-rounded justify-content-center">

@@ -81,12 +81,19 @@ const StoreProductDetail = props => {
     }, [state.isError]);
 
     const addToCart = () => {
-        try {
-            props.masterStore.addToCart(props.userStore.state.user, {});
-        } catch(e) {
-            console.log(e);
-            setState({...state, isError: true, errMsg: e?.message});
-        }
+        (async () => {
+            try {
+                await props.masterStore.addToCart(props.userStore.state.user, state.product);
+            } catch(e) {
+                console.log(e);
+                setState({...state, isError: true, errMsg: e?.message});
+            }
+        })();
+    }
+
+    const buyNow = () => {
+        addToCart();
+        props.history.push('/cart');
     }
 
     const toggleTab = (tab) => {
@@ -124,15 +131,21 @@ const StoreProductDetail = props => {
                     <Link 
                         onClick={e => {
                             e.preventDefault();
-                            setState({...state, metaTagHolder: x});
+                            setState({
+                                ...state, 
+                                metaTagHolder: x,
+                                product: {...state.product, variation: {
+                                    value: item,
+                                    key: state.product.metaname
+                                }}
+                            });
                         }}
                         to="#" 
                         className={x == state.metaTagHolder ? "active": ''}
                     >
-                        <div className="product-color-item border rounded">
-                            <img src={state.product.images[0]} alt="" className="avatar-md" />
+                        <div className="product-color-item border rounded" style={{paddingLeft: 5, paddingRight: 5, textAlign: 'center'}}>
+                            <p>{String(item).toUpperCase()}</p> 
                         </div>
-                        <p>{item}</p>                        
                     </Link>
                 )
             });
@@ -204,10 +217,16 @@ const StoreProductDetail = props => {
                                                                                     type="button" 
                                                                                     color="primary" 
                                                                                     className="btn waves-effect waves-light mt-2 mr-1"
+                                                                                    style={{backgroundColor: '#f68b1e', borderColor: '#f68b1e'}}
                                                                                 >
                                                                                         <i className="bx bx-cart mr-2"></i> Add to cart
                                                                                 </Button>
-                                                                                <Button type="button" color="success" className="ml-1 btn waves-effect  mt-2 waves-light">
+                                                                                <Button 
+                                                                                    onClick={buyNow}
+                                                                                    type="button" 
+                                                                                    color="success" 
+                                                                                    className="ml-1 btn waves-effect  mt-2 waves-light"
+                                                                                >
                                                                                     <i className="bx bx-shopping-bag mr-2"></i>Buy now
                                                                             </Button>
                                                                             </div>
@@ -242,6 +261,10 @@ const StoreProductDetail = props => {
                                                                 <h5 className="mb-4">Price : <span className="text-muted mr-2"><del>{
                                                                     Number(state.product.pastprice) > Number(state.product.currentprice) ? '$'+state.product.pastprice + ' USD': ''}
                                                                     </del></span> <b>{'$'+ state.product.currentprice + ' USD'}</b></h5>
+                                                                <div className="product-color">
+                                                                    <h5 className="font-size-15">SELECT {String(state.product.metaname).toUpperCase()}</h5>
+                                                                    {metaTags()}
+                                                                </div>
                                                                 <p className="text-muted mb-4">{state.product.productdesc}</p>
                                                                 
                                                                 {/* <Row className="mb-3">
@@ -259,11 +282,6 @@ const StoreProductDetail = props => {
                                                                         </div>
                                                                     </Col>
                                                                 </Row> */}
-
-                                                                <div className="product-color">
-                                                                    <h5 className="font-size-15">{state.product.metaname}</h5>
-                                                                    {metaTags()}
-                                                                </div>
                                                             </div>
                                                         </Col>
                                                     </Row>
@@ -343,10 +361,13 @@ const StoreProductDetail = props => {
                                                             <Col xl="4" sm="6" key={"__product__" + key}>
                                                                 <Card>
                                                                     <CardBody>
-                                                                        <Link to={`/${product.productId}`} onClick={e => {
-                                                                            e.preventDefault();
-                                                                            window.location.href = `/${product.productId}`;
-                                                                        }}>
+                                                                        <Link 
+                                                                            to={`/${product.productId}`} 
+                                                                            // onClick={e => {
+                                                                            //     e.preventDefault();
+                                                                            //     window.location.href = `/${product.productId}`;
+                                                                            // }}
+                                                                        >
                                                                             <Row className="align-items-center">
                                                                                 <Col md="4">
                                                                                     <img src={product.images[0]} alt="" className="img-fluid mx-auto d-block" />

@@ -353,7 +353,7 @@ import { configParams } from '../../config';
                                                             By clicking the “Submit” button, you agree to Jumga’s <Link to="/terms-and-condition" className="link text-pprimary">terms of acceptable use</Link>.
                                                         </div>
                                                         <div className="mt-4 link-ext">
-                                                            Have an account?<Link to="/store/login" className="link text-primary">Login</Link>
+                                                            Have an account?<Link to="/login" className="link text-primary">Login</Link>
                                                         </div>
                                                     </AvForm>
                                                 </div>

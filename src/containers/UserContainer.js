@@ -313,6 +313,23 @@ class UserContainer extends Container {
         }
     }
 
+    logOutX = async (props) => {
+        try {
+            console.log("Clicked here")
+            let user = await firebase.auth().signOut();
+            localStorage.removeItem(CONSTANTS.SESSIONBEARER);
+            localStorage.removeItem(CONSTANTS.SESSIONSTORE);
+            this.setState({
+                user: null,
+                stores: [],
+                storeLoaded: false,
+            })
+            props.history.push("/");
+        } catch(err) {
+            this._handleError(err);
+        }
+    }
+
     getUserDataFromFirebase = async () => {
         if (!_.isNull(this.state.user)) return;
         const auth = firebase.auth();

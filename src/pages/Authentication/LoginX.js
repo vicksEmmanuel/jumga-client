@@ -194,7 +194,7 @@ import ErrorMessage from '../../components/Common/ErrorMessage';
                                                             </button>
                                                         </div>
                                                         <div className="mt-4 link-ext">
-                                                            Need an account?<Link to="/store/register" className="link text-primary"> Register</Link>
+                                                            Need an account?<Link to="/register" className="link text-primary"> Register</Link>
                                                         </div>
                                                     </AvForm>
                                                 </div>

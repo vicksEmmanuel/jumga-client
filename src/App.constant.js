@@ -7,6 +7,7 @@ const CONSTANTS = {
         CATEGORIES: 'categories',
         STORES: 'stores',
         PRODUCTS: 'products',
+        CART: 'carts'
     },
     FUNCNTIONS: {
         PROCESSPAYMENT: 'flutterwaveProcessPayment',

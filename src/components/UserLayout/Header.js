@@ -9,8 +9,8 @@ import { Link, withRouter } from "react-router-dom";
 import { Dropdown, DropdownToggle, DropdownMenu } from "reactstrap";
 
 // Import menuDropdown
-import NotificationDropdown from "../CommonForBoth/TopbarDropdown/NotificationDropdown";
-import ProfileMenu from "../CommonForBoth/TopbarDropdown/ProfileMenu";
+import Cart from "../CommonForBoth/TopbarDropdown/Cart";
+import ProfileMenuX from "../CommonForBoth/TopbarDropdown/ProfileMenuX";
 
 import logo from "../../assets/images/jumga basket logo.png";
 import logoDark from "../../assets/images/jumga logo.png";
@@ -19,9 +19,6 @@ import megamenuImg from "../../assets/images/megamenu-img.png";
 import { withTranslation } from 'react-i18next';
 import stateWrapper from '../../containers/provider';
 import { inherits } from 'util';
-var randomColor = require('randomcolor');
-
-
 
 const StoreHeader = (props) => {
 
@@ -29,9 +26,11 @@ const StoreHeader = (props) => {
   const [searchtext, setSearchText] = useState('');
   const [megaMenuDrp, setmegaMenu] = useState(false);
   const [cat, setCat] = useState({});
-  const [socialDrp, setsocialDrp] = useState(false);
+
   const searchFor = (e) => {
+    console.log(searchtext);
     e.preventDefault();
+    props.history.push(`/search/${searchtext}`);
   }
 
   const trimAndReplaceSpaces = (text) => {
@@ -165,11 +164,12 @@ const StoreHeader = (props) => {
                     </div>
                 </div>
 
+                <Cart />
+
               { !_.isNull(props.userStore.state.user) ? 
                 (
                   <>
-                    <NotificationDropdown />
-                    <ProfileMenu />
+                    <ProfileMenuX />
                   </>
                 ) : (
                   <>

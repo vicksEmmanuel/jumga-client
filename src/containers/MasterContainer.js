@@ -153,18 +153,26 @@ class MasterContainer extends Container {
         return this.state.categories;
     }
 
+    objectsEqual = (o1, o2) => {
+      return typeof o1 === 'object' && Object.keys(o1).length > 0 
+      ? Object.keys(o1).length === Object.keys(o2).length 
+          && Object.keys(o1).every(p => this.objectsEqual(o1[p], o2[p]))
+      : o1 === o2;
+    }
+
     addToCart = async (user, cartItem) => {
       try {
-        if (_.isNull(user)) {
-          let cart = this.state.cart;
-          let check = cart.filter(item => {
+        let cart = this.state.cart;
+        let check = cart.filter(item => {
+            // return this.objectsEqual(item, cartItem);
             return item.productId == cartItem.productId
-          });
+        });
   
-          if (check.length > 0) throw new Error('Already in cart');
-  
+        if (check.length > 0) throw new Error('Product is already in cart');
+
+        if (_.isNull(user)) {  
           cart.push({
-            ...cartItem
+            ...cartItem,
           });
   
           this.setState({
@@ -172,11 +180,42 @@ class MasterContainer extends Container {
           });
   
         } else {
-          //TODO: Add to database cart
+
+          const cartCollection = CONSTANTS.SCHEMA.CART;
+          const cartDetailsRef = firebase.firestore().collection(cartCollection);
+          const cartDoc = cartDetailsRef.doc();                    
+          cartDoc.set({
+            ...cartItem,
+            email: user?.email
+          });
         }
       } catch(e) {
         throw new Error(e?.message);
       }
+    }
+
+    getCart = async (userId) => {
+      const doc = firebase.firestore().collection(CONSTANTS.SCHEMA.CART);
+      const docRef = doc.where('email', '==', userId);
+      const docData = await docRef.get();
+
+      if (docData.empty) return;
+
+      let cart = this.state.cart;
+      docData.forEach(i => {
+
+        let check = cart.filter(item => {
+            // return this.objectsEqual(item, cartItem);
+            return item.productId == i.data()?.productId
+        });
+
+      if (!(check.length > 0)) cart.push(i.data());
+      });
+
+      this.setState({
+        cart,
+      })
+      
     }
 }
 
