@@ -1,229 +1,282 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, Table, Input, CardTitle, InputGroup, InputGroupAddon, Button } from "reactstrap";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
+import * as _ from 'lodash';
+import stateWrapper from '../../containers/provider';
+//i18n
+import { withTranslation } from 'react-i18next';
 
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
-//Import Product Images
-import img1 from "../../assets/images/product/img-1.png";
-import img2 from "../../assets/images/product/img-2.png";
-import img3 from "../../assets/images/product/img-3.png";
-import img4 from "../../assets/images/product/img-4.png";
-import img5 from "../../assets/images/product/img-5.png";
-import img6 from "../../assets/images/product/img-6.png";
 
-class Cart extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            productList: [
-                { id: 1, img: img1, name: "Half sleeve T-shirt", color: "Maroon", price: "450", data_attr: 2, total: 900 },
-                { id: 2, img: img2, name: "Light blue T-shirt", color: "Light blue", price: "225", data_attr: 6, total: 225 },
-                { id: 3, img: img3, name: "Black Color T-shirt", color: "Black", price: "152", data_attr: 2, total: 304 },
-                { id: 4, img: img4, name: "Hoodie (Blue)", color: "Blue", price: "145", data_attr: 2, total: 290 },
-                { id: 5, img: img5, name: "Half sleeve T-Shirt", color: "Light orange", price: "138", data_attr: 8, total: 138 },
-                { id: 6, img: img6, name: "Green color T-shirt", color: "Green", price: "152", data_attr: 2, total: 304 }
-            ]
-        };
-        this.countUP.bind(this);
-        this.countDown.bind(this);
-        this.removeCartItem.bind(this);
+const Cart = props => {
+    const [state, setState] = useState({
+        isLoading: true,
+        productList: props.masterStore.state.cart
+    });
+
+    useEffect(() => {
+        setTimeout(() => {
+            setState({...state, isLoading: false})
+        }, 3000)
+    }, [])
+
+    const loadData = () => {
+        setState({ ...state, productList: props.masterStore.state.cart });
     }
 
-    removeCartItem = (id) => {
+    useEffect(() => {
+        if (!_.isEmpty(props.masterStore.state.cart)) loadData();
+    }, [props.masterStore.state.cart]);
 
+    const removeCartItem = (id) => {
+        let productList = state.productList;
 
-        let productList = this.state.productList;
+        if (!_.isNull(props.userStore.state.user)) {
+            let index = state.productList.findIndex(p => p?.productId === id);
+            if (index > -1) props.masterStore.deleteCartItem(state.productList[index], props.userStore.state.user.email);
+        }
 
         var filtered = productList.filter(function (item) {
-            return item.id !== id;
+            return item?.productId !== id;
         });
 
-        this.setState({ productList: filtered });
-    }
+        console.log("here");
 
-    countUP = (id, prev_data_attr) => {
-        this.setState({
-            productList: this.state.productList.map(p => (p.id === id ? { ...p, data_attr: prev_data_attr + 1 } : p))
+        props.masterStore.setState({ ...state, cart: filtered }, () => {
+            setState({...state, productList: filtered});
         });
     }
 
-    countDown = (id, prev_data_attr) => {
-        this.setState({
-            productList: this.state.productList.map(p => (p.id === id ? { ...p, data_attr: prev_data_attr - 1 } : p))
+    const updateCount = (newCount, id) => {
+        let newCartData = state.productList.map(p => (p?.productId === id ? { 
+            ...p,
+            quantity: newCount ,
+            total: newCount * p?.currentprice
+        } : p));
+
+        if (!_.isNull(props.userStore.state.user)) {
+            let index = state.productList.findIndex(p => p?.productId === id);
+            if (index > - 1) {
+                let data = state.productList[index];
+                props.masterStore.updateCartItem({
+                    ...data,
+                    quantity: newCount,
+                    total: newCount * data?.currentprice,
+                }, props.userStore.state.user.email);
+            }
+        }
+
+        props.masterStore.setState({
+            cart: newCartData
         });
     }
+    const countDown = (id, prev_data_attr) => {
+        let newCount = prev_data_attr - 1 >= 1 ?  prev_data_attr - 1 : 1;
+        updateCount(newCount, id);
+    }
 
-    render() {
-        return (
-            <React.Fragment>
+    const countUP = (id, prev_data_attr) => {
+        let newCount = prev_data_attr + 1;
+        updateCount(newCount, id);
+    }
+
+    const goToPay = e => {
+        e.preventDefault();
+        if (_.isNull(props.userStore.state.user)) return props.history.push('/login');
+
+        return props.history.push('/checkout');
+    }
+
+    return (
+        <React.Fragment>
+            {
                 <div className="page-content">
                     <Container fluid>
-                        <Breadcrumbs title="Ecommerce" breadcrumbItem="Cart" />
+                        <Breadcrumbs title="Cart" breadcrumbItem="" />
 
-                        <Row>
-                            <Col lx="8">
-                                <Card>
-                                    <CardBody>
-                                        <div className="table-responsive">
-                                            <Table className="table table-centered mb-0 table-nowrap">
-                                                <thead className="thead-light">
-                                                    <tr>
-                                                        <th>Product</th>
-                                                        <th>Product Desc</th>
-                                                        <th>Price</th>
-                                                        <th>Quantity</th>
-                                                        <th colSpan="2">Total</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {
-                                                        this.state.productList.map((product) =>
-                                                            <tr key={product.id}>
-                                                                <td>
-                                                                    <img src={product.img} alt="product-img" title="product-img" className="avatar-md" />
-                                                                </td>
-                                                                <td>
-                                                                    <h5 className="font-size-14 text-truncate"><Link to={"/ecommerce-product-detail/" + product.id} className="text-dark">{product.name}</Link></h5>
-                                                                    <p className="mb-0">Color : <span className="font-weight-medium">{product.color}</span></p>
-                                                                </td>
-                                                                <td>
-                                                                    $ {product.price}
-                                                                </td>
-                                                                <td>
-                                                                    <div style={{ width: "120px" }}>
-                                                                        <InputGroup>
-                                                                            <InputGroupAddon addonType="prepend">
-                                                                                <Button color="primary" onClick={() => { this.countUP(product.id, product.data_attr) }}>+</Button>
-                                                                            </InputGroupAddon>
-                                                                            <Input type="text" value={product.data_attr} name="demo_vertical" readOnly/>
-                                                                            <InputGroupAddon addonType="append">
-                                                                                <Button color="primary" onClick={() => { this.countDown(product.id, product.data_attr) }}>-</Button>
-                                                                            </InputGroupAddon>
-                                                                        </InputGroup>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    $ {product.total}
-                                                                </td>
-                                                                <td>
-                                                                    <Link to="#" onClick={() => this.removeCartItem(product.id)} className="action-icon text-danger"> <i className="mdi mdi-trash-can font-size-18"></i></Link>
-                                                                </td>
-                                                            </tr>
-                                                        )
-                                                    }
-
-
-                                                </tbody>
-                                            </Table>
-                                        </div>
-                                        <Row className="mt-4">
-                                            <Col sm="6">
-                                                <Link to="/ecommerce-products" className="btn btn-secondary">
-                                                    <i className="mdi mdi-arrow-left mr-1"></i> Continue Shopping </Link>
+                        {
+                            state.isLoading ? (
+                                <div style={{position: 'fixed', top: '0%', width: '100%', height: '100%', left: '0%', zIndex: 5000, backgroundColor: 'rgba(0,0,0,0.4)'}}>
+                                    <div style={{position: 'relative', top: '45%', left: '43%'}}>
+                                        <div className="lds-ring-x"><div></div><div></div><div></div><div></div></div>
+                                    </div>
+                                </div>
+                            ) :
+        
+                            <Row>
+                                {
+                                    state.productList.length > 0 ? (
+                                        <>
+                                            <Col lx="8">
+                                                <Card>
+                                                    <CardBody>
+                                                        <div className="table-responsive">
+                                                            <Table className="table table-centered mb-0 table-nowrap">
+                                                                <thead className="thead-light">
+                                                                    <tr>
+                                                                        <th>Product</th>
+                                                                        <th>Product Desc</th>
+                                                                        <th>Price</th>
+                                                                        <th>Quantity</th>
+                                                                        <th colSpan="2">Total</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {
+                                                                        state.productList.map((product) =>
+                                                                            <tr key={product?.productId}>
+                                                                                <td>
+                                                                                    <img src={product?.images[0]} alt="product-img" title="product-img" className="avatar-md" />
+                                                                                </td>
+                                                                                <td>
+                                                                                    <h5 className="font-size-14 text-truncate"><Link to={"/" + product?.productId} className="text-dark">{product?.productname}</Link></h5>
+                                                                                    <p className="mb-0">{
+                                                                                        product?.variantion ? (
+                                                                                            <>
+                                                                                                {product?.variantion?.key} : <span className="font-weight-medium">{product?.variantion.value}</span>
+                                                                                            </>
+                                                                                        ) : ''
+                                                                                    }</p>
+                                                                                </td>
+                                                                                <td>
+                                                                                    $ {product.currentprice}
+                                                                                </td>
+                                                                                <td>
+                                                                                    <div style={{ width: "120px" }}>
+                                                                                        <InputGroup>
+                                                                                            <InputGroupAddon addonType="prepend">
+                                                                                                <Button 
+                                                                                                    color="primary"
+                                                                                                    style={{backgroundColor: '#f68b1e', borderColor: '#f68b1e'}} 
+                                                                                                    onClick={() => { countUP(product?.productId, parseInt(product?.quantity)) }}>+</Button>
+                                                                                            </InputGroupAddon>
+                                                                                            <Input type="text" value={product?.quantity} name="demo_vertical" readOnly/>
+                                                                                            <InputGroupAddon addonType="append">
+                                                                                                <Button 
+                                                                                                    color="primary" 
+                                                                                                    style={{backgroundColor: '#f68b1e', borderColor: '#f68b1e'}}
+                                                                                                    onClick={() => { countDown(product?.productId, parseInt( product?.quantity)) }}>-</Button>
+                                                                                            </InputGroupAddon>
+                                                                                        </InputGroup>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td>
+                                                                                    $ {product.total}
+                                                                                </td>
+                                                                                <td>
+                                                                                    <Link to="#" onClick={() => removeCartItem(product?.productId)} className="action-icon text-danger"> <i className="mdi mdi-trash-can font-size-18"></i></Link>
+                                                                                </td>
+                                                                            </tr>
+                                                                        )
+                                                                    }
+                    
+                    
+                                                                </tbody>
+                                                            </Table>
+                                                        </div>
+                                                        <Row className="mt-4">
+                                                            <Col sm="6">
+                                                                <Link to="/" className="btn btn-success">
+                                                                    <i className="mdi mdi-arrow-left mr-1"></i> Continue Shopping </Link>
+                                                            </Col>
+                                                            <Col sm="6">
+                                                                <div className="text-sm-right mt-2 mt-sm-0">
+                                                                    <Link 
+                                                                        to="#" 
+                                                                        onClick={goToPay}
+                                                                        className="btn btn-success"
+                                                                        style={{backgroundColor: '#f68b1e', borderColor: '#f68b1e'}}
+                                                                    >
+                                                                        <i className="mdi mdi-cart-arrow-right mr-1"></i> Checkout </Link>
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                    </CardBody>
+                                                </Card>
                                             </Col>
-                                            <Col sm="6">
-                                                <div className="text-sm-right mt-2 mt-sm-0">
-                                                    <Link to="/ecommerce-checkout" className="btn btn-success">
-                                                        <i className="mdi mdi-cart-arrow-right mr-1"></i> Checkout </Link>
-                                                </div>
+                                            <Col xl="4">
+                                                <Card>
+                                                    <CardBody>
+                                                        <CardTitle className="mb-3">Order Summary</CardTitle>
+                    
+                                                        <div className="table-responsive">
+                                                            <Table className="table mb-0">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>Grand Total :</td>
+                                                                        <td>$ 1,857</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Discount : </td>
+                                                                        <td>- $ 157</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Shipping Charge :</td>
+                                                                        <td>$ 25</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>Estimated Tax : </td>
+                                                                        <td>$ 19.22</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Total :</th>
+                                                                        <th>$ 1744.22</th>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </Table>
+                                                        </div>
+                                                    </CardBody>
+                                                </Card>
                                             </Col>
-                                        </Row>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                            <Col xl="4">
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-4">Card Details</CardTitle>
-
-                                        <div className="card bg-primary text-white visa-card mb-0">
-                                            <CardBody>
-                                                <div>
-                                                    <i className="bx bxl-visa visa-pattern"></i>
-
-                                                    <div className="float-right">
-                                                        <i className="bx bxl-visa visa-logo display-3"></i>
-                                                    </div>
-
-                                                    <div>
-                                                        <i className="bx bx-chip h1 text-warning"></i>
-                                                    </div>
-                                                </div>
-
-                                                <Row className="mt-5">
-                                                    <Col xs="4">
-                                                        <p>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                        </p>
-                                                    </Col>
-                                                    <Col xs="4">
-                                                        <p>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                        </p>
-                                                    </Col>
-                                                    <Col xs="4">
-                                                        <p>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                            <i className="fas fa-star-of-life m-1"></i>
-                                                        </p>
-                                                    </Col>
-                                                </Row>
-
-                                                <div className="mt-5">
-                                                    <h5 className="text-white float-right mb-0">12/22</h5>
-                                                    <h5 className="text-white mb-0">Fredrick Taylor</h5>
-                                                </div>
-                                            </CardBody>
-                                        </div>
-                                    </CardBody>
-                                </Card>
-                                <Card>
-                                    <CardBody>
-                                        <CardTitle className="mb-3">Order Summary</CardTitle>
-
-                                        <div className="table-responsive">
-                                            <Table className="table mb-0">
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Grand Total :</td>
-                                                        <td>$ 1,857</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Discount : </td>
-                                                        <td>- $ 157</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Shipping Charge :</td>
-                                                        <td>$ 25</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Estimated Tax : </td>
-                                                        <td>$ 19.22</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Total :</th>
-                                                        <th>$ 1744.22</th>
-                                                    </tr>
-                                                </tbody>
-                                            </Table>
-                                        </div>
-                                    </CardBody>
-                                </Card>
-                            </Col>
-                        </Row>
-
+                                        </>
+                                    ) : (
+                                        <Col lx="12">
+                                            {
+                                                !_.isNull(props.userStore.state.user) ? (
+                                                    <>
+                                                        <h2 className="display-2 text-center" style={{fontSize:25, marginTop: 20, fontWeight: 'bolder'}}>
+                                                                Cart is Empty
+                                                        </h2>
+                                                        <div className="mt-5 text-center">
+                                                            <Link 
+                                                                className="btn btn-success waves-effect waves-light" 
+                                                                to="#"
+                                                                style={{backgroundColor: '#f68b1e', borderColor: '#f68b1e', color: 'slategray'}}
+                                                                onClick={e => {
+                                                                    e.preventDefault();
+                                                                    props.history.goBack();
+                                                                }}
+                                                            >Go Back</Link>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <h2 className="display-2 text-center" style={{fontSize:25, marginTop: 20, fontWeight: 'bolder', color: 'slategray'}}>
+                                                            Cart is Empty. Sign In to continue
+                                                        </h2>
+                                                        <div className="mt-5 text-center">
+                                                            <Link 
+                                                                className="btn btn-success waves-effect waves-light" 
+                                                                to="/login"
+                                                                style={{backgroundColor: '#f68b1e', borderColor: '#f68b1e'}}
+                                                            >Login</Link>
+                                                        </div>
+                                                    </>
+                                                )
+                                            }
+                                        </Col>
+                                    )
+                                }
+                            </Row>
+                        }
+    
                     </Container>
                 </div>
-            </React.Fragment>
-        );
-    }
+            }
+        </React.Fragment>
+    );
 }
 
-export default Cart;
+export default withRouter(withTranslation()(stateWrapper(Cart)));

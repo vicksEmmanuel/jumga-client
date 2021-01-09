@@ -173,6 +173,8 @@ class MasterContainer extends Container {
         if (_.isNull(user)) {  
           cart.push({
             ...cartItem,
+            quantity: 1,
+            total: cartItem?.currentprice * 1
           });
   
           this.setState({
@@ -186,8 +188,12 @@ class MasterContainer extends Container {
           const cartDoc = cartDetailsRef.doc();                    
           cartDoc.set({
             ...cartItem,
-            email: user?.email
+            email: user?.email,
+            quantity: 1,
+            total: cartItem?.currentprice * 1
           });
+
+          this.getCart(user?.email);
         }
       } catch(e) {
         throw new Error(e?.message);
@@ -209,13 +215,27 @@ class MasterContainer extends Container {
             return item.productId == i.data()?.productId
         });
 
-      if (!(check.length > 0)) cart.push(i.data());
+      if (!(check.length > 0)) cart.push({...i.data(), id: i.id});
       });
 
       this.setState({
         cart,
       })
       
+    }
+
+    updateCartItem = async (cart, userId) => {
+      const doc = firebase.firestore().doc(`${CONSTANTS.SCHEMA.CART}/${cart?.id}`);
+      const docRef = await doc.get();
+      if (docRef.exists) await doc.update(cart);
+      await this.getCart(userId);
+    }
+
+    deleteCartItem = async (cart, userId) => {
+      const doc = firebase.firestore().doc(`${CONSTANTS.SCHEMA.CART}/${cart?.id}`);
+      const docRef = await doc.get();
+      if (docRef.exists) await doc.delete();
+      await this.getCart(userId);
     }
 }
 

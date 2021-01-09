@@ -262,7 +262,7 @@ const StoreProductDetail = props => {
                                                                     Number(state.product.pastprice) > Number(state.product.currentprice) ? '$'+state.product.pastprice + ' USD': ''}
                                                                     </del></span> <b>{'$'+ state.product.currentprice + ' USD'}</b></h5>
                                                                 <div className="product-color">
-                                                                    <h5 className="font-size-15">SELECT {String(state.product.metaname).toUpperCase()}</h5>
+                                                                    <h5 className="font-size-15">{_.isNull(state.product.metaname) ? '' : 'SELECT'} {String(state.product.metaname).toUpperCase()}</h5>
                                                                     {metaTags()}
                                                                 </div>
                                                                 <p className="text-muted mb-4">{state.product.productdesc}</p>

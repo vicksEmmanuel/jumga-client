@@ -67,8 +67,21 @@ const StoreProducts = props => {
         isLoading: true
     });
 
+    useEffect(() => {
+        setTimeout(() => {
+            setState({...state, isLoading: false})
+        }, 3000)
+    }, [])
+
     return (
         <React.Fragment>
+           { state.isLoading ? (
+                            <div style={{position: 'fixed', top: '0%', width: '100%', height: '100%', left: '0%', zIndex: 5000, backgroundColor: 'rgba(0,0,0,0.4)'}}>
+                                <div style={{position: 'relative', top: '45%', left: '43%'}}>
+                                    <div className="lds-ring-x"><div></div><div></div><div></div><div></div></div>
+                                </div>
+                            </div>
+                        ) :
             <div className="page-content">
                 <Container fluid>
                     <Breadcrumbs title={storeId} breadcrumbItem="Product" />
@@ -213,7 +226,7 @@ const StoreProducts = props => {
                         </Col>
                     </Row>
                 </Container>
-            </div>
+            </div>}
         </React.Fragment>
     );
 }

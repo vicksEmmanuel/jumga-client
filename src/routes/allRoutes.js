@@ -24,8 +24,8 @@ const userRoutes = [
 	{ path: "/search/:id", component: GeneralStoreProducts}, //TODO:
 	{ path: "/search/", component: GeneralStoreProducts}, //TODO:
 	{ path: "/categories/:id", component: ComingSoon}, //TODO:
-	{ path: "/cart", component: Cart}, //TODO:
-	{ path: "/checkout/:id", component: Checkout}, //TODO:
+	{ path: "/cart", component: Cart}, //TODO: View product in cart
+	{ path: "/checkout", component: Checkout}, //TODO:
 	{ path: "/:productId", component: StoreProductDetails}, //TODO: //View a particular product
 	{ path: "/", exact: true, component: Home } //TODO:
 ];
