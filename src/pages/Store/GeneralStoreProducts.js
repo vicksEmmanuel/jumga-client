@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, CardBody, CardTitle, Form, Label, Input, Nav, NavItem, NavLink, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import classnames from 'classnames';
+import * as _ from 'lodash';
 import stateWrapper from '../../containers/provider';
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
@@ -41,6 +42,13 @@ const GeneralStoreProducts = props => {
             let result = await props.masterStore.searchForId({
                 id: searchId, //If the value is '' it would return all the products
             });
+            console.log("Here ==", result);
+
+            if (_.isEmpty(result) || _.isUndefined(result)) {
+                setProducts([])
+                setTotalSize(0);
+                return;
+            }
 
             setProducts(result.data)
             setTotalSize(result?.totalSize);
@@ -94,12 +102,12 @@ const GeneralStoreProducts = props => {
         <React.Fragment>
             {
                 state.isLoading ? (
-                            <div style={{position: 'fixed', top: '0%', width: '100%', height: '100%', left: '0%', zIndex: 5000, backgroundColor: 'rgba(0,0,0,0.4)'}}>
-                                <div style={{position: 'relative', top: '45%', left: '43%'}}>
-                                    <div className="lds-ring-x"><div></div><div></div><div></div><div></div></div>
-                                </div>
-                            </div>
-                        ) :
+                    <div style={{position: 'fixed', top: '0%', width: '100%', height: '100%', left: '0%', zIndex: 5000, backgroundColor: 'rgba(0,0,0,0.4)'}}>
+                        <div style={{position: 'relative', top: '45%', left: '43%'}}>
+                            <div className="lds-ring-x"><div></div><div></div><div></div><div></div></div>
+                        </div>
+                    </div>
+                ) :
                 <div className="page-content">
                     <Container fluid>
                         <Breadcrumbs title="Products" breadcrumbItem={searchId} />
@@ -223,15 +231,23 @@ const GeneralStoreProducts = props => {
                                         products.length <= 0
                                         ? (
                                             <Row>
-                                                <Col md="3"></Col>
-                                                <Col md="6">
+                                                <Col md="12">
                                                     <Card>
-                                                    <CardBody>
-                                                        <h4 className="mt-1 mb-3">No Poducts as been added</h4>
-                                                    </CardBody>
-                                                </Card>
+                                                        <CardBody>
+                                                            <h4 className="mt-1 mb-3 text-center">No Poducts with such name or Categories exist</h4>
+                                                            <div className="mt-5 text-center">
+                                                                <Link 
+                                                                    className="btn btn-success waves-effect waves-light" 
+                                                                    to="#"
+                                                                    onClick={e => {
+                                                                        e.preventDefault();
+                                                                        props.history.goBack();
+                                                                    }}
+                                                                >Go Back</Link>
+                                                            </div>
+                                                        </CardBody>
+                                                    </Card>
                                                 </Col>
-                                                <Col md="3"></Col>
                                             </Row>
                                         ) : products.map((product, key) =>
                                             <Col xl="3" sm="4" key={"_col_" + key}>

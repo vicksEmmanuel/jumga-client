@@ -18,20 +18,22 @@ const StoreCheckout = (props) => {
     const storeId = props.match.params.id;
 
     const processCurrency = async () => {
-        let { remoteConfigs, remoteConfigLoading } = props.masterStore.state;
-        if (_.isEmpty(remoteConfigs)) return;
+        // let { remoteConfigs, remoteConfigLoading } = props.masterStore.state;
+        // if (_.isEmpty(remoteConfigs)) return;
         if (state.currencyLoaded) return;
+        if (props.paymentStore.state.currency.isLoading) return;
+
         await (async () => {
             try {
                 // state.currency TODO: Change back to this
-                let result = await props.paymentStore.convertToLocalCurrency(props.masterStore.state.remoteConfigs?.store_cost,'USD');
+                // let result = await props.paymentStore.convertToLocalCurrency(props.masterStore.state.remoteConfigs?.store_cost,'USD');
                 setState({
                     ...state,
                     currencyLoaded: true,
-                    store_cost: result?.store_cost,
-                    currency: result?.currency,
-                    currencyPricePerDollar: result?.currencyPricePerDollar,
-                    remoteConfigCheck: !remoteConfigLoading
+                    store_cost: props.paymentStore.state.currency.store_cost,
+                    currency: props.paymentStore.state.currency.code,
+                    currencyPricePerDollar: props.paymentStore.state.currency.pricePerDollar,
+                    // remoteConfigCheck: !remoteConfigLoading
                 });
             } catch(err) {
                 setState({
@@ -61,13 +63,13 @@ const StoreCheckout = (props) => {
     const [state, setState] = useState({
         currencyLoaded: false,
         isOpen: true,
-        store_cost: null,
-        currency: null,
-        currencyPricePerDollar: 0,
+        store_cost: props.paymentStore.state.currency?.store_cost || null,
+        currency: props.paymentStore.state.currency?.code || 'USD',
+        currencyPricePerDollar: props.paymentStore.state.currency?.pricePerDollar || 0,
         isError: false,
         errMsg: '',
         storeCheck: !checkifApproved(storeId),
-        remoteConfigCheck: !props.masterStore.state.remoteConfigLoading,
+        // remoteConfigCheck: !props.masterStore.state.remoteConfigLoading,
         bgColor: 'white',
         color: 'rgb(22, 46, 88)',
         clicked: false,
@@ -76,11 +78,18 @@ const StoreCheckout = (props) => {
         url: null
     });
 
+    // useEffect(() => {
+    //     (async () => {
+    //         await processCurrency();
+    //     })();
+    // }, [props.masterStore.state.remoteConfigs]);
+
     useEffect(() => {
+        console.log(props.paymentStore);
         (async () => {
             await processCurrency();
         })();
-    }, [props.masterStore.state.remoteConfigs]);
+    }, [props.paymentStore.state.currency]);
 
     useEffect(() => {
         if (_.isNull(props.userStore.state.user)) return;

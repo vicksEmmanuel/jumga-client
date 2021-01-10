@@ -19,7 +19,80 @@ class PaymentContainer extends Container {
 
     constructor() {
         super();
-        this.state = {}        
+        this.state = {
+            currency: {
+                pricePerDollar: 1,
+                code: 'USD',
+                store_cost: null,
+                isLoading: true
+            },
+        }    
+        this.setCurrency();    
+    }
+
+    setCurrency = async () => {
+        const remoteConfigs = await this.asyncgetAllRemoteConfigs();
+        const {
+            store_cost,
+            currency,
+            currencyPricePerDollar,
+        } = await this.convertToLocalCurrency(remoteConfigs?.store_cost, remoteConfigs?.currency);
+
+        this.setState({
+            currency: {
+                pricePerDollar: currencyPricePerDollar,
+                code: currency,
+                store_cost,
+                isLaoding: false
+            }
+        });
+
+    }
+
+    getAllRemoteConfigs = async (state) => {
+    
+        try {
+          firebase.remoteConfig().defaultConfig = ({
+            ...state.remoteConfigs
+          });
+          await firebase.remoteConfig().fetchAndActivate();
+          // console.log("remoteConfig activated == ", activated);
+          let jsonRemoteConfig = firebase.remoteConfig().getAll();
+    
+          if (!_.isEmpty(jsonRemoteConfig)) {
+    
+            let updatedState = {...state};
+    
+            let remoteConfig = {};
+            
+            Object.entries(jsonRemoteConfig).forEach(($) => {
+              
+              const [key, entry] = $;
+              remoteConfig[key] = entry._value;
+             
+            });
+    
+            updatedState.remoteConfigs = remoteConfig;
+    
+            return updatedState;
+          }
+        } 
+        catch (error) {
+          console.log(`fetching values for remoteConfig produced an error == `, error);
+          return state.remoteConfig;
+        }
+    }  
+
+    asyncgetAllRemoteConfigs = async () => {
+        let config = await this.getAllRemoteConfigs(this.state);
+        // this.setState({
+        //     ...this.state,
+        //     remoteConfigs: config.remoteConfigs,
+        //     remoteConfigLoading: false
+        // }, () => {
+            
+        // });
+        return config.remoteConfigs;
     }
 
     initiatePayment = async (paymentDetails) => {

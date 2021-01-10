@@ -494,7 +494,7 @@ class Checkout extends Component {
                                     </Card>
                                     <Row className="my-4">
                                         <Col sm="6">
-                                            <Link to="/ecommerce-cart" className="btn text-muted d-none d-sm-inline-block btn-link">
+                                            <Link to="/cart" className="btn text-muted d-none d-sm-inline-block btn-link">
                                                 <i className="mdi mdi-arrow-left mr-1"></i> Back to Shopping Cart </Link>
                                         </Col>
                                         <Col sm="6">

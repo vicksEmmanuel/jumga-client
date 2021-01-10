@@ -35,7 +35,6 @@ class MasterContainer extends Container {
 
         this.asyncgetAllRemoteConfigs();
         this.getAllCategories();
-        
     }
 
     getAllRemoteConfigs = async (state) => {
@@ -109,7 +108,7 @@ class MasterContainer extends Container {
       storeId: '',
       startAt: 0,
       limit: 10,
-  }) => {
+    }) => {
       try {
         if (!_.isObject(searchDetails)) return [];
         const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETPRODUCTS);
@@ -123,7 +122,7 @@ class MasterContainer extends Container {
 
     getProduct = async (searchDetails = {
       id: '',
-  }) => {
+    }) => {
       try {
         if (!_.isObject(searchDetails)) return {};
         const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETPRODUCT);

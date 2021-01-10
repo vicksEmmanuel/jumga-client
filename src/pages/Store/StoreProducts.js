@@ -56,10 +56,17 @@ const StoreProducts = props => {
             let result = await props.masterStore.getProducts({
                 storeId: storeId
             });
-            setProducts(result.data)
-            setTotalSize(result?.totalSize);
-            console.log(result);
-            console.log("Properties of this component", props);
+
+            if (_.isEmpty(result) || _.isUndefined(result)) {
+                setProducts([]);
+                setTotalSize(0);
+                return;
+            } else {
+                setProducts(result.data)
+                setTotalSize(result?.totalSize);
+                console.log(result);
+                console.log("Properties of this component", props);
+            }
         })();
     }, []);
 
@@ -127,15 +134,13 @@ const StoreProducts = props => {
                                     products.length <= 0
                                       ? (
                                         <Row>
-                                            <Col md="3"></Col>
-                                            <Col md="6">
+                                            <Col md="12">
                                                 <Card>
                                                 <CardBody>
-                                                    <h4 className="mt-1 mb-3">No Poducts as been added</h4>
+                                                    <h4 className="mt-1 mb-3 text-center">No Poducts as been added</h4>
                                                 </CardBody>
                                             </Card>
                                             </Col>
-                                            <Col md="3"></Col>
                                         </Row>
                                       ) : products.map((product, key) =>
                                         <Col xl="3" sm="4" key={"_col_" + key}>
