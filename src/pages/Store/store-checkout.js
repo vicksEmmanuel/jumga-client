@@ -6,13 +6,11 @@ import * as _ from 'lodash';
 import ErrorMessage from '../../components/Common/ErrorMessage';
 import stateWrapper from "../../containers/provider";
 import { Container, Row, Col } from "reactstrap";
-import { firebaseConfigParams } from '../../config';
 import './store.scss';
 
 import CardMaintenance from "./card-store-checkout";
 
 import logo from "../../assets/images/jumga logo.png";
-import CONSTANTS from '../../App.constant';
 
 const StoreCheckout = (props) => {
     const storeId = props.match.params.id;

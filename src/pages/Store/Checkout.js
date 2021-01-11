@@ -2,44 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table, Input, Nav, NavItem, NavLink, TabContent, TabPane, Card, Form, FormGroup, Label, CardBody, CardTitle, CardSubtitle } from "reactstrap";
 import Select from "react-select";
 import { Link, withRouter } from "react-router-dom";
+import ErrorMessage from '../../components/Common/ErrorMessage';
 import * as _ from 'lodash';
 import stateWrapper from '../../containers/provider';
 //i18n
 import { withTranslation } from 'react-i18next';
+import './store.scss';
+
 
 import classnames from 'classnames';
 
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
-//Import Images
-import img1 from "../../assets/images/product/img-1.png"
-import img7 from "../../assets/images/product/img-7.png"
-
-const optionGroup = [
-    {
-        label: "Picnic",
-        options: [
-            { label: "Mustard", value: "Mustard" },
-            { label: "Ketchup", value: "Ketchup" },
-            { label: "Relish", value: "Relish" }
-        ]
-    },
-    {
-        label: "Camping",
-        options: [
-            { label: "Tent", value: "Tent" },
-            { label: "Flashlight", value: "Flashlight" },
-            { label: "Toilet Paper", value: "Toilet Paper" }
-        ]
-    }
-];
-
 const Checkout = props => {
     const [state, setState] = useState({
         orderSummary: props.masterStore.state.cart,
         activeTab: '1',
-        selectedGroup: null
+        name: null,
+        email: props.userStore.state.user?.email,
+        phone: props.userStore.state.user?.phone || null,
+        address: null,
+        country: null,
+        state: null,
+        note: null,
+        isError: false,
+        errMsg: '',
+        clicked: false,
+        paybutton: 'btn btn-success',
+        url: null,
+        currency: props.paymentStore.state.currency?.code,
+        currencyPricePerDollar: props.paymentStore.state.currency?.pricePerDollar
     });
 
     const getAddUpValues = (value) => {
@@ -54,6 +47,13 @@ const Checkout = props => {
     useEffect(() => {
         if (_.isEmpty(props.userStore.state.user) || _.isNull(props.userStore.state.user) || _.isEmpty(props.masterStore.state.cart)) props.history.goBack();
     }, []);
+
+    useEffect(() => {
+        if (state.isError) {
+            setTimeout(() => {setState({...state, isError: false, errMsg: ''})}, 10000);
+        }
+    }, [state.isError]);
+
     const toggleTab = (tab) => {
         if (state.activeTab !== tab) {
             setState({
@@ -79,15 +79,61 @@ const Checkout = props => {
         return Number(discount) + Number(totalprice);
     }
 
-    const handleSelectGroup = selectedGroup => {
-        setState({ ...state, selectedGroup });
-    };
+    let windowRef = null;
 
-    const { selectedGroup } = state;
+    const openNewWindow = (url) => {
+        windowRef = window.open(url, 'Payment', 'statusbar=no,height=600,width=400');    
+    }
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            validateSubmit();
+            setState({...state, paybutton: 'btn btn-warning'});
+
+            const options = {
+                email: state.email,
+                name: state.name,
+                paymentTitle: `Payment for Order`,
+                description: `${props.userStore.state.user.username} is to pay ${getTotal()} for goods ordered`,
+                currency: state.currency,
+                currencyPricePerDollar: state.currencyPricePerDollar
+            };
+
+            let payment = await  props.paymentStore.initiatePayment(options);
+            const { link } = payment?.data?.data;
+            setState({
+                ...state,
+                paybutton: 'btn btn-success',
+                clicked: false,
+                url: link
+            });
+            openNewWindow(link);
+
+        } catch (e) {
+            setState({...state, isError: true, errMsg: e?.message, clicked: false});
+        }
+    }
+
+    const validateSubmit = () => {
+        setState({...state, clicked: true});
+        if (cleanUpName(state.name).length <= 3) throw new Error ("Enter a valid name");
+        // if (!(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(state.email))) throw new Error("Enter a valid email");
+        if (String(state.address).length <= 5) throw new Error("Enter a valid address.. Address string length must be > 5");
+        if (_.isNull(state.country)) throw new Error("Select a country");
+        if (_.isNull(state.state || cleanUpName(state.state).length <= 3)) throw new Error("Enter a valid state value");
+
+    }
+
+    const cleanUpName = (name) => {
+        return String(name).replace(/[\@\"\']+/g, '');
+    }
 
     return (
         <React.Fragment>
+            <div onClick={() => {setState({...state, errMsg: '', isError: false})}}>
+                <ErrorMessage isError={state.isError} message={state.errMsg} />
+            </div>
             <div className="page-content">
                 <Container fluid>
 
@@ -102,37 +148,41 @@ const Checkout = props => {
                                         <TabContent activeTab={state.activeTab}>
                                             <TabPane tabId="1">
                                                 <div>
-                                                    <CardTitle>Shipping information</CardTitle>
+                                                    <CardTitle>Delivery information</CardTitle>
                                                     <CardSubtitle className="mb-3">Fill all information below</CardSubtitle>
                                                     <Form>
                                                         <FormGroup className="mb-4" row>
                                                             <Label htmlFor="billing-name" md="2" className="col-form-label">Name</Label>
                                                             <Col md="10">
-                                                                <Input type="text" className="form-control" id="billing-name" placeholder="Enter your name" />
+                                                                <Input value={state.name} onChange={e => setState({...state, name: e.target.value})} type="text" className="form-control" id="billing-name" placeholder="Enter your name" />
                                                             </Col>
                                                         </FormGroup>
                                                         <FormGroup className="mb-4" row>
                                                             <Label htmlFor="billing-email-address" md="2" className="col-form-label">Email Address</Label>
                                                             <Col md="10">
-                                                                <Input type="email" className="form-control" id="billing-email-address" placeholder="Enter your email" />
+                                                                <Input 
+                                                                    value={state.email} 
+                                                                    // onChange={e => setState({...state, email: e.target.value})} 
+                                                                    disabled
+                                                                    type="email" className="form-control" id="billing-email-address" placeholder="Enter your email" />
                                                             </Col>
                                                         </FormGroup>
                                                         <FormGroup className="mb-4" row>
                                                             <Label htmlFor="billing-phone" md="2" className="col-form-label">Phone</Label>
                                                             <Col md={10}>
-                                                                <input type="text" className="form-control" id="billing-phone" placeholder="Enter your Phone no." />
+                                                                <input value={state.phone} onChange={e => setState({...state, phone: e.target.value})} type="text" className="form-control" id="billing-phone" placeholder="Enter your Phone no." />
                                                             </Col>
                                                         </FormGroup>
                                                         <FormGroup className="mb-4" row>
                                                             <Label htmlFor="billing-address" md="2" className="col-form-label">Address</Label>
                                                             <Col md="10">
-                                                                <textarea className="form-control" id="billing-address" rows="3" placeholder="Enter full address"></textarea>
+                                                                <textarea value={state.address} onChange={e => setState({...state, address: e.target.value})} className="form-control" id="billing-address" rows="3" placeholder="Enter full address"></textarea>
                                                             </Col>
                                                         </FormGroup>
                                                         <FormGroup className="mb-4" row>
                                                             <Label md="2" className="col-form-label">Country</Label>
                                                             <Col md="10">
-                                                                <select className="form-control select2" title="Country">
+                                                                <select value={state.country} onChange={e => setState({...state, country: e.target.value})} className="form-control select2" title="Country">
                                                                     <option value="0">Select Country</option>
                                                                     <option value="AF">Afghanistan</option>
                                                                     <option value="AL">Albania</option>
@@ -358,20 +408,15 @@ const Checkout = props => {
                                                         </FormGroup>
 
                                                         <FormGroup className="select2-container mb-4" row>
-                                                            <Label md="2" className="col-form-label">States</Label>
+                                                            <Label md="2" className="col-form-label">State</Label>
                                                             <Col md="10">
-                                                                <Select
-                                                                    value={selectedGroup}
-                                                                    onChange={handleSelectGroup}
-                                                                    options={optionGroup}
-                                                                    classNamePrefix="select2-selection"
-                                                                />
+                                                                <input value={state.state} onChange={e => setState({...state, state: e.target.value})} type="text" className="form-control" id="sate" placeholder="Enter your State/City" />
                                                             </Col>
                                                         </FormGroup>
                                                         <FormGroup className="mb-0" row>
                                                             <Label htmlFor="example-textarea" md="2" className="col-form-label">Order Notes:</Label>
                                                             <Col md="10">
-                                                                <textarea className="form-control" id="example-textarea" rows="3" placeholder="Write some note.."></textarea>
+                                                                <textarea value={state.note} onChange={e => setState({...state, note: e.target.value})} className="form-control" id="example-textarea" rows="3" placeholder="Write some note.."></textarea>
                                                             </Col>
                                                         </FormGroup>
                                                     </Form>
@@ -527,8 +572,33 @@ const Checkout = props => {
                             </Col>
                             <Col sm="6">
                                 <div className="text-sm-right">
-                                    <Link to="/ecommerce-checkout" className="btn btn-success">
-                                        <i className="mdi mdi-truck-fast mr-1"></i> Proceed to Shipping </Link>
+                                    <Link to="#" 
+                                        onClick={handleSubmit} 
+                                        className={state.paybutton}
+                                        style={{
+                                            borderRadius: 20, 
+                                            fontFamily: 'Sriracha, cursive',
+                                            transition: 'all 0.5s ease'
+                                        }}
+                                    >
+                                        <i className="mdi mdi-truck-fast mr-1"></i> Pay {state.clicked? (
+                                                                        <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+                                                                    ): <></>}
+                                    </Link>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md="12">
+                                <div align="center">
+                                    {
+                                        _.isNull(state.url) ? <></> : (
+                                            <span style={{color: 'black', fontSize: '14'}}>
+                                                If window does not open click this &nbsp; 
+                                                <a target="_blank" style={{color: 'dodgerblue'}} href={state.url}>Link</a>
+                                            </span>
+                                        )
+                                    }
                                 </div>
                             </Col>
                         </Row>
