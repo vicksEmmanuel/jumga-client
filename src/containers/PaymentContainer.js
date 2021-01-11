@@ -105,6 +105,16 @@ class PaymentContainer extends Container {
         }
     }
 
+    formatToIntCurrency = (value) => {
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: this.state.currency?.code,
+            minimumFractionDigits: 2
+        });
+
+        return formatter.format(Number(value) * this.state.currency?.pricePerDollar);
+    }
+
     convertToLocalCurrency = async (price, currency) => {
         try {
             if (_.isNull(currency) || _.isNull(price)) return;

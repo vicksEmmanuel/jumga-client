@@ -44,6 +44,7 @@ const  StoreAddProduct = (props) => {
         categories: [],
         isSubmitted: false,
         transferRate: '',
+        deliverycost: 0.00,
         stock: 1,
         options: cleanUpCategories(props.masterStore.state.categories)
     });
@@ -130,6 +131,7 @@ const  StoreAddProduct = (props) => {
             metadescription: '',
             categories: [],
             transferRate: '',
+            deliverycost: 0.00,
             stock: 1
         });
     }
@@ -150,6 +152,7 @@ const  StoreAddProduct = (props) => {
         e.preventDefault();
         setState({...state, isSubmitted: true});
         if (!(parseInt(state.currentprice) > 0)) return setState({...state, isError: true, errMsg: 'Add a valid price', isSubmitted: false});
+        if (!(parseInt(state.deliverycost) > 0)) return setState({...state, isError: true, errMsg: 'Add a valid delivery cost', isSubmitted: false});
         if (_.isEmpty(state.productname) || String(state.productname).length <= 3) return setState({...state, isError: true, errMsg: 'Enter a valid product name', isSubmitted: false});
         if (_.isEmpty(state.productdesc) || String(state.productdesc).length < 10) return setState({...state, isError: true, errMsg: 'Make your product description presentable', isSubmitted: false});
         if (!(state.selectedFiles.length > 0)) return setState({...state, isError: true, errMsg: 'Add at least one image', isSubmitted: false});
@@ -170,6 +173,7 @@ const  StoreAddProduct = (props) => {
             metakeywords: state.metakeywords,
             metadescription: state.metadescription,
             categories: state.categories,
+            deliverycost: state.deliverycost,
             storeId: storeId,
             stock: state.stock,
         }
@@ -385,6 +389,12 @@ const  StoreAddProduct = (props) => {
                                                             <textarea 
                                                                 onChange={e => setState({...state, metadescription: e.target.value})}
                                                                 className="form-control" id="metadescription" rows="5" value={state.metadescription}></textarea>
+                                                        </FormGroup>
+                                                        <FormGroup>
+                                                            <Label htmlFor="price">Delivery Cost($)</Label>
+                                                            <Input 
+                                                                onChange={e => setState({...state, deliverycost: e.target.value})}
+                                                                id="price" name="price" type="number" className="form-control" value={state.deliverycost} />
                                                         </FormGroup>
                                                     </Col>
                                                 </Row>

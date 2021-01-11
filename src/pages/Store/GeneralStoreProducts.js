@@ -280,7 +280,7 @@ const GeneralStoreProducts = props => {
                                                                         starSpacing="3px"
                                                                     />
                                                                 </div>
-                                                                <h5 className="my-0"><span className="text-muted mr-2"><del>${product?.pastprice}</del></span> <b>${product?.currentprice}</b></h5>
+                                                                <h5 className="my-0"><span className="text-muted mr-2"><del>{props.paymentStore.formatToIntCurrency(product?.pastprice)}</del></span> <b>{props.paymentStore.formatToIntCurrency(product?.currentprice)}</b></h5>
                                                             </div>
                                                         </CardBody>
                                                     </Card>

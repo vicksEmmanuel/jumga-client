@@ -259,8 +259,8 @@ const StoreProductDetail = props => {
 
                                                                 { Number(state.product.pastprice) > 0 ? calculateAndReturnDiscount() : <></>}
                                                                 <h5 className="mb-4">Price : <span className="text-muted mr-2"><del>{
-                                                                    Number(state.product.pastprice) > Number(state.product.currentprice) ? '$'+state.product.pastprice + ' USD': ''}
-                                                                    </del></span> <b>{'$'+ state.product.currentprice + ' USD'}</b></h5>
+                                                                    Number(state.product.pastprice) > Number(state.product.currentprice) ? props.paymentStore.formatToIntCurrency(state.product.pastprice): ''}
+                                                                    </del></span> <b>{props.paymentStore.formatToIntCurrency(state.product.currentprice)}</b></h5>
                                                                 <div className="product-color">
                                                                     <h5 className="font-size-15">{_.isNull(state.product.metaname) ? '' : 'SELECT'} {String(state.product.metaname).toUpperCase()}</h5>
                                                                     {metaTags()}
@@ -392,9 +392,9 @@ const StoreProductDetail = props => {
                                                                                         <h5 className="my-0">
                                                                                             <span className="text-muted mr-2">
                                                                                                 <del>
-                                                                                                    {Number(product.pastprice) > Number(product.currentprice) ? '$'+ product.pastprice + ' USD': ''}
+                                                                                                    {Number(product.pastprice) > Number(product.currentprice) ? props.paymentStore.formatToIntCurrency(product.pastprice): ''}
                                                                                                 </del>
-                                                                                            </span> <b>{'$'+ product.currentprice + ' USD'}</b>
+                                                                                            </span> <b>{props.paymentStore.formatToIntCurrency(product.currentprice)}</b>
                                                                                         </h5>
                                                                                     </div>
                                                                                 </Col>

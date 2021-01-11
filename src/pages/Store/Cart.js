@@ -17,12 +17,15 @@ const Cart = props => {
     });
 
     useEffect(() => {
+        console.log(props.masterStore.state.cart);
+
         setTimeout(() => {
             setState({...state, isLoading: false})
         }, 3000)
     }, [])
 
     const loadData = () => {
+        console.log(props.masterStore.state.cart);
         setState({ ...state, productList: props.masterStore.state.cart });
     }
 
@@ -41,9 +44,7 @@ const Cart = props => {
         var filtered = productList.filter(function (item) {
             return item?.productId !== id;
         });
-
-        console.log("here");
-
+        
         props.masterStore.setState({ ...state, cart: filtered }, () => {
             setState({...state, productList: filtered});
         });
@@ -87,6 +88,30 @@ const Cart = props => {
         if (_.isNull(props.userStore.state.user)) return props.history.push('/login');
 
         return props.history.push('/checkout');
+    }
+
+    const getAddUpValues = (value) => {
+        let x = 0;
+        state.productList.forEach(item => {
+            x += Number(item[value]);
+        });
+
+        return x;
+    }
+
+    const getTotal = () => {
+        let discount = getDeliveryCost();
+        let totalprice = getAddUpValues('total');
+
+        return Number(discount) + Number(totalprice);
+    }
+
+    const getDeliveryCost = () => {
+        let delivery = 0;
+        state.productList.forEach(item => {
+            delivery += (Number(item?.deliverycost) * item?.quantity);
+        })
+        return delivery;
     }
 
     return (
@@ -133,15 +158,15 @@ const Cart = props => {
                                                                                 <td>
                                                                                     <h5 className="font-size-14 text-truncate"><Link to={"/" + product?.productId} className="text-dark">{product?.productname}</Link></h5>
                                                                                     <p className="mb-0">{
-                                                                                        product?.variantion ? (
+                                                                                        !_.isEmpty(product?.variation) ? (
                                                                                             <>
-                                                                                                {product?.variantion?.key} : <span className="font-weight-medium">{product?.variantion.value}</span>
+                                                                                                {product?.variation?.key} : <span className="font-weight-medium">{product?.variation.value}</span>
                                                                                             </>
                                                                                         ) : ''
                                                                                     }</p>
                                                                                 </td>
                                                                                 <td>
-                                                                                    $ {product.currentprice}
+                                                                                    {props.paymentStore.formatToIntCurrency(product.currentprice)}
                                                                                 </td>
                                                                                 <td>
                                                                                     <div style={{ width: "120px" }}>
@@ -163,7 +188,7 @@ const Cart = props => {
                                                                                     </div>
                                                                                 </td>
                                                                                 <td>
-                                                                                    $ {product.total}
+                                                                                    {props.paymentStore.formatToIntCurrency(product.total)}
                                                                                 </td>
                                                                                 <td>
                                                                                     <Link to="#" onClick={() => removeCartItem(product?.productId)} className="action-icon text-danger"> <i className="mdi mdi-trash-can font-size-18"></i></Link>
@@ -205,24 +230,20 @@ const Cart = props => {
                                                             <Table className="table mb-0">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td>Grand Total :</td>
-                                                                        <td>$ 1,857</td>
+                                                                        <td>Grand Total : </td>
+                                                                        <td>{props.paymentStore.formatToIntCurrency(getAddUpValues('total'))}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td>Discount : </td>
-                                                                        <td>- $ 157</td>
+                                                                        <td>Delivery Cost :</td>
+                                                                        <td>{props.paymentStore.formatToIntCurrency(getDeliveryCost())}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td>Shipping Charge :</td>
-                                                                        <td>$ 25</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Estimated Tax : </td>
-                                                                        <td>$ 19.22</td>
+                                                                        <td>Number of items : </td>
+                                                                        <td>{getAddUpValues('quantity')}</td>
                                                                     </tr>
                                                                     <tr>
                                                                         <th>Total :</th>
-                                                                        <th>$ 1744.22</th>
+                                                                        <th>{props.paymentStore.formatToIntCurrency(getTotal())}</th>
                                                                     </tr>
                                                                 </tbody>
                                                             </Table>
