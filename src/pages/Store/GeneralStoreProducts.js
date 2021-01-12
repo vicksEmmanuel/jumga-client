@@ -21,6 +21,13 @@ import Breadcrumbs from '../../components/Common/Breadcrumb';
 const GeneralStoreProducts = props => {
     const searchId = props.match.params?.id || '';
 
+    const moneyFormat = wNumb({
+        decimals: 2,
+        mark: '.',
+        thousand: ',',
+        prefix: props.paymentStore.state.currency.code
+    });
+
     const calculatePercentage = (newPrice, oldPrice) => {
         const difference = Number(oldPrice) - Number(newPrice);
         return Math.round((difference / oldPrice) * 100);
@@ -86,7 +93,12 @@ const GeneralStoreProducts = props => {
     }
 
     const getDiscountFilter = () => {
-
+        if (state.discount1) return 10;
+        if (state.discount2) return 20;
+        if (state.discount3) return 30;
+        if (state.discount4) return 50;
+        if (state.discount5) return 70;
+        if (state.discount6) return 90;
     }
 
     const filterOut = async () => {
@@ -95,12 +107,13 @@ const GeneralStoreProducts = props => {
             startAt: 0,
             limit: pageTracker.limit,
             filter: state.filter,
-            filterPriceMinRange: Number(String(state.filterPriceMinRange).replace(props.paymentStore.state.currency.code, '')),
-            filterPriceMaxRange: Number(String(state.filterPriceMaxRange).replace(props.paymentStore.state.currency.code, '')),
-            filterDiscountRate: (state.discount1 || state.discount2 || state.discount3 || state.discount4 || state.discount5 || state.discount6)
-             ? getDiscountFilter() : state.filterDiscountRate,
+            filterPriceMinRange: moneyFormat.from(state.filterPriceMinRange) ? moneyFormat.from(state.filterPriceMinRange) / props.paymentStore.state.currency.pricePerDollar : 0,
+            filterPriceMaxRange: moneyFormat.from(state.filterPriceMaxRange) ? moneyFormat.from(state.filterPriceMaxRange)  / props.paymentStore.state.currency.pricePerDollar : 1000000,
+            filterDiscountRate: (state.discount1 || state.discount2 || state.discount3 || state.discount4 || state.discount5 || state.discount6)? getDiscountFilter() : state.filterDiscountRate,
             // filterCustomerRating: state.filterCustomerRating,
         }
+
+        console.log(moneyFormat.from(state.filterPriceMaxRange));
 
         let result = await props.masterStore.searchForId(options);
 
@@ -238,12 +251,7 @@ const GeneralStoreProducts = props => {
                                                 onChange={ e => {
                                                     setState({...state, filter: true, filterPriceMinRange: e[0], filterPriceMaxRange: e[1]})
                                                 }} 
-                                                format={ wNumb({
-                                                    decimals: 2,
-                                                    mark: '.',
-                                                    thousand: ',',
-                                                    prefix: props.paymentStore.state.currency.code
-                                                })} 
+                                                format={ moneyFormat} 
                                             />
 
                                         </div>
@@ -261,9 +269,10 @@ const GeneralStoreProducts = props => {
                                                 />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck1">Less than 10%</Label>
                                             </div>
-                                            <div checked={state.discount2} className="custom-control custom-checkbox mt-2">
+                                            <div  className="custom-control custom-checkbox mt-2">
                                                 <Input 
                                                     type="checkbox" 
+                                                    checked={state.discount2}
                                                     value="1" 
                                                     className="custom-control-input" 
                                                     id="productdiscountCheck2" 
@@ -271,8 +280,9 @@ const GeneralStoreProducts = props => {
                                                 />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck2">10% or more</Label>
                                             </div>
-                                            <div checked={state.discount3} className="custom-control custom-checkbox mt-2">
+                                            <div  className="custom-control custom-checkbox mt-2">
                                                 <Input 
+                                                    checked={state.discount3}
                                                     type="checkbox" 
                                                     value="2" 
                                                     className="custom-control-input" 
@@ -280,8 +290,11 @@ const GeneralStoreProducts = props => {
                                                     onChange={e => setState({...state, discount3: !state.discount3, discount2: false, discount1: false, discount4: false, discount5: false, discount6: false})}/>
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck3">20% or more</Label>
                                             </div>
-                                            <div checked={state.discount4} className="custom-control custom-checkbox mt-2">
+                                            <div 
+                                                checked={state.discount4} 
+                                                className="custom-control custom-checkbox mt-2">
                                                 <Input 
+                                                    checked={state.discount4} 
                                                     type="checkbox" 
                                                     value="3" 
                                                     className="custom-control-input" 
@@ -290,20 +303,22 @@ const GeneralStoreProducts = props => {
                                                 />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck4">30% or more</Label>
                                             </div>
-                                            <div checked={state.discount5} className="custom-control custom-checkbox mt-2">
+                                            <div  className="custom-control custom-checkbox mt-2">
                                                 <Input 
                                                     type="checkbox" 
                                                     value="4" 
+                                                    checked={state.discount5}
                                                     className="custom-control-input" 
                                                     id="productdiscountCheck5" 
                                                     onChange={e => setState({...state, discount5: !state.discount5, discount2: false, discount3: false, discount4: false, discount1: false, discount6: false})}
                                                  />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck5">40% or more</Label>
                                             </div>
-                                            <div checked={state.discount6} className="custom-control custom-checkbox mt-2">
+                                            <div  className="custom-control custom-checkbox mt-2">
                                                 <Input 
                                                     type="checkbox" 
                                                     value="5" 
+                                                    checked={state.discount6}
                                                     className="custom-control-input" 
                                                     id="productdiscountCheck6" 
                                                     onChange={e => setState({...state, discount6: !state.discount6, discount2: false, discount3: false, discount4: false, discount5: false, discount1: false})}
