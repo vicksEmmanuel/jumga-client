@@ -152,7 +152,7 @@ const  StoreAddProduct = (props) => {
         e.preventDefault();
         setState({...state, isSubmitted: true});
         if (!(parseInt(state.currentprice) > 0)) return setState({...state, isError: true, errMsg: 'Add a valid price', isSubmitted: false});
-        if (!(parseInt(state.deliverycost) > 0)) return setState({...state, isError: true, errMsg: 'Add a valid delivery cost', isSubmitted: false});
+        if (!(parseInt(state.deliverycost) > 0)) return setState({...state, isError: true, errMsg: 'Add a valid delivery cost. >', isSubmitted: false});
         if (_.isEmpty(state.productname) || String(state.productname).length <= 3) return setState({...state, isError: true, errMsg: 'Enter a valid product name', isSubmitted: false});
         if (_.isEmpty(state.productdesc) || String(state.productdesc).length < 10) return setState({...state, isError: true, errMsg: 'Make your product description presentable', isSubmitted: false});
         if (!(state.selectedFiles.length > 0)) return setState({...state, isError: true, errMsg: 'Add at least one image', isSubmitted: false});

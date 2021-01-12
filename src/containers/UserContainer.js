@@ -66,7 +66,7 @@ class UserContainer extends Container {
                 uploadTask.on('state_changed', function(snapshot){
                     // Observe state change events such as progress, pause, and resume
                     // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    var progress = Number((snapshot.bytesTransferred / snapshot.totalBytes) * 100).toFixed(3);
                     getTransferRate('Upload is ' + progress + '% done');
                     console.log('Upload is ' + progress + '% done');
                     switch (snapshot.state) {
@@ -107,6 +107,7 @@ class UserContainer extends Container {
         metadescription,
         categories,
         storeId,
+        deliverycost
     }) => {
         try {
 
@@ -122,6 +123,7 @@ class UserContainer extends Container {
                 currentprice,
                 productdesc,
                 metaname,
+                deliverycost,
                 metakeywords,
                 metadescription,
                 categories,

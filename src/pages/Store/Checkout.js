@@ -89,7 +89,7 @@ const Checkout = props => {
         e.preventDefault();
         try {
             validateSubmit();
-            setState({...state, paybutton: 'btn btn-warning'});
+            setState({...state, paybutton: 'btn btn-warning', clicked: true});
 
             const options = {
                 email: state.email,
@@ -97,7 +97,8 @@ const Checkout = props => {
                 paymentTitle: `Payment for Order`,
                 description: `${props.userStore.state.user.username} is to pay ${getTotal()} for goods ordered`,
                 currency: state.currency,
-                currencyPricePerDollar: state.currencyPricePerDollar
+                currencyPricePerDollar: state.currencyPricePerDollar,
+                sell: true
             };
 
             let payment = await  props.paymentStore.initiatePayment(options);

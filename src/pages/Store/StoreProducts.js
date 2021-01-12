@@ -17,8 +17,6 @@ import "nouislider/distribute/nouislider.css";
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
 const StoreProducts = props => {
-    const [products, setProducts] = useState([]);
-    const [totalSize, setTotalSize] = useState(0);
     const calculatePercentage = (newPrice, oldPrice) => {
         const difference = Number(oldPrice) - Number(newPrice);
         return Math.round((difference / oldPrice) * 100);
@@ -79,6 +77,107 @@ const StoreProducts = props => {
             setState({...state, isLoading: false})
         }, 3000)
     }, [])
+
+     
+    let [pageTracker, setPageTracker] = useState({
+        limit: 10,
+        to: 6,
+        from: 1,
+        tracker: 1,
+        holder: 0,
+        startAt: 0,
+        filter: false,
+        filterPriceMinRange: 0,
+        filterPriceMaxRange: 1000000000,
+        filterDiscountRate: 50,
+        filterCustomerRating: 5,
+    })
+
+    const [products, setProducts] = useState([]);
+    const [totalSize, setTotalSize] = useState(0);
+    const [active, setActive] = useState(0);
+
+    const getPage = async (page) => {
+        let options = {
+            id: storeId, //If the value is '' it would return all the products
+            startAt: page * pageTracker.limit,
+            limit: pageTracker.limit,
+            filter: state.filter,
+            filterPriceMinRange: state.filterPriceMinRange,
+            filterPriceMaxRange: state.filterPriceMaxRange,
+            filterDiscountRate: state.filterDiscountRate,
+            filterCustomerRating: state.filterCustomerRating,
+        }
+
+        let result = await props.masterStore.searchForId(options);
+
+        if (_.isEmpty(result) || _.isUndefined(result)) {
+            setProducts([])
+            setTotalSize(0);
+            return;
+        }
+
+        setProducts(result.data)
+        setTotalSize(result?.totalSize);
+    }
+
+    const setUpPagination = numOfPages => {
+        if (numOfPages <= 0) return;
+
+        const pagination = Math.ceil(numOfPages/pageTracker.limit);
+
+        return (
+            <Pagination className="pagination pagination-rounded justify-content-center mt-4">
+                <PaginationItem 
+                    disabled={active <= 0}
+                    onClick={async () => {
+                        if(active <= 0) {
+                            return;
+                        }
+                        let activeCopy = active;
+                        await setActive(active - 1);
+                        await getPage(activeCopy - 1 );
+                    }}
+                >
+                    <PaginationLink previous/>
+                </PaginationItem>
+                {new Array(pagination).fill(null).map((i, idx) => {
+                    return (
+                        <PaginationItem 
+                            active={idx == active}
+                            key={idx}
+                            onClick={async () => {
+                                // await getPage({
+                                //     collection: 'articles', 
+                                //     page: i - 1, 
+                                //     query: searchText
+                                // });
+                                await setActive(idx);
+                            }}
+                        >
+                            <PaginationLink>
+                                {idx + 1}
+                            </PaginationLink>
+                        </PaginationItem>
+                    )
+                })}
+                <PaginationItem 
+                    disabled={(active >= pagination - 1) || numOfPages <= pageTracker.limit}
+                    onClick={async () => {
+                        if ((active >= pagination - 1) || (numOfPages <= pageTracker.limit)) {
+                            return;
+                        }
+                        let activeCopy = active;
+                        await setActive(activeCopy + 1);
+                        await getPage(activeCopy + 1);
+                    }}
+                >
+                    <PaginationLink next />
+                </PaginationItem>
+            </Pagination>
+        )
+
+    }
 
     return (
         <React.Fragment>
@@ -193,39 +292,7 @@ const StoreProducts = props => {
                             </Row>
                             <Row>
                                 <Col lg="12">
-                                    <Pagination className="pagination pagination-rounded justify-content-center">
-                                        <PaginationItem disabled>
-                                            <PaginationLink previous href="#" />
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationLink href="#">
-                                                1
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                        <PaginationItem active>
-                                            <PaginationLink href="#">
-                                                2
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationLink href="#">
-                                                3
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationLink href="#">
-                                                4
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationLink href="#">
-                                                5
-                                            </PaginationLink>
-                                        </PaginationItem>
-                                        <PaginationItem>
-                                            <PaginationLink next href="#" />
-                                        </PaginationItem>
-                                    </Pagination>
+                                    {setUpPagination(totalSize)}
                                 </Col>
                             </Row>
                         </Col>

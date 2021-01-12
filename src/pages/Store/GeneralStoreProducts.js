@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, CardBody, CardTitle, Form, Label, Input, Nav, NavItem, NavLink, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
-import classnames from 'classnames';
 import * as _ from 'lodash';
 import stateWrapper from '../../containers/provider';
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+import wNumb from 'wnumb';
 
 //Import Star Ratings
 import StarRatings from 'react-star-ratings';
@@ -14,28 +14,17 @@ import Nouislider from "nouislider-react";
 import "nouislider/distribute/nouislider.css";
 
 
-//Import Product Images
-import product1 from "../../assets/images/product/img-1.png";
-import product2 from "../../assets/images/product/img-2.png";
-import product3 from "../../assets/images/product/img-3.png";
-import product4 from "../../assets/images/product/img-4.png";
-import product5 from "../../assets/images/product/img-5.png";
-import product6 from "../../assets/images/product/img-6.png";
 
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 
 const GeneralStoreProducts = props => {
     const searchId = props.match.params?.id || '';
-    const [products, setProducts] = useState([]);
-    const [totalSize, setTotalSize] = useState(0);
 
     const calculatePercentage = (newPrice, oldPrice) => {
         const difference = Number(oldPrice) - Number(newPrice);
         return Math.round((difference / oldPrice) * 100);
     }
-
-    console.log(searchId);
 
     const loadData = () => {
         (async () => {
@@ -53,7 +42,8 @@ const GeneralStoreProducts = props => {
             setProducts(result.data)
             setTotalSize(result?.totalSize);
             console.log(result);
-            console.log("Properties of this component", props);
+
+            console.log("Pagination counting", )
         })();
     }
 
@@ -71,31 +61,144 @@ const GeneralStoreProducts = props => {
         }, 3000)
     }, [])
 
+    const getPage = async (page) => {
+        let options = {
+            id: searchId, //If the value is '' it would return all the products
+            startAt: page * pageTracker.limit,
+            limit: pageTracker.limit,
+            filter: state.filter,
+            filterPriceMinRange: state.filterPriceMinRange,
+            filterPriceMaxRange: state.filterPriceMaxRange,
+            filterDiscountRate: state.filterDiscountRate,
+            filterCustomerRating: state.filterCustomerRating,
+        }
+
+        let result = await props.masterStore.searchForId(options);
+
+        if (_.isEmpty(result) || _.isUndefined(result)) {
+            setProducts([])
+            setTotalSize(0);
+            return;
+        }
+
+        setProducts(result.data)
+        setTotalSize(result?.totalSize);
+    }
+
+    const getDiscountFilter = () => {
+
+    }
+
+    const filterOut = async () => {
+        let options = {
+            id: searchId, //If the value is '' it would return all the products
+            startAt: 0,
+            limit: pageTracker.limit,
+            filter: state.filter,
+            filterPriceMinRange: Number(String(state.filterPriceMinRange).replace(props.paymentStore.state.currency.code, '')),
+            filterPriceMaxRange: Number(String(state.filterPriceMaxRange).replace(props.paymentStore.state.currency.code, '')),
+            filterDiscountRate: (state.discount1 || state.discount2 || state.discount3 || state.discount4 || state.discount5 || state.discount6)
+             ? getDiscountFilter() : state.filterDiscountRate,
+            // filterCustomerRating: state.filterCustomerRating,
+        }
+
+        let result = await props.masterStore.searchForId(options);
+
+        if (_.isEmpty(result) || _.isUndefined(result)) {
+            setProducts([])
+            setTotalSize(0);
+            return;
+        }
+
+        setProducts(result.data)
+        setTotalSize(result?.totalSize);
+    }
+
     const [state, setState] = useState({
         isLoading: true,
-        FilterClothes: [
-            { id: 1, name: "T-shirts", link: "#" },
-            { id: 2, name: "Shirts", link: "#" },
-            { id: 3, name: "Jeans", link: "#" },
-            { id: 4, name: "Jackets", link: "#" },
-        ],
-        Products: [
-            { id: 1, image: product1, name: "Half sleeve T-shirt", link: "#", rating: 5, oldPrice: 500, newPrice: 450, isOffer: true, offer: -25 },
-            { id: 2, image: product2, name: "Light blue T-shirt", link: "#", rating: 4, oldPrice: 240, newPrice: 225, isOffer: false, offer: 0 },
-            { id: 3, image: product3, name: "Black Color T-shirt", link: "#", rating: 4, oldPrice: 175, newPrice: 152, isOffer: true, offer: -20 },
-            { id: 4, image: product4, name: "Hoodie (Blue)", link: "#", rating: 4, oldPrice: 150, newPrice: 145, isOffer: false, offer: 0 },
-            { id: 5, image: product5, name: "Half sleeve T-Shirt", link: "#", rating: 4, oldPrice: 145, newPrice: 138, isOffer: true, offer: -22 },
-            { id: 6, image: product6, name: "Green color T-shirt", link: "#", rating: 4, oldPrice: 138, newPrice: 135, isOffer: true, offer: -28 },
-        ],
+        startAt: 0,
+        filter: false,
+        filterPriceMinRange: 0,
+        filterPriceMaxRange: 1000000000,
+        filterDiscountRate: 50,
+        filterCustomerRating: 5,
         activeTab: '1',
+        discount1: false,
+        discount2: false,
+        discount3: false,
+        discount4: false,
+        discount5: false,
+        discount6: false,
     });
+    
+    let [pageTracker, setPageTracker] = useState({
+        limit: 10,
+        to: 6,
+        from: 1,
+        tracker: 1,
+        holder: 0
+    })
 
-    const toggleTab = (tab) => {
-        if (state.activeTab !== tab) {
-            setState({
-                activeTab: tab
-            });
-        }
+    const [products, setProducts] = useState([]);
+    const [totalSize, setTotalSize] = useState(0);
+    const [active, setActive] = useState(0);
+
+    const setUpPagination = numOfPages => {
+        if (numOfPages <= 0) return;
+
+        const pagination = Math.ceil(numOfPages/pageTracker.limit);
+
+        return (
+            <Pagination className="pagination pagination-rounded justify-content-center mt-4">
+                <PaginationItem 
+                    disabled={active <= 0}
+                    onClick={async () => {
+                        if(active <= 0) {
+                            return;
+                        }
+                        let activeCopy = active;
+                        await setActive(active - 1);
+                        await getPage(activeCopy - 1 );
+                    }}
+                >
+                    <PaginationLink previous/>
+                </PaginationItem>
+                {new Array(pagination).fill(null).map((i, idx) => {
+                    return (
+                        <PaginationItem 
+                            active={idx == active}
+                            key={idx}
+                            onClick={async () => {
+                                // await getPage({
+                                //     collection: 'articles', 
+                                //     page: i - 1, 
+                                //     query: searchText
+                                // });
+                                await setActive(idx);
+                            }}
+                        >
+                            <PaginationLink>
+                                {idx + 1}
+                            </PaginationLink>
+                        </PaginationItem>
+                    )
+                })}
+                <PaginationItem 
+                    disabled={(active >= pagination - 1) || numOfPages <= pageTracker.limit}
+                    onClick={async () => {
+                        if ((active >= pagination - 1) || (numOfPages <= pageTracker.limit)) {
+                            return;
+                        }
+                        let activeCopy = active;
+                        await setActive(activeCopy + 1);
+                        await getPage(activeCopy + 1);
+                    }}
+                >
+                    <PaginationLink next />
+                </PaginationItem>
+            </Pagination>
+        )
+
     }
 
     return (
@@ -116,51 +219,95 @@ const GeneralStoreProducts = props => {
                                 <Card>
                                     <CardBody>
                                         <CardTitle className="mb-4">
-                                            Filter
+                                            <Row>
+                                                <Col lg="8" md="9" sm="6" xs="6">Filter</Col>
+                                                <Col lg="4" md="3" sm="6" xs="6" align="right">
+                                                    <button onClick={filterOut} className="btn btn-warning" style={{fontSize: 11, borderRadius: 20}}>Apply</button>
+                                                </Col>
+                                            </Row>
                                         </CardTitle>
-                                        <div>
-                                            <h5 className="font-size-14 mb-3">Clothes</h5>
-                                            {/* Render Cloth Categories */}
-                                            <ul className="list-unstyled product-list">
-                                                {
-                                                    state.FilterClothes.map((cloth, key) =>
-                                                        <li key={"_li_" + key}><Link to={cloth.link}><i className="mdi mdi-chevron-right mr-1"></i>{cloth.name}</Link></li>
-                                                    )
-                                                }
-                                            </ul>
-                                        </div>
                                         <div className="mt-4 pt-3">
                                             <h5 className="font-size-14 mb-4">Price</h5>
                                             <br />
 
-                                            <Nouislider range={{ min: 0, max: 600 }} tooltips={true} start={[100, 500]} connect />
+                                            <Nouislider 
+                                                range={{ min: 0, max: 4000000 }} 
+                                                tooltips={true} 
+                                                start={[0, 4000000]} 
+                                                connect 
+                                                onChange={ e => {
+                                                    setState({...state, filter: true, filterPriceMinRange: e[0], filterPriceMaxRange: e[1]})
+                                                }} 
+                                                format={ wNumb({
+                                                    decimals: 2,
+                                                    mark: '.',
+                                                    thousand: ',',
+                                                    prefix: props.paymentStore.state.currency.code
+                                                })} 
+                                            />
 
                                         </div>
 
                                         <div className="mt-4 pt-3">
                                             <h5 className="font-size-14 mb-3">Discount</h5>
                                             <div className="custom-control custom-checkbox mt-2">
-                                                <Input type="checkbox" value="0" className="custom-control-input" id="productdiscountCheck1" />
+                                                <Input 
+                                                    checked={state.discount1} 
+                                                    type="checkbox" 
+                                                    value="0" 
+                                                    className="custom-control-input" 
+                                                    id="productdiscountCheck1" 
+                                                    onChange={e => setState({...state, discount1: !state.discount1, discount2: false, discount3: false, discount4: false, discount5: false, discount6: false})}
+                                                />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck1">Less than 10%</Label>
                                             </div>
-                                            <div className="custom-control custom-checkbox mt-2">
-                                                <Input type="checkbox" value="1" className="custom-control-input" id="productdiscountCheck2" />
+                                            <div checked={state.discount2} className="custom-control custom-checkbox mt-2">
+                                                <Input 
+                                                    type="checkbox" 
+                                                    value="1" 
+                                                    className="custom-control-input" 
+                                                    id="productdiscountCheck2" 
+                                                    onChange={e => setState({...state, discount2: !state.discount2, discount1: false, discount3: false, discount4: false, discount5: false, discount6: false})} 
+                                                />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck2">10% or more</Label>
                                             </div>
-                                            <div className="custom-control custom-checkbox mt-2">
-                                                <Input type="checkbox" value="2" className="custom-control-input" id="productdiscountCheck3" defaultChecked />
+                                            <div checked={state.discount3} className="custom-control custom-checkbox mt-2">
+                                                <Input 
+                                                    type="checkbox" 
+                                                    value="2" 
+                                                    className="custom-control-input" 
+                                                    id="productdiscountCheck3" 
+                                                    onChange={e => setState({...state, discount3: !state.discount3, discount2: false, discount1: false, discount4: false, discount5: false, discount6: false})}/>
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck3">20% or more</Label>
                                             </div>
-                                            <div className="custom-control custom-checkbox mt-2">
-                                                <Input type="checkbox" value="3" className="custom-control-input" id="productdiscountCheck4" />
+                                            <div checked={state.discount4} className="custom-control custom-checkbox mt-2">
+                                                <Input 
+                                                    type="checkbox" 
+                                                    value="3" 
+                                                    className="custom-control-input" 
+                                                    id="productdiscountCheck4" 
+                                                    onChange={e => setState({...state, discount4: !state.discount4, discount2: false, discount3: false, discount1: false, discount5: false, discount6: false})}
+                                                />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck4">30% or more</Label>
                                             </div>
-                                            <div className="custom-control custom-checkbox mt-2">
-                                                <Input type="checkbox" value="4" className="custom-control-input" id="productdiscountCheck5" />
+                                            <div checked={state.discount5} className="custom-control custom-checkbox mt-2">
+                                                <Input 
+                                                    type="checkbox" 
+                                                    value="4" 
+                                                    className="custom-control-input" 
+                                                    id="productdiscountCheck5" 
+                                                    onChange={e => setState({...state, discount5: !state.discount5, discount2: false, discount3: false, discount4: false, discount1: false, discount6: false})}
+                                                 />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck5">40% or more</Label>
                                             </div>
-                                            <div className="custom-control custom-checkbox mt-2">
-                                                <Input type="checkbox" value="5" className="custom-control-input" id="productdiscountCheck6" />
+                                            <div checked={state.discount6} className="custom-control custom-checkbox mt-2">
+                                                <Input 
+                                                    type="checkbox" 
+                                                    value="5" 
+                                                    className="custom-control-input" 
+                                                    id="productdiscountCheck6" 
+                                                    onChange={e => setState({...state, discount6: !state.discount6, discount2: false, discount3: false, discount4: false, discount5: false, discount1: false})}
+                                                />
                                                 <Label className="custom-control-label" htmlFor="productdiscountCheck6">50% or more</Label>
                                             </div>
                                         </div>
@@ -300,39 +447,7 @@ const GeneralStoreProducts = props => {
                                 </Row>
                                 <Row>
                                     <Col lg="12">
-                                        <Pagination className="pagination pagination-rounded justify-content-center">
-                                            <PaginationItem disabled>
-                                                <PaginationLink previous href="#" />
-                                            </PaginationItem>
-                                            <PaginationItem>
-                                                <PaginationLink href="#">
-                                                    1
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                            <PaginationItem active>
-                                                <PaginationLink href="#">
-                                                    2
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                            <PaginationItem>
-                                                <PaginationLink href="#">
-                                                    3
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                            <PaginationItem>
-                                                <PaginationLink href="#">
-                                                    4
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                            <PaginationItem>
-                                                <PaginationLink href="#">
-                                                    5
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                            <PaginationItem>
-                                                <PaginationLink next href="#" />
-                                            </PaginationItem>
-                                        </Pagination>
+                                        {setUpPagination(totalSize)}
                                     </Col>
                                 </Row>
                             </Col>
