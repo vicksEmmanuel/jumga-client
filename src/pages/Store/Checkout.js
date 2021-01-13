@@ -85,6 +85,12 @@ const Checkout = props => {
         windowRef = window.open(url, 'Payment', 'statusbar=no,height=600,width=400');    
     }
 
+    const trackPayment = () => {
+        props.userStore.trackPaymentForGoods(() => {
+            props.history.push('/history');
+        });
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -98,7 +104,13 @@ const Checkout = props => {
                 description: `${props.userStore.state.user.username} is to pay ${getTotal()} for goods ordered`,
                 currency: state.currency,
                 currencyPricePerDollar: state.currencyPricePerDollar,
-                sell: true
+                sell: true,
+                email: state.email,
+                phone: state.phone,
+                address: state.address,
+                country: state.country,
+                state: state.state,
+                note: state.note,
             };
 
             let payment = await  props.paymentStore.initiatePayment(options);
@@ -110,6 +122,8 @@ const Checkout = props => {
                 url: link
             });
             openNewWindow(link);
+
+            trackPayment();
 
         } catch (e) {
             setState({...state, isError: true, errMsg: e?.message, clicked: false});
@@ -567,7 +581,7 @@ const Checkout = props => {
                             </Col>
                         </Row>
                         <Row className="my-4">
-                            <Col sm="6">
+                            <Col sm="4">
                                 <Link to="/cart" className="btn text-muted d-none d-sm-inline-block btn-link">
                                     <i className="mdi mdi-arrow-left mr-1"></i> Back to Shopping Cart </Link>
                             </Col>
@@ -590,11 +604,11 @@ const Checkout = props => {
                             </Col>
                         </Row>
                         <Row>
-                            <Col md="12">
+                            <Col md="10">
                                 <div align="center">
                                     {
                                         _.isNull(state.url) ? <></> : (
-                                            <span style={{color: 'black', fontSize: '14'}}>
+                                            <span style={{color: 'black', fontSize: '18'}}>
                                                 If window does not open click this &nbsp; 
                                                 <a target="_blank" style={{color: 'dodgerblue'}} href={state.url}>Link</a>
                                             </span>

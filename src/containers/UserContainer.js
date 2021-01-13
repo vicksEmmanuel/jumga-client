@@ -241,7 +241,8 @@ class UserContainer extends Container {
             dispatchRiders,
             createdDate,
             dateVisited,
-            wallentBalance: 0.00,
+            walletBalance: 0.00,
+            pendingBalance: 0.00,
             country,
             state,
         });
@@ -356,6 +357,15 @@ class UserContainer extends Container {
         doc.onSnapshot(docSnapShot => {
             callback(docSnapShot.data());
         });
+    }
+
+    trackPaymentForGoods = async (callback) => {
+        const doc = firebase.firestore().collection(CONSTANTS.SCHEMA.CART);
+        const docRef = doc.where('email', '==', this.state.user?.email);
+        docRef.onSnapshot(docSnapShot => {
+            if (docSnapShot.empty) callback();
+        });
+
     }
 
     signIn = async ({

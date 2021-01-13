@@ -94,7 +94,6 @@ class MasterContainer extends Container {
       limit: 10,
   }) => {
       try {
-        console.log(searchDetails);
         if (!_.isObject(searchDetails)) return [];
         const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.SEARCHPRODUCT);
         const response = await callable(searchDetails);
