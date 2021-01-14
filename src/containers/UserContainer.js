@@ -108,7 +108,6 @@ class UserContainer extends Container {
             let getYear = newDate.getFullYear();
 
             const { statistics } = response.data;
-            console.log(statistics);
 
             let ordersPerMonth = months.map(id => {
                 return statistics?.numOfOrdersPerMonth[`${getYear}`][`${id.toLowerCase()}`]

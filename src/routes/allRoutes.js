@@ -18,6 +18,8 @@ import Checkout from "../pages/Store/Checkout";
 import LoginX from "../pages/Authentication/LoginX";
 import CreateX from "../pages/Authentication/CreateX";
 import Overview from "../pages/Store/Overview";
+import StoreCustomers from "../pages/Store/StoreCustomers";
+import StoreOrders from "../pages/Store/StoreOrders";
 
 
 const userRoutes = [
@@ -40,8 +42,8 @@ const storeAuthRoutes = [
 	{ path: "/store/front/:id/analysis", component: ComingSoon}, //TODO: 
 	{ path: "/store/front/:id/account", component: ComingSoon}, //TODO: 
 	{ path: "/store/front/:id/settings", component: ComingSoon}, //TODO: 
-	{ path: "/store/front/:id/customers", component: ComingSoon},  //TODO: 
-	{ path: "/store/front/:id/orders", component: ComingSoon}, //TODO: 
+	{ path: "/store/front/:id/customers", component: StoreCustomers},  //TODO: 
+	{ path: "/store/front/:id/orders", component: StoreOrders}, //TODO: 
 	{ path: "/store/front/:id/add-products", component: StoreAddProduct}, //Add product
 	{ path: "/store/front/:id/products", component: StoreProducts},  //TODO: //View all product
 	{ path: "/store/front/:id", component: StoreDetails}, //Home

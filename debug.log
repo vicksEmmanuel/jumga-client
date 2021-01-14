@@ -517,3 +517,4 @@
 [0104/213731.253:ERROR:process_memory_win.cc(73)] ReadMemory at 0x7716dca0 of 36 bytes failed: Only part of a ReadProcessMemory or WriteProcessMemory request was completed. (0x12B)
 [0104/213731.258:ERROR:filesystem_win.cc(129)] GetFileAttributes C:\Users\HP\AppData\Local\Google\Chrome\User Data\Crashpad\attachments\a7a38e97-b83a-4abf-bb33-179ec3ee5141: The system cannot find the path specified. (0x3)
 [0104/213731.256:ERROR:scoped_process_suspend.cc(40)] NtResumeProcess: An attempt was made to access an exiting process. (0xc000010a)
+[0114/073632.446:ERROR:directory_reader_win.cc(43)] FindFirstFile: The system cannot find the path specified. (0x3)

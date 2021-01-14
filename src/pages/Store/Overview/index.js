@@ -51,8 +51,8 @@ const Overview  = props => {
 
         reports.push({ title: "Revenue", iconClass: "bx-archive-in", description: `$ ${store[0]?.walletBalance}` });
         reports.push({ title: "Pending Revenue", iconClass: "bx-copy-alt", description: `$ ${store[0]?.pendingBalance}` });
-        reports.push({ title: 'Orders', iconClass: 'bx-purchase-tag-alt', description: state.noOfOrders})
-        setState({...state, reports, delivery: props.userStore.state.delivery, noOfOrders: props.userStore.state.noOfOrders});
+        setState({...state, reports, delivery: props.userStore.state.delivery,noOfOrders: props.userStore.state.noOfOrders});
+
     }, [props.userStore.state.storeLoaded, props.userStore.state.stores])
 
     useEffect(() => {
@@ -79,8 +79,19 @@ const Overview  = props => {
 
     useEffect(() => {
        try {
-        props.userStore.getNumofProductsOfAParticularStore(storeId);
-        props.userStore.getStoreStatistics(storeId);
+        (async() => {
+            await props.userStore.getNumofProductsOfAParticularStore(storeId);
+            await props.userStore.getStoreStatistics(storeId);
+
+            let reports = state.reports;
+            let store = props.userStore.state.stores.filter(item => {
+                return item.storeId == storeId
+            });
+            
+            reports.push({ title: 'Orders', iconClass: 'bx-purchase-tag-alt', description: props.userStore.state.noOfOrders})
+            setState({...state, reports})
+
+        })()
        } catch(e) {
            console.log(e);
        }

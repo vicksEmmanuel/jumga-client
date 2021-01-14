@@ -12,10 +12,6 @@ import StarRatings from 'react-star-ratings';
 import ErrorMessage from '../../components/Common/ErrorMessage';
 
 //Import Product Images
-import img4 from "../../assets/images/product/img-4.png";
-import img6 from "../../assets/images/product/img-6.png";
-import img7 from "../../assets/images/product/img-7.png";
-import img8 from "../../assets/images/product/img-8.png";
 import avatar2 from "../../assets/images/users/avatar-2.jpg";
 import avatar4 from "../../assets/images/users/avatar-4.jpg";
 import avatar5 from "../../assets/images/users/avatar-5.jpg";
@@ -43,11 +39,6 @@ const StoreProductDetail = props => {
                 ]
             },
             { id: 3, img: "Null", name: "Neal", description: "Everyone realizes why a new common language would be desirable.", date: "05 Oct, 2019" },
-        ],
-        recentProducts: [
-            { id: 1, img: img7, name: "Wirless Headphone", link: "", rating: 4, oldPrice: 240, newPrice: 225 },
-            { id: 2, img: img4, name: "Phone patterned cases", link: "", rating: 3, oldPrice: 150, newPrice: 145 },
-            { id: 3, img: img6, name: "Phone Dark Patterned cases", link: "", rating: 4, oldPrice: 138, newPrice: 135 },
         ],
         activeTab: '1',
         metaTagHolder: ''

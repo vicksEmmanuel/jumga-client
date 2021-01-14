@@ -15,7 +15,9 @@ const CONSTANTS = {
         SEARCHPRODUCT: 'jumgaOnSearch',
         GETPRODUCTS: 'jumgaGetProductList',
         GETPRODUCT: 'jumgaGetProduct',
-        STORESTAT: 'jumgaStoreStatistics'
+        STORESTAT: 'jumgaStoreStatistics',
+        GETORDERS: 'jumgaGetOrder',
+        GETCUSTOMERS: 'jumgaGetCustomers'
     }
 }
 export default CONSTANTS;

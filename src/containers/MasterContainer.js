@@ -120,6 +120,38 @@ class MasterContainer extends Container {
       }
     }
 
+    getCustomers = async (searchDetails = {
+      storeId: '',
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETCUSTOMERS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    getOrders = async (searchDetails = {
+      storeId: '',
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETORDERS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
     getProduct = async (searchDetails = {
       id: '',
     }) => {

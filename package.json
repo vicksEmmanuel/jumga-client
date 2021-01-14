@@ -66,6 +66,7 @@
     "react-jvectormap": "^0.0.16",
     "react-lazy-load-image-component": "^1.5.0",
     "react-leaflet": "^2.7.0",
+    "react-lottie": "^1.2.3",
     "react-modal-video": "^1.2.3",
     "react-perfect-scrollbar": "^1.5.8",
     "react-rangeslider": "^2.2.0",
