@@ -23,6 +23,10 @@ class UserContainer extends Container {
             user: null,
             stores: [],
             storeLoaded: false,
+            noOfProducts: null,
+            delivery: {},
+            series: [],
+            noOfOrders: null
         }
 
         if (firebaseConfig) {
@@ -93,6 +97,42 @@ class UserContainer extends Container {
                }
         });
     }
+    
+    getStoreStatistics = async (storeId) => {
+        try {
+            const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.STORESTAT);
+            const response = await callable({storeId});
+
+            let newDate = new Date();
+            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+            let getYear = newDate.getFullYear();
+
+            const { statistics } = response.data;
+            console.log(statistics);
+
+            let ordersPerMonth = months.map(id => {
+                return statistics?.numOfOrdersPerMonth[`${getYear}`][`${id.toLowerCase()}`]
+            });
+
+            let revenuePerMonth = months.map(id => {
+                return statistics?.revenuePerMonth[`${getYear}`][`${id.toLowerCase()}`]
+            })
+
+            this.setState({
+                delivery: statistics?.deliveryGuy,
+                series: [
+                    {name: 'Orders', data: ordersPerMonth},
+                    {name: 'Sales', data: revenuePerMonth}
+                ],
+                noOfOrders: statistics?.numberOfOrders
+            })
+
+            return response.data;
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
 
     createProduct = async ({
         images = [],
@@ -366,6 +406,17 @@ class UserContainer extends Container {
             if (docSnapShot.empty) callback();
         });
 
+    }
+
+    getNumofProductsOfAParticularStore = async (storeId) => {
+        const doc = firebase.firestore().collection(CONSTANTS.SCHEMA.PRODUCTS);
+        const docRef = doc.where('storeId', '==', storeId);
+        const docQuin = await docRef.get();
+        this.setState({
+            ...this.state,
+            noOfProducts: docQuin.size
+        })
+        return docQuin.size;  
     }
 
     signIn = async ({

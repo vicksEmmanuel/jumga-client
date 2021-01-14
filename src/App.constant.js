@@ -7,13 +7,15 @@ const CONSTANTS = {
         CATEGORIES: 'categories',
         STORES: 'stores',
         PRODUCTS: 'products',
-        CART: 'carts'
+        CART: 'carts',
+        ORDER: 'orders'
     },
     FUNCNTIONS: {
         PROCESSPAYMENT: 'flutterwaveProcessPayment',
         SEARCHPRODUCT: 'jumgaOnSearch',
         GETPRODUCTS: 'jumgaGetProductList',
         GETPRODUCT: 'jumgaGetProduct',
+        STORESTAT: 'jumgaStoreStatistics'
     }
 }
 export default CONSTANTS;

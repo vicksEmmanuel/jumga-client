@@ -235,8 +235,8 @@ const StoreProducts = props => {
                                         <Row>
                                             <Col md="12">
                                                 <Card>
-                                                <CardBody>
-                                                    <h4 className="mt-1 mb-3 text-center">No Poducts as been added</h4>
+                                                <CardBody align="center">
+                                                    <h4 className="mt-1 mb-3 text-center">Wait a while ...</h4>
                                                 </CardBody>
                                             </Card>
                                             </Col>

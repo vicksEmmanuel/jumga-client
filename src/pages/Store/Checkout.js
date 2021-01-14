@@ -87,6 +87,7 @@ const Checkout = props => {
 
     const trackPayment = () => {
         props.userStore.trackPaymentForGoods(() => {
+            props.masterStore.setState({...props.masterStore.state, cart: []});
             props.history.push('/history');
         });
     }
