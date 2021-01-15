@@ -152,6 +152,22 @@ class MasterContainer extends Container {
       }
     }
 
+    getHistory = async (searchDetails = {
+      email: '',
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETHISTORY);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
     getProduct = async (searchDetails = {
       id: '',
     }) => {

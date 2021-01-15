@@ -61,7 +61,11 @@ const ProfileMenu = (props) => {
                     </DropdownToggle>
                     <DropdownMenu right>
                         <DropdownItem tag="a"  href="/profile"> <i className="bx bx-user font-size-16 align-middle mr-1"></i>{props.t('Profile')}  </DropdownItem>
-                        <DropdownItem tag="a" href="#"><span className="badge badge-success float-right">11</span><i className="mdi mdi-settings font-size-17 align-middle mr-1"></i>{props.t('Settings')}</DropdownItem>
+                        <DropdownItem tag="a" href="/history">
+                            <Link to={"/history"}>
+                                <i className="mdi mdi-settings font-size-17 align-middle mr-1"></i>{props.t('History')}
+                            </Link>
+                        </DropdownItem>
                         <div className="dropdown-divider"></div>
                         <Link to="/logout" onClick={logOut} className="dropdown-item">
                             <i className="bx bx-power-off font-size-16 align-middle mr-1 text-danger"></i>

@@ -4,7 +4,7 @@ import { Container, Row, Col, Button, Card, CardBody, CardTitle, Modal, ModalHea
 import Lottie from 'react-lottie';
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
-import * as animationData from '../../assets/images/36196-fruit-basket -grey.json';
+import * as animationData from '../../assets/images/9644-delivery-riding.json';
 import svg from '../../svgs';
 import logo from '../../assets/images/jumga basket logo.png';
 import "./home.scss";

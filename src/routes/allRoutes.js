@@ -1,7 +1,6 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
 
-import Home from "../pages/Home/Home";
 import Login from "../pages/Authentication/Login";
 import Create from "../pages/Authentication/Create";
 import StoreCheckout from "../pages/Store/store-checkout";
@@ -16,20 +15,43 @@ import GeneralStoreProducts from "../pages/Store/GeneralStoreProducts";
 import Cart from "../pages/Store/Cart";
 import Checkout from "../pages/Store/Checkout";
 import LoginX from "../pages/Authentication/LoginX";
+import LoginAdmin from "../pages/Authentication/LoginAdmin";
+import LoginDelivery from "../pages/Authentication/LoginDelivery";
 import CreateX from "../pages/Authentication/CreateX";
 import Overview from "../pages/Store/Overview";
 import StoreCustomers from "../pages/Store/StoreCustomers";
+import UserHistory from "../pages/Store/History";
 import StoreOrders from "../pages/Store/StoreOrders";
 
+import Home from "../pages/Home/Home";
+import StoreHome from "../pages/Store/Home";
+import DeliveryHome from "../pages/Delivery/DeliveryHome";
+
+// import DeliveryOverview from '../pages/Delivery/DeliveryOverview';
+// import DeliveryOrders from '../pages/Delivery/DeliveryOrders';
+
+
+// import AdminOverview from "../pages/Admin/Overview";
+// import AdminAddDelivery from "../pages/Admin";
+// import AdminUsers from "../pages/Admin";
+// import AdminAddCategories from "../pages/Admin";
+// import AdminOrders from '../pages/Admin';
+// import AdminProducts from '../pages/Admin';
 
 const userRoutes = [
 	{ path: "/store/:id", component: ComingSoon},
-	{ path: "/search/:id", component: GeneralStoreProducts}, //TODO:
-	{ path: "/search/", component: GeneralStoreProducts}, //TODO:
+	{ path: "/search/:id", component: GeneralStoreProducts},
+	{ path: "/search/", component: GeneralStoreProducts},
 	{ path: "/categories/:id", component: ComingSoon}, //TODO:
-	{ path: "/cart", component: Cart}, //TODO: View product in cart
-	{ path: "/checkout", component: Checkout}, //TODO:
-	{ path: "/:productId", component: StoreProductDetails}, //TODO: //View a particular product
+	{ path: "/cart", component: Cart},
+	{ path: "/checkout", component: Checkout},
+	//Home
+	{ path: "/store", component: StoreHome }, //TODO:
+	{ path: "/delivery", component: DeliveryHome},
+	{ path: "/history", component: UserHistory}, //TODO:
+	{ path: "/:productId", component: StoreProductDetails},
+
+	
 	{ path: "/", exact: true, component: Home } //TODO:
 ];
 
@@ -42,11 +64,27 @@ const storeAuthRoutes = [
 	{ path: "/store/front/:id/analysis", component: ComingSoon}, //TODO: 
 	{ path: "/store/front/:id/account", component: ComingSoon}, //TODO: 
 	{ path: "/store/front/:id/settings", component: ComingSoon}, //TODO: 
-	{ path: "/store/front/:id/customers", component: StoreCustomers},  //TODO: 
-	{ path: "/store/front/:id/orders", component: StoreOrders}, //TODO: 
-	{ path: "/store/front/:id/add-products", component: StoreAddProduct}, //Add product
-	{ path: "/store/front/:id/products", component: StoreProducts},  //TODO: //View all product
-	{ path: "/store/front/:id", component: StoreDetails}, //Home
+	{ path: "/store/front/:id/customers", component: StoreCustomers},
+	{ path: "/store/front/:id/orders", component: StoreOrders},
+	{ path: "/store/front/:id/add-products", component: StoreAddProduct},
+	{ path: "/store/front/:id/products", component: StoreProducts},
+	{ path: "/store/front/:id", component: StoreDetails},
+];
+
+const adminAuthRoutes = [
+	{ path: "/admin/overview", component: ComingSoon}, //AdminOverview}, //TODO:
+	{ path: "/admin/add-delivery", component: ComingSoon},//AdminAddDelivery}, //TODO:
+	{ path: "/admin/analysis", component: ComingSoon}, //TODO: 
+	{ path: "/admin/users", component: ComingSoon},//AdminUsers}, //TODO:
+	{ path: "/admin/add-categories", component: ComingSoon},//AdminAddCategories}, //TODO:
+	{ path: "/admin/order", component: ComingSoon},//AdminOrders}, //TODO:
+	{ path: "/admin/products", component: ComingSoon}//AdminProducts}, //TODO:
+];
+
+const deliveryAuthRoutes = [
+	{ path: "/delivery/overview", component: ComingSoon},//DeliveryOverview}, //TODO:
+	{ path: "/delivery/account", component: ComingSoon}, //TODO: 
+	{ path: "/delivery/orders", component: ComingSoon}//DeliveryOrders}, //TODO:
 ];
 
 const authRoutes = [
@@ -59,11 +97,8 @@ const authRoutes = [
 const userAuthRoutes = [
 	{ path: "/login", component: LoginX },
 	{ path: "/register", component: CreateX},
+	{ path: "/admin/login", component: LoginAdmin},
+	{ path: "/delivery/login", component: LoginDelivery}
 ];
-
-const jumgaAdmminRoutes = [
-	{ path: "/dispatch-rider-display" },
-	{ path: "/categories"}
-]
 
 export { userRoutes, authRoutes, storeRoutes, storeAuthRoutes, userAuthRoutes };
