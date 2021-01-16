@@ -9,23 +9,111 @@ import stateWrapper from '../../containers/provider';
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 
-const UserHistory = props => {
 
+const ListOrder = props => {
+    const order = props.order;
+    const key = props.key;
+    const [state, setState] = useState({
+        notClicked: false,
+        order
+    });
+
+    const sendToDeliveryTeam = () => {
+        let x = state.order;
+        x.isSentToDeliveryTeam = true;
+        setState({...state, notClicked: true, order: x});
+        props.sendToDeliveryTeam(order);
+    }
+
+    const delivered = () => {
+        let x = state.order;
+        x.isDelivered = true;
+        setState({...state, notClicked: true, order: x});
+        props.delivered(order);
+    }
+
+    const setButton = pop => {
+        return (
+            <>
+                {
+                    !pop.isSentToDeliveryTeam ? (
+                        <Button 
+                            type="button" 
+                            color="success" 
+                            className="btn-sm btn-rounded" 
+                            onClick={() => {
+                                sendToDeliveryTeam();
+                            }}
+                        >
+                            Send to Delivery Team
+                        </Button>
+                    ) : (<>{
+                        !pop.isDelivered ? (
+                            <Button 
+                                type="button" 
+                                color="success" 
+                                className="btn-sm btn-rounded" 
+                                onClick={async () => {
+                                    await delivered();
+                                }}
+                            >
+                                Delivered ?
+                            </Button>
+                        ) : <>Delivered!</>
+                    }</>)
+                }
+            </>
+        )
+    }
+
+    return (
+        <tr key={"_order_" + key}>
+            <td><Link to="#" className="text-body font-weight-bold">{order.id}</Link></td>
+            <td>{order.email}</td>
+            <td>
+                {moment(order.orderDate).format('MMM ddd, YY')}
+            </td>
+            <td>
+                ${order.totalCostOfSales}
+            </td>
+            <td>
+                <Badge 
+                    className={"font-size-12 badge-soft-" + order.isDelivered? order.refunded? 'danger':'success': 'warning'} 
+                    color={order.isDelivered? order.refunded? 'danger':'success': 'warning'} 
+                    pill
+                >{order.isDelivered? order.refunded? 'Refunded':'Delivered': 'Not Delivered'}
+                </Badge>
+            </td>
+            <td>
+                <Button 
+                    type="button" 
+                    color="primary" 
+                    className="btn-sm btn-rounded" 
+                    onClick={() => {props.togglemodal(order)}}
+                >
+                    View Details
+                </Button>
+            </td>
+            <td>
+                {setButton(state.order)}
+            </td>
+        </tr>
+    )
+}
+
+const AdminOrders = props => {
+
+    const [isLoading, setLoading] = useState(true);
     useEffect(() => {
-        if (!_.isNull(props.userStore.state.user)) {
-            loadData();
-            setState({
-                ...state, isLoading: false
-            });
+        if(!_.isNull(props.userStore.state.user)) {
+            if (props.userStore.state.user?.userType !== 'Admin') return props.history.push('/');
+            setLoading(false);
         }
     }, [props.userStore.state.user]);
 
-    const loadData = () => {
+    useEffect(() => {
         (async () => {
-            console.log(props.userStore.state.user)
-            let result = await props.masterStore.getHistory({
-                email:  props.userStore.state.user?.email
-            });
+            let result = await props.masterStore.adminGetOrders({});
 
             if (_.isEmpty(result) || _.isUndefined(result)) {
                 setOrders([]);
@@ -38,7 +126,7 @@ const UserHistory = props => {
                 console.log("Properties of this component", props);
             }
         })();
-    }
+    }, []);
 
     const [state, setState] = useState({
         isLoading: true,
@@ -48,8 +136,8 @@ const UserHistory = props => {
 
     useEffect(() => {
         setTimeout(() => {
-            if (state.isLoading && _.isNull(props.userStore.state.user)) props.history.push('/');
-        }, 10000)
+            setState({...state, isLoading: false})
+        }, 3000)
     }, [])
 
      
@@ -68,12 +156,11 @@ const UserHistory = props => {
 
     const getPage = async (page) => {
         let options = {
-            email: props.userStore.state.user.email, //If the value is '' it would return all the products
             startAt: page * pageTracker.limit,
             limit: pageTracker.limit,
         }
 
-        let result = await props.masterStore.getOrders(options);
+        let result = await props.masterStore.adminGetOrders(options);
 
         if (_.isEmpty(result) || _.isUndefined(result)) {
             setOrders([])
@@ -170,7 +257,7 @@ const UserHistory = props => {
                     <>
                         <div className="page-content">
                             <Container fluid>
-                                <Breadcrumbs title="History" breadcrumbItem="" />
+                                <Breadcrumbs title="Orders" breadcrumbItem="" />
                                 <Row>
                                     <Col xs="12">
                                         <Card>
@@ -191,44 +278,23 @@ const UserHistory = props => {
                                                         <thead className="thead-light">
                                                             <tr>
                                                                 <th>Order ID</th>
-                                                                <th>Store</th>
+                                                                <th>Billing Email</th>
                                                                 <th>Date</th>
                                                                 <th>Sub Total</th>
                                                                 <th>Delivery Status</th>
                                                                 <th>View Details</th>
+                                                                <th>Action</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             {
                                                                 orders.map((order, key) =>
-                                                                    <tr key={"_order_" + key}>
-                                                                        <td><Link to="#" className="text-body font-weight-bold">{order.id}</Link></td>
-                                                                        <td><Link to={`/store/${order.storeId}`} className="text-body font-weight-bold">{order.storeId}</Link></td>
-                                                                        <td>
-                                                                            {moment(order.orderDate).format('MMM ddd, YY')}
-                                                                        </td>
-                                                                        <td>
-                                                                            ${order.total}
-                                                                        </td>
-                                                                        <td>
-                                                                            <Badge 
-                                                                                className={"font-size-12 badge-soft-" + order.isDelivered? order.refunded? 'danger':'success': 'warning'} 
-                                                                                color={order.isDelivered? order.refunded? 'danger':'success': 'warning'} 
-                                                                                pill
-                                                                            >{order.isDelivered? order.refunded? 'Refunded':'Delivered': 'Not Delivered'}
-                                                                            </Badge>
-                                                                        </td>
-                                                                        <td>
-                                                                            <Button 
-                                                                                type="button" 
-                                                                                color="primary" 
-                                                                                className="btn-sm btn-rounded" 
-                                                                                onClick={() => {togglemodal(order)}}
-                                                                            >
-                                                                                View Details
-                                                                            </Button>
-                                                                        </td>
-                                                                    </tr>
+                                                                    <ListOrder 
+                                                                        sendToDeliveryTeam={props.masterStore.sendToDeliveryTeam} 
+                                                                        order={order} key={key} 
+                                                                        togglemodal={togglemodal} 
+                                                                        delivered={props.masterStore.delivered}
+                                                                    />
                                                                 )
                                                             }
 
@@ -271,18 +337,29 @@ const UserHistory = props => {
                                                     </th>
                                                     <td>
                                                         <div>
-                                                            <h5 className="text-truncate font-size-14">{state.currentOrderInModal?.productname} (Black)</h5>
+                                                            <h5 className="text-truncate font-size-14">
+                                                            {state.currentOrderInModal?.productname} &nbsp;
+                                                                <>
+                                                                    {
+                                                                        state.currentOrderInModal?.variation ? (
+                                                                            <>
+                                                                                {state.currentOrderInModal?.variation?.key} :   ({state.currentOrderInModal?.variation?.value})
+                                                                            </>
+                                                                        ) : (<></>)
+                                                                    }
+                                                                </>
+                                                            </h5>
                                                             <p className="text-muted mb-0">$ {state.currentOrderInModal?.currentprice} x {state.currentOrderInModal?.quantity}</p>
                                                         </div>
                                                     </td>
-                                                    <td>$ {state.currentOrderInModal?.total}</td>
+                                                    <td>$ {state.currentOrderInModal?.totalCostOfSales}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="2">
                                                         <h6 className="m-0 text-right">Sub Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {state.currentOrderInModal?.total}
+                                                        $ {state.currentOrderInModal?.totalCostOfSales}
                                                         </td>
                                                 </tr>
                                                 <tr>
@@ -290,7 +367,7 @@ const UserHistory = props => {
                                                         <h6 className="m-0 text-right">Shipping:</h6>
                                                     </td>
                                                     <td>
-                                                        { (state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity) <= 0 ? 'Free' : `$ ${state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity}`}
+                                                        { state.currentOrderInModal?.totalCostOfDelivery <= 0 ? 'Free' : `$ ${state.currentOrderInModal?.totalCostOfDelivery}`}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -298,8 +375,8 @@ const UserHistory = props => {
                                                         <h6 className="m-0 text-right">Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {Number(state.currentOrderInModal?.total) + Number((state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity))}
-                                                    </td>
+                                                        $ {Number(state.currentOrderInModal?.totalCostOfSales) + Number(state.currentOrderInModal?.totalCostOfDelivery)}
+                                                        </td>
                                                 </tr>
                                             </tbody>
                                            )}
@@ -318,4 +395,4 @@ const UserHistory = props => {
     );
 }
 
-export default withRouter(withTranslation()(stateWrapper(UserHistory)));
+export default withRouter(withTranslation()(stateWrapper(AdminOrders)));

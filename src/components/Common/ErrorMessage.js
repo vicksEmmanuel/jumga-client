@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Col, CardBody, Card, Alert,Container, Label } from "reactstrap";
+import React from 'react';
 import "./errormsg.scss";
 
 

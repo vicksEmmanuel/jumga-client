@@ -11,65 +11,46 @@ import { withTranslation } from 'react-i18next';
 
 const StoreOrders = props => {
 
-    const storeId = props.match.params?.id;
-    useEffect(() => {
-        if (!props.userStore.state.storeLoaded) return;
-        const checkifApproved = (storeId) => {
-            let checkApproval = props.userStore.state.stores.filter(item => {
-                return item.storeId == storeId && item.approved == true
-            });
+    const [isLoading, setLoading] = useState(true);
 
-            if (checkApproval.length > 0) return true;
-            return false;
+    useEffect(() => {
+        if(!_.isNull(props.userStore.state.user)) {
+            if (props.userStore.state.user?.userType !== 'Dispatcher') return props.history.push('/');
         }
-        if (!checkifApproved(storeId)) props.history.push(`/store/get-approved/${storeId}`);
-        setState({...state, isLoading: false});
-    }, [props.userStore.state.storeLoaded, props.userStore.state.stores])
+    }, [props.userStore.state.user]);
 
-    useEffect(() => {
-        props.userStore.trackApproval(storeId, (result) => {
-            if (_.isUndefined(result)) return;
-            if (result.approved == false) {
-               (async () => {
-                if (_.isNull(props.userStore.state.user)) return;
-                await props.userStore.getUserStore();
-                props.history.push(`/store/get-approved/${storeId}`);
-               })();
-            }
-        });
-    }, []);
 
     useEffect(() => {
         (async () => {
-            let result = await props.masterStore.getOrders({
-                storeId: storeId
-            });
-
-            if (_.isEmpty(result) || _.isUndefined(result)) {
-                setOrders([]);
-                setTotalSize(0);
-                return;
-            } else {
-                setOrders(result.data)
-                setTotalSize(result?.totalSize);
-                console.log(result);
-                console.log("Properties of this component", props);
-            }
+           try {
+                if (!_.isNull(props.userStore.state.user)) {
+                    let result = await props.masterStore.deliveryGetOrders({
+                        email: props.userStore.state.user?.email
+                    });
+    
+                    if (_.isEmpty(result) || _.isUndefined(result)) {
+                        setOrders([]);
+                        setLoading(false)
+                        setTotalSize(0);
+                        return;
+                    } else {
+                        setOrders(result.data)
+                        setTotalSize(result?.totalSize);
+                        setLoading(false)
+                        console.log(result);
+                        console.log("Properties of this component", props);
+                    }
+                }
+           } catch(e) {
+            console.log("Error is here", e)
+           }
         })();
-    }, []);
+    }, [props.userStore.state.user]);
 
     const [state, setState] = useState({
-        isLoading: true,
         currentOrderInModal: {},
         modal: false,
     });
-
-    useEffect(() => {
-        setTimeout(() => {
-            setState({...state, isLoading: false})
-        }, 3000)
-    }, [])
-
      
     let [pageTracker, setPageTracker] = useState({
         limit: 10,
@@ -86,12 +67,12 @@ const StoreOrders = props => {
 
     const getPage = async (page) => {
         let options = {
-            id: storeId, //If the value is '' it would return all the products
+            email: props.userStore.state.user?.email, //If the value is '' it would return all the products
             startAt: page * pageTracker.limit,
             limit: pageTracker.limit,
         }
 
-        let result = await props.masterStore.getOrders(options);
+        let result = await props.masterStore.deliveryGetOrders(options);
 
         if (_.isEmpty(result) || _.isUndefined(result)) {
             setOrders([])
@@ -178,7 +159,7 @@ const StoreOrders = props => {
     return (
         <React.Fragment>
             {
-                 state.isLoading ? (
+                 isLoading ? (
                     <div style={{position: 'fixed', top: '0%', width: '100%', height: '100%', left: '0%', zIndex: 5000, backgroundColor: 'rgba(0,0,0,0.4)'}}>
                         <div style={{position: 'relative', top: '45%', left: '43%'}}>
                             <div className="lds-ring-x"><div></div><div></div><div></div><div></div></div>
@@ -188,7 +169,7 @@ const StoreOrders = props => {
                     <>
                         <div className="page-content">
                             <Container fluid>
-                                <Breadcrumbs title={storeId} breadcrumbItem="Orders" />
+                                <Breadcrumbs title={props.userStore.state.user?.email} breadcrumbItem="Orders" />
                                 <Row>
                                     <Col xs="12">
                                         <Card>
@@ -209,7 +190,7 @@ const StoreOrders = props => {
                                                         <thead className="thead-light">
                                                             <tr>
                                                                 <th>Order ID</th>
-                                                                <th>Billing Email</th>
+                                                                <th>Store</th>
                                                                 <th>Date</th>
                                                                 <th>Sub Total</th>
                                                                 <th>Delivery Status</th>
@@ -221,7 +202,7 @@ const StoreOrders = props => {
                                                                 orders.map((order, key) =>
                                                                     <tr key={"_order_" + key}>
                                                                         <td><Link to="#" className="text-body font-weight-bold">{order.id}</Link></td>
-                                                                        <td>{order.email}</td>
+                                                                        <td>{order.storeId}</td>
                                                                         <td>
                                                                             {moment(order.orderDate).format('MMM ddd, YY')}
                                                                         </td>
@@ -268,7 +249,7 @@ const StoreOrders = props => {
                                     </ModalHeader >
                                 <ModalBody>
                                     <p className="mb-2">Product id: <span className="text-primary">{state.currentOrderInModal?.id}</span></p>
-                                    <p className="mb-4">Billing Email: <span className="text-primary">{state.currentOrderInModal?.email}</span></p>
+                                    <p className="mb-4">Store: <span className="text-primary">{state.currentOrderInModal?.storeId}</span></p>
 
                                     <div className="table-responsive">
                                         <Table className="table table-centered table-nowrap">

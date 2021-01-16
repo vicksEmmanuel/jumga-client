@@ -9,41 +9,19 @@ import stateWrapper from '../../containers/provider';
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 
-const StoreOrders = props => {
+const AdminDispatchers = props => {
 
-    const storeId = props.match.params?.id;
+    const [isLoading, setLoading] = useState(true);
     useEffect(() => {
-        if (!props.userStore.state.storeLoaded) return;
-        const checkifApproved = (storeId) => {
-            let checkApproval = props.userStore.state.stores.filter(item => {
-                return item.storeId == storeId && item.approved == true
-            });
-
-            if (checkApproval.length > 0) return true;
-            return false;
+        if(!_.isNull(props.userStore.state.user)) {
+            if (props.userStore.state.user?.userType !== 'Admin') return props.history.push('/');
+            setLoading(false);
         }
-        if (!checkifApproved(storeId)) props.history.push(`/store/get-approved/${storeId}`);
-        setState({...state, isLoading: false});
-    }, [props.userStore.state.storeLoaded, props.userStore.state.stores])
-
-    useEffect(() => {
-        props.userStore.trackApproval(storeId, (result) => {
-            if (_.isUndefined(result)) return;
-            if (result.approved == false) {
-               (async () => {
-                if (_.isNull(props.userStore.state.user)) return;
-                await props.userStore.getUserStore();
-                props.history.push(`/store/get-approved/${storeId}`);
-               })();
-            }
-        });
-    }, []);
+    }, [props.userStore.state.user]);
 
     useEffect(() => {
         (async () => {
-            let result = await props.masterStore.getOrders({
-                storeId: storeId
-            });
+            let result = await props.masterStore.adminGetDispatchers({});
 
             if (_.isEmpty(result) || _.isUndefined(result)) {
                 setOrders([]);
@@ -86,12 +64,11 @@ const StoreOrders = props => {
 
     const getPage = async (page) => {
         let options = {
-            id: storeId, //If the value is '' it would return all the products
             startAt: page * pageTracker.limit,
             limit: pageTracker.limit,
         }
 
-        let result = await props.masterStore.getOrders(options);
+        let result = await props.masterStore.adminGetDispatchers(options);
 
         if (_.isEmpty(result) || _.isUndefined(result)) {
             setOrders([])
@@ -175,6 +152,7 @@ const StoreOrders = props => {
         });
     }
 
+
     return (
         <React.Fragment>
             {
@@ -188,7 +166,7 @@ const StoreOrders = props => {
                     <>
                         <div className="page-content">
                             <Container fluid>
-                                <Breadcrumbs title={storeId} breadcrumbItem="Orders" />
+                                <Breadcrumbs title={'Dispatchers'} breadcrumbItem="" />
                                 <Row>
                                     <Col xs="12">
                                         <Card>
@@ -208,11 +186,11 @@ const StoreOrders = props => {
                                                     <Table className="table table-centered table-nowrap">
                                                         <thead className="thead-light">
                                                             <tr>
-                                                                <th>Order ID</th>
-                                                                <th>Billing Email</th>
-                                                                <th>Date</th>
-                                                                <th>Sub Total</th>
-                                                                <th>Delivery Status</th>
+                                                                <th>Dispatcher ID</th>
+                                                                <th>Email</th>
+                                                                <th>Phone</th>
+                                                                <th>Revenue</th>
+                                                                <th>Withdrawals</th>
                                                                 <th>View Details</th>
                                                             </tr>
                                                         </thead>
@@ -222,19 +200,12 @@ const StoreOrders = props => {
                                                                     <tr key={"_order_" + key}>
                                                                         <td><Link to="#" className="text-body font-weight-bold">{order.id}</Link></td>
                                                                         <td>{order.email}</td>
+                                                                        <td>{order.phoneNumber}</td>
                                                                         <td>
-                                                                            {moment(order.orderDate).format('MMM ddd, YY')}
+                                                                            ${order?.walletBalance}
                                                                         </td>
                                                                         <td>
-                                                                            ${order.totalCostOfSales}
-                                                                        </td>
-                                                                        <td>
-                                                                            <Badge 
-                                                                                className={"font-size-12 badge-soft-" + order.isDelivered? order.refunded? 'danger':'success': 'warning'} 
-                                                                                color={order.isDelivered? order.refunded? 'danger':'success': 'warning'} 
-                                                                                pill
-                                                                            >{order.isDelivered? order.refunded? 'Refunded':'Delivered': 'Not Delivered'}
-                                                                            </Badge>
+                                                                            ${order?.withdrawals}
                                                                         </td>
                                                                         <td>
                                                                             <Button 
@@ -267,16 +238,16 @@ const StoreOrders = props => {
                                     Order Details
                                     </ModalHeader >
                                 <ModalBody>
-                                    <p className="mb-2">Product id: <span className="text-primary">{state.currentOrderInModal?.id}</span></p>
-                                    <p className="mb-4">Billing Email: <span className="text-primary">{state.currentOrderInModal?.email}</span></p>
+                                    <p className="mb-2">Dispatcher id: <span className="text-primary">{state.currentOrderInModal?.id}</span></p>
+                                    <p className="mb-4">Email: <span className="text-primary">{state.currentOrderInModal?.email}</span></p>
 
                                     <div className="table-responsive">
                                         <Table className="table table-centered table-nowrap">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">Product</th>
-                                                    <th scope="col">Product Name</th>
-                                                    <th scope="col">Price</th>
+                                                    <th scope="col">Image</th>
+                                                    <th scope="col">Number of Stores In-Charge</th>
+                                                    <th scope="col">Revenue</th>
                                                 </tr>
                                             </thead>
                                            {_.isEmpty(state.currentOrderInModal) ? <></> : (
@@ -284,39 +255,30 @@ const StoreOrders = props => {
                                                 <tr>
                                                     <th scope="row">
                                                         <div>
-                                                            <img src={state.currentOrderInModal?.images[0]} alt="" className="avatar-sm" />
+                                                            <img src={state.currentOrderInModal?.imageUrl} alt="" className="avatar-sm" />
                                                         </div>
                                                     </th>
                                                     <td>
                                                         <div>
-                                                            <h5 className="text-truncate font-size-14">{state.currentOrderInModal?.productname} (Black)</h5>
-                                                            <p className="text-muted mb-0">$ {state.currentOrderInModal?.currentprice} x {state.currentOrderInModal?.quantity}</p>
+                                                            <h5 className="text-truncate font-size-14">{state.currentOrderInModal?.numOfStores}</h5>
                                                         </div>
                                                     </td>
-                                                    <td>$ {state.currentOrderInModal?.totalCostOfSales}</td>
+                                                    <td>$ {state.currentOrderInModal?.walletBalance}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="2">
-                                                        <h6 className="m-0 text-right">Sub Total:</h6>
+                                                        <h6 className="m-0 text-right">Withdrawn Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {state.currentOrderInModal?.totalCostOfSales}
+                                                        $ {state.currentOrderInModal?.withdrawals}
                                                         </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <h6 className="m-0 text-right">Shipping:</h6>
-                                                    </td>
-                                                    <td>
-                                                        { state.currentOrderInModal?.totalCostOfDelivery <= 0 ? 'Free' : `$ ${state.currentOrderInModal?.totalCostOfDelivery}`}
-                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="2">
                                                         <h6 className="m-0 text-right">Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {Number(state.currentOrderInModal?.totalCostOfSales) + Number(state.currentOrderInModal?.totalCostOfDelivery)}
+                                                        $ {Number(state.currentOrderInModal?.walletBalance) + Number(state.currentOrderInModal?.withdrawals) }
                                                         </td>
                                                 </tr>
                                             </tbody>
@@ -336,4 +298,4 @@ const StoreOrders = props => {
     );
 }
 
-export default withRouter(withTranslation()(stateWrapper(StoreOrders)));
+export default withRouter(withTranslation()(stateWrapper(AdminDispatchers)));

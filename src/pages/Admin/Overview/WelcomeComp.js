@@ -4,12 +4,21 @@ import { Row, Col, Card, CardBody } from "reactstrap";
 import stateWrapper from '../../../containers/provider';
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+import wNumb from 'wnumb';
 import * as _ from 'lodash';
-import avatar1 from "../../../assets/images/users/avatar-1.jpg";
-import profileImg from "../../../assets/images/profile-img.png";
 
 const WelcomeComp = props => {
     const [state, setState] = useState({});
+
+    const formatNumber = (number) => {
+        var formatter = wNumb({
+            mark: '.',
+            thousand: ',',
+            prefix: '',
+            suffix: ''
+        });
+        return formatter.to(number);
+    }
 
     return (
         <React.Fragment>
@@ -19,7 +28,7 @@ const WelcomeComp = props => {
                         <Col xs="7">
                             <div className="text-primary p-3">
                                 <h5 className="text-primary">Welcome Back !</h5>
-                                <p>{props.storeId}</p>
+                                <p>Jumga</p>
                             </div>
                         </Col>
                     </Row>
@@ -47,21 +56,19 @@ const WelcomeComp = props => {
                                 }
                             </div>
                             <h5 className="font-size-15 text-truncate">{props.userStore.state.user?.username}</h5>
-                            <p className="text-muted mb-0 text-truncate">Store Owner</p>
+                            <p className="text-muted mb-0 text-truncate">Admin</p>
                         </Col>
 
                         <Col sm="8">
                             <div className="pt-4">
                                 <Row>
                                     <Col xs="6">
-                                        <h5 className="font-size-15">{props.userStore.state.noOfProducts}</h5>
+                                        <h5 className="font-size-15">{formatNumber(props.userStore.state.admin?.noOfProducts)}</h5>
                                         <p className="text-muted mb-0">Products</p>
                                     </Col>
                                     <Col xs="6">
                                         <h5 className="font-size-15">${
-                                            props.userStore.state.stores.filter(item => {
-                                                return item.storeId == props.storeId
-                                            })[0]?.walletBalance
+                                            props.userStore.state.admin?.walletBalance
                                         }</h5>
                                         <p className="text-muted mb-0">Revenue</p>
                                     </Col>

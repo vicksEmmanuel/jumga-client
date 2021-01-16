@@ -110,7 +110,7 @@ import "./home.scss";
                                     <Row>
                                         <Col lg="12">
                                             <div className="page-title-box d-flex align-items-center justify-content-between" style={{margin: 0, padding: 0}}>
-                                                <div className="mb-0" style={{fontSize: '20px', lineHeight: '32px', fontWeight: '700', zIndex: 400, color: '#0f1c70'}}>{props.t("Buy anything, anytime, anywhere")}</div>
+                                                <div className="mb-0" style={{fontSize: '20px', lineHeight: '32px', fontWeight: '700', zIndex: 400, color: '#0f1c70'}}>{props.t("Sell anything, anytime, anywhere")}</div>
                                             </div>
                                             <div style={{position: 'relative', top: '-35%', opacity: 0.9, left: '-50px', height: 150}} align="left">
                                                 <svg.zigzag width="200px" height="200px"/>

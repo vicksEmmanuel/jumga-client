@@ -8,6 +8,7 @@ import "firebase/firestore";
 import "firebase/functions";
 import "firebase/storage";
 import "firebase/remote-config";
+import moment from 'moment';
 
 import { Container } from "unstated";
 import axios from 'axios';
@@ -26,7 +27,15 @@ class UserContainer extends Container {
             noOfProducts: null,
             delivery: {},
             series: [],
-            noOfOrders: null
+            noOfOrders: null,
+            admin: {
+                noOfProducts: null,
+                series: [],
+                noOfOrders: null,
+                walletBalance: 0,
+                pendingBalance: 0,
+                noOfUsers: 0
+            }
         }
 
         if (firebaseConfig) {
@@ -97,11 +106,89 @@ class UserContainer extends Container {
                }
         });
     }
+
+    getAdminStatistics = async () => {
+        try {
+            const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.ADMINSTAT);
+            const response = await callable({email: this.state.user?.email});
+
+            let newDate = new Date();
+            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+            let getYear = newDate.getFullYear();
+
+            const { statistics } = response.data;
+
+            let ordersPerMonth = months.map(id => {
+                return statistics?.numOfOrdersPerMonth[`${getYear}`][`${id.toLowerCase()}`]
+            });
+
+            let revenuePerMonth = months.map(id => {
+                return statistics?.revenuePerMonth[`${getYear}`][`${id.toLowerCase()}`]
+            });
+
+            let usersPerMonth = months.map(id => {
+                return statistics?.usersPerMonth[`${getYear}`][`${id.toLowerCase()}`]
+            });
+
+            this.setState({
+                admin: {
+                    series: [
+                        {name: 'Orders', data: ordersPerMonth},
+                        {name: 'Sales', data: revenuePerMonth},
+                        {name: 'Users', data: usersPerMonth},
+                    ],
+                    noOfUsers: statistics?.numberOfUsers,
+                    noOfOrders: statistics?.numberOfOrders,
+                    noOfProducts: statistics?.numOfProducts,
+                    walletBalance: statistics?.walletBalance,
+                    pendingBalance: statistics?.pendingBalance
+                }
+            })
+
+            return response.data;
+        } catch(e) {
+            console.log(e);
+        }
+    }
     
     getStoreStatistics = async (storeId) => {
         try {
             const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.STORESTAT);
             const response = await callable({storeId});
+
+            let newDate = new Date();
+            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+            let getYear = newDate.getFullYear();
+
+            const { statistics } = response.data;
+
+            let ordersPerMonth = months.map(id => {
+                return statistics?.numOfOrdersPerMonth[`${getYear}`][`${id.toLowerCase()}`]
+            });
+
+            let revenuePerMonth = months.map(id => {
+                return statistics?.revenuePerMonth[`${getYear}`][`${id.toLowerCase()}`]
+            })
+
+            this.setState({
+                delivery: statistics?.deliveryGuy,
+                series: [
+                    {name: 'Orders', data: ordersPerMonth},
+                    {name: 'Sales', data: revenuePerMonth}
+                ],
+                noOfOrders: statistics?.numberOfOrders
+            })
+
+            return response.data;
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
+    getDispatcherStatistics = async (dispatcherId) => {
+        try {
+            const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.DELIVERYGETSTATISTICS);
+            const response = await callable({dispatcherId});
 
             let newDate = new Date();
             let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
@@ -169,7 +256,7 @@ class UserContainer extends Container {
                 storeId,
                 starRating: 0,
                 reviews: [],
-                createdAt: Date.now()
+                createdAt: firebase.firestore.Timestamp.fromDate(moment().toDate())
             });
             return id;
 
@@ -185,7 +272,7 @@ class UserContainer extends Container {
         userType,
         downloadURL,
         approved = false,
-        createdAt = Date.now(),
+        createdAt = firebase.firestore.Timestamp.fromDate(moment().toDate()),
         paymentDates = [],
         stores = []
     }, checkError = () => {}) => {
@@ -252,8 +339,8 @@ class UserContainer extends Container {
         approved = false,
         userEmail,
         dispatchRiders = null,
-        createdDate = Date.now(),
-        dateVisited = Date.now(),
+        createdDate = firebase.firestore.Timestamp.fromDate(moment().toDate()),
+        dateVisited = firebase.firestore.Timestamp.fromDate(moment().toDate()),
     }, props) => {
         const storeCollection = CONSTANTS.SCHEMA.STORES;
         const userCollection = CONSTANTS.SCHEMA.USER;
@@ -262,6 +349,10 @@ class UserContainer extends Container {
         const userData = await userDetailsRef.get();
         const storeData = await storeDetailsRef.get();
         if (storeData.exists) {
+            storeId = `${storeId}${Date.now()}`;
+        }
+
+        if (String(storeId) == 'admin' || String(storeId) == 'delivery' || String(storeId) == 'front' || String(storeId) == 'store') {
             storeId = `${storeId}${Date.now()}`;
         }
 

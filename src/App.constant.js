@@ -16,9 +16,19 @@ const CONSTANTS = {
         GETPRODUCTS: 'jumgaGetProductList',
         GETPRODUCT: 'jumgaGetProduct',
         STORESTAT: 'jumgaStoreStatistics',
+        GETSTOREPRODUCTS: 'jumgaGetStoreProducts',
+        GETCATEGORYPRODUCTS: 'jumgaGetCategories',
         GETORDERS: 'jumgaGetOrder',
         GETCUSTOMERS: 'jumgaGetCustomers',
         GETHISTORY: 'jumgaGetHistory',
+        ADMINSTAT: 'adminGetStatistics',
+        ADMINGETORDERS: 'adminGetOrder',
+        ADMINGETPRODUCTS: 'adminGetProductList',
+        ADMINGETSTORES: 'adminGetStores',
+        ADMINGETUSERS: 'adminGetUsers',
+        ADMINGETDISPATCHERS: 'adminGetDisptachRider',
+        DELIVERYGETORDERS: 'dispatchRidersGetOrder',
+        DELIVERYGETSTATISTICS: 'dispatchRidersGetStatistics',
     }
 }
 export default CONSTANTS;

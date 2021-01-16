@@ -3,13 +3,15 @@ import { Switch, BrowserRouter as Router,Route } from "react-router-dom";
 import { Provider, Subscribe } from "unstated";
 
 import allStores from './containers';
-import { userRoutes , authRoutes, storeRoutes, storeAuthRoutes, userAuthRoutes } from "./routes/allRoutes";
+import { userRoutes , authRoutes, storeRoutes, storeAuthRoutes, userAuthRoutes, adminAuthRoutes, deliveryAuthRoutes } from "./routes/allRoutes";
 import Authmiddleware from "./routes/middleware/Authmiddleware";
 import Storemiddleware from "./routes/middleware/Storemiddleware";
 import NonAuthmiddleware from "./routes/middleware/NonAuthMiddleware";
 import NonAuthLayout from './components/NonAuthLayout';
 import StoreLayout from './components/StoreLayout';
 import Layout from "./components/Layout";
+import AdminLayout from "./components/AdminLayout";
+import DispatcherLayout from "./components/DispatcherLayout";
 import UserLayout from "./components/UserLayout";
 
 import "./assets/scss/theme.scss";
@@ -46,6 +48,23 @@ class App extends Component{
 							component={route.component}
 							key={idx}
 							layout={NonAuthLayout}
+						/>
+					))}
+					{deliveryAuthRoutes.map((route, idx) => (
+						<StoreAuthmiddleware
+							path={route.path}
+							component={route.component}
+							key={idx}
+							layout={DispatcherLayout}
+						/>
+					))}
+
+					{adminAuthRoutes.map((route, idx) => (
+						<StoreAuthmiddleware
+							path={route.path}
+							component={route.component}
+							key={idx}
+							layout={AdminLayout}
 						/>
 					))}
 

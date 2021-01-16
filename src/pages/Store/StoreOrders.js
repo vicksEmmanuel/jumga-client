@@ -289,7 +289,18 @@ const StoreOrders = props => {
                                                     </th>
                                                     <td>
                                                         <div>
-                                                            <h5 className="text-truncate font-size-14">{state.currentOrderInModal?.productname} (Black)</h5>
+                                                            <h5 className="text-truncate font-size-14">
+                                                                {state.currentOrderInModal?.productname} &nbsp;
+                                                                <>
+                                                                    {
+                                                                        state.currentOrderInModal?.variation ? (
+                                                                            <>
+                                                                                {state.currentOrderInModal?.variation?.key} :   ({state.currentOrderInModal?.variation?.value})
+                                                                            </>
+                                                                        ) : (<></>)
+                                                                    }
+                                                                </>
+                                                            </h5>
                                                             <p className="text-muted mb-0">$ {state.currentOrderInModal?.currentprice} x {state.currentOrderInModal?.quantity}</p>
                                                         </div>
                                                     </td>

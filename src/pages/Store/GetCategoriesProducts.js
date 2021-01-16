@@ -35,7 +35,7 @@ const GeneralStoreProducts = props => {
 
     const loadData = () => {
         (async () => {
-            let result = await props.masterStore.searchForId({
+            let result = await props.masterStore.searchForCategoriesProducts({
                 id: searchId, //If the value is '' it would return all the products
             });
             console.log("Here ==", result);
@@ -76,7 +76,7 @@ const GeneralStoreProducts = props => {
             filterCustomerRating: state.filterCustomerRating,
         }
 
-        let result = await props.masterStore.searchForId(options);
+        let result = await props.masterStore.searchForCategoriesProducts(options);
 
         if (_.isEmpty(result) || _.isUndefined(result)) {
             setProducts([])
@@ -111,7 +111,7 @@ const GeneralStoreProducts = props => {
 
         console.log(moneyFormat.from(state.filterPriceMaxRange));
 
-        let result = await props.masterStore.searchForId(options);
+        let result = await props.masterStore.searchForCategoriesProducts(options);
 
         if (_.isEmpty(result) || _.isUndefined(result)) {
             setProducts([])

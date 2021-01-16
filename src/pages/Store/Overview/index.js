@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Card, CardBody, CardTitle, Modal, ModalHeader, ModalBody, ModalFooter, Media, Table } from "reactstrap";
 import * as _ from 'lodash';
+import wNumb from 'wnumb';
 //import Charts
 import StackedColumnChart from "./StackedColumnChart";
 
@@ -30,6 +31,15 @@ const Overview  = props => {
         delivery: null,
         noOfOrders: props.userStore.state?.noOfOrders
     });
+    const formatNumber = (number) => {
+        var formatter = wNumb({
+            mark: '.',
+            thousand: ',',
+            prefix: '',
+            suffix: ''
+        });
+        return formatter.to(number);
+    }
 
     useEffect(() => {
         if (!props.userStore.state.storeLoaded) return;
@@ -49,9 +59,9 @@ const Overview  = props => {
             return item.storeId == storeId
         });
 
-        reports.push({ title: "Revenue", iconClass: "bx-archive-in", description: `$ ${store[0]?.walletBalance}` });
-        reports.push({ title: "Pending Revenue", iconClass: "bx-copy-alt", description: `$ ${store[0]?.pendingBalance}` });
-        setState({...state, reports, delivery: props.userStore.state.delivery,noOfOrders: props.userStore.state.noOfOrders});
+        reports.push({ title: "Revenue", iconClass: "bx-archive-in", description: `$ ${formatNumber(store[0]?.walletBalance)}` });
+        reports.push({ title: "Pending Revenue", iconClass: "bx-copy-alt", description: `$ ${formatNumber(store[0]?.pendingBalance)}` });
+        setState({...state, reports, delivery: props.userStore.state.delivery,noOfOrders: formatNumber(props.userStore.state.noOfOrders)});
 
     }, [props.userStore.state.storeLoaded, props.userStore.state.stores])
 
@@ -88,7 +98,7 @@ const Overview  = props => {
                 return item.storeId == storeId
             });
             
-            reports.push({ title: 'Orders', iconClass: 'bx-purchase-tag-alt', description: props.userStore.state.noOfOrders})
+            reports.push({ title: 'Orders', iconClass: 'bx-purchase-tag-alt', description: formatNumber(props.userStore.state.noOfOrders)})
             setState({...state, reports})
 
         })()

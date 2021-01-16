@@ -4,12 +4,21 @@ import { Row, Col, Card, CardBody } from "reactstrap";
 import stateWrapper from '../../../containers/provider';
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
+import wNumb from 'wnumb';
 import * as _ from 'lodash';
-import avatar1 from "../../../assets/images/users/avatar-1.jpg";
-import profileImg from "../../../assets/images/profile-img.png";
 
 const WelcomeComp = props => {
     const [state, setState] = useState({});
+
+    const formatNumber = (number) => {
+        var formatter = wNumb({
+            mark: '.',
+            thousand: ',',
+            prefix: '',
+            suffix: ''
+        });
+        return formatter.to(number);
+    }
 
     return (
         <React.Fragment>
@@ -54,7 +63,7 @@ const WelcomeComp = props => {
                             <div className="pt-4">
                                 <Row>
                                     <Col xs="6">
-                                        <h5 className="font-size-15">{props.userStore.state.noOfProducts}</h5>
+                                        <h5 className="font-size-15">{formatNumber(props.userStore.state.noOfProducts)}</h5>
                                         <p className="text-muted mb-0">Products</p>
                                     </Col>
                                     <Col xs="6">

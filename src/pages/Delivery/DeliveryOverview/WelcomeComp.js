@@ -47,25 +47,11 @@ const WelcomeComp = props => {
                                 }
                             </div>
                             <h5 className="font-size-15 text-truncate">{props.userStore.state.user?.username}</h5>
-                            <p className="text-muted mb-0 text-truncate">Store Owner</p>
+                            <p className="text-muted mb-0 text-truncate">Dispatcher</p>
                         </Col>
 
                         <Col sm="8">
                             <div className="pt-4">
-                                <Row>
-                                    <Col xs="6">
-                                        <h5 className="font-size-15">{props.userStore.state.noOfProducts}</h5>
-                                        <p className="text-muted mb-0">Products</p>
-                                    </Col>
-                                    <Col xs="6">
-                                        <h5 className="font-size-15">${
-                                            props.userStore.state.stores.filter(item => {
-                                                return item.storeId == props.storeId
-                                            })[0]?.walletBalance
-                                        }</h5>
-                                        <p className="text-muted mb-0">Revenue</p>
-                                    </Col>
-                                </Row>
                                 <div className="mt-4">
                                     <Link to="/profile" className="btn btn-primary waves-effect waves-light btn-sm">View Profile <i className="mdi mdi-arrow-right ml-1"></i></Link>
                                 </div>

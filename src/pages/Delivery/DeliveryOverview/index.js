@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Card, CardBody, CardTitle, Modal, ModalHeader, ModalBody, ModalFooter, Media, Table } from "reactstrap";
 import * as _ from 'lodash';
+import wNumb from 'wnumb';
 //import Charts
 import StackedColumnChart from "./StackedColumnChart";
 
 
 // Pages Components
 import WelcomeComp from "./WelcomeComp";
-import DeliveryRider from "./DeliveryRider";
-
 import stateWrapper from '../../../containers/provider';
 import { withRouter, Link } from 'react-router-dom';
 //Import Breadcrumb
@@ -20,75 +19,43 @@ import { withTranslation } from 'react-i18next';
 const Overview  = props => {
 
     const [isLoading, setLoading] = useState(true);
-    const storeId = props.match.params.id;
+
+    useEffect(() => {
+        if(!_.isNull(props.userStore.state.user)) {
+            if (props.userStore.state.user?.userType !== 'Dispatcher') return props.history.push('/');
+            setLoading(false);
+        }
+    }, [props.userStore.state.user]);
+
     const [state, setState] = useState({
         reports: [],
         revenue: [
             { title: "Year", linkto: "#", isActive: true }
         ],
         modal: false,
-        delivery: null,
-        noOfOrders: props.userStore.state?.noOfOrders
+        noOfOrders: props.userStore.state?.admin.noOfOrders
     });
 
-    useEffect(() => {
-        if (!props.userStore.state.storeLoaded) return;
-        const checkifApproved = (storeId) => {
-            let checkApproval = props.userStore.state.stores.filter(item => {
-                return item.storeId == storeId && item.approved == true
-            });
-
-            if (checkApproval.length > 0) return true;
-            return false;
-        }
-        if (!checkifApproved(storeId)) props.history.push(`/store/get-approved/${storeId}`);
-        setLoading(false);
-
-        let reports = state.reports;
-        let store = props.userStore.state.stores.filter(item => {
-            return item.storeId == storeId
+    const formatNumber = (number) => {
+        var formatter = wNumb({
+            mark: '.',
+            thousand: ',',
+            prefix: '',
+            suffix: ''
         });
-
-        reports.push({ title: "Revenue", iconClass: "bx-archive-in", description: `$ ${store[0]?.walletBalance}` });
-        reports.push({ title: "Pending Revenue", iconClass: "bx-copy-alt", description: `$ ${store[0]?.pendingBalance}` });
-        setState({...state, reports, delivery: props.userStore.state.delivery,noOfOrders: props.userStore.state.noOfOrders});
-
-    }, [props.userStore.state.storeLoaded, props.userStore.state.stores])
-
-    useEffect(() => {
-        props.userStore.trackApproval(storeId, (result) => {
-            if (_.isUndefined(result)) return;
-            if (result.approved == false) {
-               (async () => {
-                if (_.isNull(props.userStore.state.user)) return;
-                await props.userStore.getUserStore();
-                props.history.push(`/store/get-approved/${storeId}`);
-               })();
-            } else {
-                props.history.push(`/store/front/${storeId}/overview`);
-            }
-        });
-    }, []);
-
-    const togglemodal = () => {
-        setState({
-            ...state,
-            modal: !state.modal
-        });
+        return formatter.to(number);
     }
 
     useEffect(() => {
        try {
         (async() => {
-            await props.userStore.getNumofProductsOfAParticularStore(storeId);
-            await props.userStore.getStoreStatistics(storeId);
+            await props.userStore.getDispatcherStatistics();
 
             let reports = state.reports;
-            let store = props.userStore.state.stores.filter(item => {
-                return item.storeId == storeId
-            });
-            
-            reports.push({ title: 'Orders', iconClass: 'bx-purchase-tag-alt', description: props.userStore.state.noOfOrders})
+
+            reports.push({ title: 'Orders', iconClass: 'bx-purchase-tag-alt', description: formatNumber(props.userStore.state.dispatch?.noOfOrders)});
+            reports.push({ title: "Revenue", iconClass: "bx-archive-in", description: `$ ${formatNumber(props.userStore.state.dispatch?.walletBalance)}` });
+            reports.push({ title: "Pending Revenue", iconClass: "bx-copy-alt", description: `$ ${formatNumber(props.userStore.state.dispatch?.pendingBalance)}` });
             setState({...state, reports})
 
         })()
@@ -112,14 +79,12 @@ const Overview  = props => {
                                 <Container fluid>
 
                                     {/* Render Breadcrumb */}
-                                    <Breadcrumbs title={props.t('Overview')} breadcrumbItem={props.t(storeId)} />
+                                    <Breadcrumbs title={props.t('Overview')} breadcrumbItem={props.t(props.userStore.state.user?.email)} />
 
                                     <Row>
-                                        <Col xl="4">
-                                            <WelcomeComp storeId={storeId}/>
-                                            <DeliveryRider storeId={storeId} />
-                                        </Col>
+                                        <Col xl="2"></Col>
                                         <Col xl="8">
+                                            <WelcomeComp/>
                                             <Row>
                                                 {/* Reports Render */}
                                                 {

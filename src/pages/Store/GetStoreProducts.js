@@ -35,7 +35,7 @@ const GeneralStoreProducts = props => {
 
     const loadData = () => {
         (async () => {
-            let result = await props.masterStore.searchForId({
+            let result = await props.masterStore.searchForStoreProducts({
                 id: searchId, //If the value is '' it would return all the products
             });
             console.log("Here ==", result);
@@ -43,11 +43,13 @@ const GeneralStoreProducts = props => {
             if (_.isEmpty(result) || _.isUndefined(result)) {
                 setProducts([])
                 setTotalSize(0);
+                setState({...state, isLoading: false});
                 return;
             }
 
             setProducts(result.data)
             setTotalSize(result?.totalSize);
+            setState({...state, isLoading: false})
             console.log(result);
 
             console.log("Pagination counting", )
@@ -62,12 +64,6 @@ const GeneralStoreProducts = props => {
         loadData();
     }, [searchId])
 
-    useEffect(() => {
-        setTimeout(() => {
-            setState({...state, isLoading: false})
-        }, 3000)
-    }, [])
-
     const getPage = async (page) => {
         let options = {
             id: searchId, //If the value is '' it would return all the products
@@ -80,7 +76,7 @@ const GeneralStoreProducts = props => {
             filterCustomerRating: state.filterCustomerRating,
         }
 
-        let result = await props.masterStore.searchForId(options);
+        let result = await props.masterStore.searchForStoreProducts(options);
 
         if (_.isEmpty(result) || _.isUndefined(result)) {
             setProducts([])
@@ -115,7 +111,7 @@ const GeneralStoreProducts = props => {
 
         console.log(moneyFormat.from(state.filterPriceMaxRange));
 
-        let result = await props.masterStore.searchForId(options);
+        let result = await props.masterStore.searchForStoreProducts(options);
 
         if (_.isEmpty(result) || _.isUndefined(result)) {
             setProducts([])

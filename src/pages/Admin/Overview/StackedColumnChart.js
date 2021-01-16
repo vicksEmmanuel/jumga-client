@@ -44,10 +44,10 @@ const StackedColumnChart = props => {
     });
 
     useEffect(() => {
-        if (!_.isEmpty(props.userStore.state.series)) {
-            setState({...state, series: props.userStore.state.series});
+        if (!_.isEmpty(props.userStore.state.admin.series)) {
+            setState({...state, series: props.userStore.state.admin.series});
         }
-    }, [props.userStore.state.series]);
+    }, [props.userStore.state.admin.series]);
 
     return (
         <React.Fragment>

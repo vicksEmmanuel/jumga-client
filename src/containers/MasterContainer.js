@@ -103,6 +103,167 @@ class MasterContainer extends Container {
         return [];
       }
     }
+    
+    searchForCategoriesProducts = async (searchDetails = {
+      id: '',
+      filter: false,
+      filterPriceMinRange: 0,
+      filterPriceMaxRange: 1000000000,
+      filterDiscountRate: 50,
+      filterCustomerRating: 5,
+      startAt: 0,
+      limit: 10,
+  }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETCATEGORYPRODUCTS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    searchForStoreProducts = async (searchDetails = {
+      id: '',
+      filter: false,
+      filterPriceMinRange: 0,
+      filterPriceMaxRange: 1000000000,
+      filterDiscountRate: 50,
+      filterCustomerRating: 5,
+      startAt: 0,
+      limit: 10,
+  }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETSTOREPRODUCTS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+
+    sendToDeliveryTeam = async (order) => {
+      const doc = firebase.firestore().doc(`${CONSTANTS.SCHEMA.ORDER}/${order.id}`);
+      const docData = await doc.get();
+
+      if (docData.exists) {
+        await doc.update({isSentToDeliveryTeam: true});
+      }
+    }
+
+    delivered = async (order) => {
+      try {
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.ADMINPROCESSDELIVERY);
+        const response = await callable(order);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+
+
+    adminGetProducts = async (searchDetails = {
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.ADMINGETPRODUCTS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    adminGetUsers = async (searchDetails = {
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.ADMINGETUSERS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    adminGetOrders = async (searchDetails = {
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.ADMINGETORDERS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    adminGetDispatchers = async (searchDetails = {
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.ADMINGETDISPATCHERS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    adminGetStores = async (searchDetails = {
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.ADMINGETSTORES);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+
+
+    deliveryGetOrders = async (searchDetails = {
+      email: '',
+      startAt: 0,
+      limit: 10,
+    }) => {
+      console.log(searchDetails);
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.DELIVERYGETORDERS);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+
 
     getProducts = async (searchDetails = {
       storeId: '',

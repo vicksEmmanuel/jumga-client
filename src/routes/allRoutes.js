@@ -12,6 +12,7 @@ import StoreAddProduct from "../pages/Store/StoreAddProduct";
 import StoreProductDetails from "../pages/Store/StoreProductDetails";
 import StoreProducts from "../pages/Store/StoreProducts";
 import GeneralStoreProducts from "../pages/Store/GeneralStoreProducts";
+import GetStoreProducts from '../pages/Store/GetStoreProducts';
 import Cart from "../pages/Store/Cart";
 import Checkout from "../pages/Store/Checkout";
 import LoginX from "../pages/Authentication/LoginX";
@@ -27,22 +28,24 @@ import Home from "../pages/Home/Home";
 import StoreHome from "../pages/Store/Home";
 import DeliveryHome from "../pages/Delivery/DeliveryHome";
 
-// import DeliveryOverview from '../pages/Delivery/DeliveryOverview';
-// import DeliveryOrders from '../pages/Delivery/DeliveryOrders';
 
-
-// import AdminOverview from "../pages/Admin/Overview";
+import AdminOverview from "../pages/Admin/Overview";
 // import AdminAddDelivery from "../pages/Admin";
 // import AdminUsers from "../pages/Admin";
 // import AdminAddCategories from "../pages/Admin";
-// import AdminOrders from '../pages/Admin';
+import AdminOrders from '../pages/Admin/AdminOrder';
 // import AdminProducts from '../pages/Admin';
+import AdminDispatchers from '../pages/Admin/AdminDispatchers';
+import AdminDetails from '../pages/Admin/AdminDetails';
+import GetCategoriesProducts from "../pages/Store/GetCategoriesProducts";
+// import DeliveryOverview from "../pages/Delivery/DeliveryOverview";
+// import DeliveryOrders from "../pages/Delivery/DeliveryOrders";
 
 const userRoutes = [
-	{ path: "/store/:id", component: ComingSoon},
+	{ path: "/store/:id", component: GetStoreProducts},
 	{ path: "/search/:id", component: GeneralStoreProducts},
 	{ path: "/search/", component: GeneralStoreProducts},
-	{ path: "/categories/:id", component: ComingSoon}, //TODO:
+	{ path: "/categories/:id", component: GetCategoriesProducts},
 	{ path: "/cart", component: Cart},
 	{ path: "/checkout", component: Checkout},
 	//Home
@@ -72,19 +75,22 @@ const storeAuthRoutes = [
 ];
 
 const adminAuthRoutes = [
-	{ path: "/admin/overview", component: ComingSoon}, //AdminOverview}, //TODO:
+	{ path: "/admin/overview", component: AdminOverview}, //AdminOverview},
+	{ path: "/admin/buyers", component: ComingSoon}, //AdminOverview}, //TODO:
 	{ path: "/admin/add-delivery", component: ComingSoon},//AdminAddDelivery}, //TODO:
 	{ path: "/admin/analysis", component: ComingSoon}, //TODO: 
+	{ path: "/admin/dispatchers", component: AdminDispatchers}, 
 	{ path: "/admin/users", component: ComingSoon},//AdminUsers}, //TODO:
 	{ path: "/admin/add-categories", component: ComingSoon},//AdminAddCategories}, //TODO:
-	{ path: "/admin/order", component: ComingSoon},//AdminOrders}, //TODO:
-	{ path: "/admin/products", component: ComingSoon}//AdminProducts}, //TODO:
+	{ path: "/admin/order", component: AdminOrders},//AdminOrders},
+	{ path: "/admin/products", component: ComingSoon},//AdminProducts}, //TODO:
+	{ path: "/admin/", component: AdminDetails},
 ];
 
 const deliveryAuthRoutes = [
-	{ path: "/delivery/overview", component: ComingSoon},//DeliveryOverview}, //TODO:
-	{ path: "/delivery/account", component: ComingSoon}, //TODO: 
-	{ path: "/delivery/orders", component: ComingSoon}//DeliveryOrders}, //TODO:
+	{ path: "/delivery/overview", component: ComingSoon}, // DeliveryOverview},//DeliveryOverview}, //
+	{ path: "/delivery/account", component: ComingSoon}, //
+	{ path: "/delivery/orders", component: ComingSoon}//DeliveryOrders}, //DeliveryOrders}, //
 ];
 
 const authRoutes = [
@@ -101,4 +107,4 @@ const userAuthRoutes = [
 	{ path: "/delivery/login", component: LoginDelivery}
 ];
 
-export { userRoutes, authRoutes, storeRoutes, storeAuthRoutes, userAuthRoutes };
+export { userRoutes, authRoutes, storeRoutes, storeAuthRoutes, userAuthRoutes, adminAuthRoutes, deliveryAuthRoutes };

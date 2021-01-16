@@ -33,7 +33,9 @@ import ErrorMessage from '../../components/Common/ErrorMessage';
         email: '',
         password: ''
     });
+
     const form = useRef();
+    
     async function  handleValidSubmit(event, values) {
         event.preventDefault();
         console.log(values);
@@ -47,11 +49,6 @@ import ErrorMessage from '../../components/Common/ErrorMessage';
 
         props.history.push('/admin');
     }
-
-    // useEffect(() => {
-    //     props.userStore.logOut(props);
-    //     console.log('jerr')
-    // }, [])
 
     useEffect(() => {
         if (state.postSubmitError) {
