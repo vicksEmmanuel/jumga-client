@@ -17,7 +17,9 @@ export const firebaseConfigParams = {
   // geolocationRoute: 'http://api.ipstack.com/41.190.2.56?access_key=881adef0d0649ce8981bbab9feb172c9',
   // geolocationRoute: 'http://ipwhois.app/json',
   // geolocationRoute: 'http://ip-api.com/json?fields=status,country,currency,message',
-  geolocationRoute: 'https://api.ipgeolocation.io/ipgeo?apiKey=d0124bc29ad4449b9d4d318fffbe9071',
+  // geolocationRoute: 'https://api.ipgeolocation.io/ipgeo?apiKey=d0124bc29ad4449b9d4d318fffbe9071',
+  geolocationRoute: 'https://api.ipgeolocation.io/ipgeo?apiKey=71c8263a604848219fd0be1456063b99',
   geolocationIpRoute: 'https://api.ipgeolocation.io/getip',
-  currencyExchangeApiKey: '3f2fafa7fca1c5b86d68'
+  // currencyExchangeApiKey: '3f2fafa7fca1c5b86d68'
+  currencyExchangeApiKey: '68c0bd7b7292adeefe56'
 }
