@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Input, Button, Card, CardBody, Table, Label, Badge, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledTooltip, Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { Container, Row, Col, Input, Button, Card, CardBody, Table, Modal, ModalHeader, ModalBody, ModalFooter, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import * as _ from 'lodash';
-import moment from 'moment';
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 

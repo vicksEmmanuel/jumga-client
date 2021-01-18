@@ -4,7 +4,6 @@ import { Provider, Subscribe } from "unstated";
 
 import allStores from './containers';
 import { userRoutes , authRoutes, storeRoutes, storeAuthRoutes, userAuthRoutes, adminAuthRoutes, deliveryAuthRoutes } from "./routes/allRoutes";
-import Authmiddleware from "./routes/middleware/Authmiddleware";
 import Storemiddleware from "./routes/middleware/Storemiddleware";
 import NonAuthmiddleware from "./routes/middleware/NonAuthMiddleware";
 import NonAuthLayout from './components/NonAuthLayout';
@@ -17,7 +16,6 @@ import UserLayout from "./components/UserLayout";
 import "./assets/scss/theme.scss";
 import StoreAuthmiddleware from './routes/middleware/StoreAuthmiddleware';
 import UserMiddleware from './routes/middleware/UserMiddleware';
-// import TestingSpeech from './components/TestingSpeech';
 
 class App extends Component{
 

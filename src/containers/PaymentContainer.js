@@ -1,6 +1,5 @@
 import * as _ from "lodash";
 import firebase from "firebase/app";
-import { v4 as uuidv4 } from 'uuid';
 
 // Add the Firebase products that you want to use
 import "firebase/auth";
@@ -13,7 +12,6 @@ import { Container } from "unstated";
 import CONSTANTS from "../App.constant";
 import axios from 'axios';
 import { firebaseConfigParams } from '../config';
-import { get } from "lodash";
 
 class PaymentContainer extends Container {
 

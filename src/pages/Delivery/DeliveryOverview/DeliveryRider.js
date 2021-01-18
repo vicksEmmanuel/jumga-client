@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import { Row, Col, Card, CardBody, CardTitle } from "reactstrap";
 
 import stateWrapper from '../../../containers/provider';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 //i18n
 import { withTranslation } from 'react-i18next';

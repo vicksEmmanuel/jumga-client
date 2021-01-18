@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useRef }  from 'react';
 import _ from 'lodash';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { AvForm, AvField, AvGroup, AvInput, AvFeedback, AvRadioGroup, AvRadio, AvCheckboxGroup, AvCheckbox } from 'availity-reactstrap-validation';
+import { AvForm, AvGroup, AvInput } from 'availity-reactstrap-validation';
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import { Container, Row, Col, Button, Card, CardBody, CardTitle, Modal, ModalHeader, ModalBody, ModalFooter, Media, Table } from "reactstrap";
+import { Container, Row, Col, Card, CardBody } from "reactstrap";
 import stateWrapper from '../../containers/provider';
 import storefront from "../../assets/images/store-umbrella.png";
 import { withRouter, Link } from 'react-router-dom';
 import './create-store.scss';
 import { withTranslation } from 'react-i18next';
-import { createStore } from 'redux';
 
 const CreateStore = (props) => {
     const [state, setState] = useState({

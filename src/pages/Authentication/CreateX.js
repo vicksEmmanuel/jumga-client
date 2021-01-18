@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { withRouter, Link } from 'react-router-dom';
 import { Row, Col, CardBody, Card, Alert,Container, Label } from "reactstrap";
 import ErrorMessage from '../../components/Common/ErrorMessage';
-import { AvForm, AvField, AvGroup, AvInput, AvFeedback, AvRadioGroup, AvRadio, AvCheckboxGroup, AvCheckbox } from 'availity-reactstrap-validation';
+import { AvForm, AvGroup, AvInput, AvFeedback} from 'availity-reactstrap-validation';
 import { withTranslation } from 'react-i18next';
 import stateWrapper from "../../containers/provider";
 import "../../styles/Login.scss";

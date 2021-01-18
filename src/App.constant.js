@@ -18,6 +18,11 @@ const CONSTANTS = {
         STORESTAT: 'jumgaStoreStatistics',
         GETSTOREPRODUCTS: 'jumgaGetStoreProducts',
         GETCATEGORYPRODUCTS: 'jumgaGetCategories',
+
+        GETPOPULARPRODUCTS: 'jumgaGetPopularProducts',
+        GETRECENTPRODUCTS: 'jumgaGetRecentProducts',
+        GETRANDOMPRODUCTS: 'jumgaGetRandomStore',
+
         GETORDERS: 'jumgaGetOrder',
         GETCUSTOMERS: 'jumgaGetCustomers',
         GETHISTORY: 'jumgaGetHistory',
@@ -27,6 +32,9 @@ const CONSTANTS = {
         ADMINGETSTORES: 'adminGetStores',
         ADMINGETUSERS: 'adminGetUsers',
         ADMINGETDISPATCHERS: 'adminGetDisptachRider',
+
+        ADMINPROCESSDELIVERY: 'adminProcessDelivery',
+
         DELIVERYGETORDERS: 'dispatchRidersGetOrder',
         DELIVERYGETSTATISTICS: 'dispatchRidersGetStatistics',
     }

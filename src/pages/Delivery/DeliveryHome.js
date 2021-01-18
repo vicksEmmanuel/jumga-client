@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import { Container, Row, Col, Button, Card, CardBody, CardTitle, Modal, ModalHeader, ModalBody, ModalFooter, Media, Table } from "reactstrap";
+import { Container, Row, Col} from "reactstrap";
 import Lottie from 'react-lottie';
 import { withRouter, Link } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';

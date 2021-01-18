@@ -1,10 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Route,Redirect,withRouter } from "react-router-dom";
 import { withTranslation } from 'react-i18next';
 import * as _ from 'lodash';
 import stateWrapper from "../../containers/provider";
-import firebase from "firebase/app";
-import { v4 as uuidv4 } from 'uuid';
 
 // Add the Firebase products that you want to use
 import "firebase/auth";

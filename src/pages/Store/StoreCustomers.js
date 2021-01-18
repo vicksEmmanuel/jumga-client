@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react';
-import { Container, Row, Col, Card, CardBody, Table, Label, Input, Button, Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import { Container, Row, Col, Card, CardBody, Table, Input, Badge, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import * as _ from 'lodash';
 
 import stateWrapper from '../../containers/provider';

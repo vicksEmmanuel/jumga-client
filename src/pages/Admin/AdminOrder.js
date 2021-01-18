@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Input, Button, Card, CardBody, Table, Label, Badge, Modal, ModalHeader, ModalBody, ModalFooter, UncontrolledTooltip, Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { Container, Row, Col, Input, Button, Card, CardBody, Table, Badge, Modal, ModalHeader, ModalBody, ModalFooter, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import * as _ from 'lodash';
 import moment from 'moment';
 //Import Breadcrumb
@@ -39,7 +39,7 @@ const ListOrder = props => {
                     !pop.isSentToDeliveryTeam ? (
                         <Button 
                             type="button" 
-                            color="success" 
+                            color="warning" 
                             className="btn-sm btn-rounded" 
                             onClick={() => {
                                 sendToDeliveryTeam();
@@ -349,33 +349,52 @@ const AdminOrders = props => {
                                                                     }
                                                                 </>
                                                             </h5>
-                                                            <p className="text-muted mb-0">$ {state.currentOrderInModal?.currentprice} x {state.currentOrderInModal?.quantity}</p>
+                                                            <p className="text-muted mb-0"> (${state.currentOrderInModal?.currentprice} x {state.currentOrderInModal?.quantity}) x (${state.currentOrderInModal?.deliverycost} shipping  x {state.currentOrderInModal?.quantity})</p>
                                                         </div>
                                                     </td>
-                                                    <td>$ {state.currentOrderInModal?.totalCostOfSales}</td>
+                                                    <td>$ {Number(state.currentOrderInModal?.total) + (Number(state.currentOrderInModal?.deliverycost) * Number(state.currentOrderInModal?.quantity))}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="2">
-                                                        <h6 className="m-0 text-right">Sub Total:</h6>
+                                                        <h6 className="m-0 text-right">Item(s) Price:</h6>
                                                     </td>
                                                     <td>
                                                         $ {state.currentOrderInModal?.totalCostOfSales}
-                                                        </td>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="2">
-                                                        <h6 className="m-0 text-right">Shipping:</h6>
+                                                        <h6 className="m-0 text-right">Jumga's Commission From Sale:</h6>
+                                                    </td>
+                                                    <td>
+                                                        $ {state.currentOrderInModal?.totalCostOfCommissionOnSales}
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <h6 className="m-0 text-right">Shipping Cost:</h6>
                                                     </td>
                                                     <td>
                                                         { state.currentOrderInModal?.totalCostOfDelivery <= 0 ? 'Free' : `$ ${state.currentOrderInModal?.totalCostOfDelivery}`}
                                                     </td>
                                                 </tr>
+
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <h6 className="m-0 text-right">Jumga's Shipping Commission:</h6>
+                                                    </td>
+                                                    <td>
+                                                        { state.currentOrderInModal?.totalcostOfCommissionOnDelivery <= 0 ? 'Free' : `$ ${state.currentOrderInModal?.totalcostOfCommissionOnDelivery}`}
+                                                    </td>
+                                                </tr>
+
                                                 <tr>
                                                     <td colspan="2">
                                                         <h6 className="m-0 text-right">Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {Number(state.currentOrderInModal?.totalCostOfSales) + Number(state.currentOrderInModal?.totalCostOfDelivery)}
+                                                        $ {Number(state.currentOrderInModal?.totalCostOfSales) +Number(state.currentOrderInModal?.totalCostOfCommissionOnSales) +Number(state.currentOrderInModal?.totalCostOfDelivery) + Number(state.currentOrderInModal?.totalcostOfCommissionOnDelivery)}
                                                         </td>
                                                 </tr>
                                             </tbody>

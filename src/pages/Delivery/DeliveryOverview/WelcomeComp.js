@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import { Row, Col, Card, CardBody } from "reactstrap";
 import stateWrapper from '../../../containers/provider';

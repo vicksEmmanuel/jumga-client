@@ -34,7 +34,9 @@ class UserContainer extends Container {
                 noOfOrders: null,
                 walletBalance: 0,
                 pendingBalance: 0,
-                noOfUsers: 0
+                noOfUsers: 0,
+                deliveryWalletBalance: 0,
+                pendingDeliveryRevenue: 0
             }
         }
 
@@ -126,6 +128,10 @@ class UserContainer extends Container {
                 return statistics?.revenuePerMonth[`${getYear}`][`${id.toLowerCase()}`]
             });
 
+            let deliveryRevenuePerMonth = months.map(id => {
+                return statistics?.deliveryRevenuePerMonth[`${getYear}`][`${id.toLowerCase()}`]
+            })
+
             let usersPerMonth = months.map(id => {
                 return statistics?.usersPerMonth[`${getYear}`][`${id.toLowerCase()}`]
             });
@@ -136,12 +142,15 @@ class UserContainer extends Container {
                         {name: 'Orders', data: ordersPerMonth},
                         {name: 'Sales', data: revenuePerMonth},
                         {name: 'Users', data: usersPerMonth},
+                        {name: 'Delivery', data: deliveryRevenuePerMonth}
                     ],
                     noOfUsers: statistics?.numberOfUsers,
                     noOfOrders: statistics?.numberOfOrders,
                     noOfProducts: statistics?.numOfProducts,
                     walletBalance: statistics?.walletBalance,
-                    pendingBalance: statistics?.pendingBalance
+                    pendingBalance: statistics?.pendingBalance,
+                    pendingDeliveryRevenue: statistics?.pendingDeliveryRevenue,
+                    deliveryWalletBalance: statistics?.deliveryWalletBalance
                 }
             })
 

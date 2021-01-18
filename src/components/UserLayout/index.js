@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import Header from './Header';
+import Footer from './Footer';
 
 class UserLayout extends Component {
     constructor(props) {
@@ -24,6 +25,7 @@ class UserLayout extends Component {
             <div id="layout-wrapper">
                 <Header/>
                 {this.props.children}
+                <Footer />
             </div>
         </React.Fragment>;
     }

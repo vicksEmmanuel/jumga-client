@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button, Card, CardBody, CardTitle, Modal, ModalHeader, ModalBody, ModalFooter, Media, Table } from "reactstrap";
+import { Container, Row, Col, Card, CardBody, CardTitle, Media } from "reactstrap";
 import * as _ from 'lodash';
 import wNumb from 'wnumb';
 //import Charts
@@ -56,7 +56,9 @@ const Overview  = props => {
             reports.push({ title: 'Orders', iconClass: 'bx-purchase-tag-alt', description: formatNumber(props.userStore.state.admin?.noOfOrders)});
             reports.push({ title: "Users", iconClass: "bx bx-group", description: `${formatNumber(props.userStore.state.admin?.noOfUsers)}` });
             reports.push({ title: "Revenue", iconClass: "bx-archive-in", description: `$ ${formatNumber(props.userStore.state.admin?.walletBalance)}` });
+            reports.push({ title: "Delivery Revenue", iconClass: "bx-archive-in", description: `$ ${formatNumber(props.userStore.state.admin?.deliveryWalletBalance)}` });
             reports.push({ title: "Pending Revenue", iconClass: "bx-copy-alt", description: `$ ${formatNumber(props.userStore.state.admin?.pendingBalance)}` });
+            reports.push({ title: "Pending Delivery Revenue", iconClass: "bx-copy-alt", description: `$ ${formatNumber(props.userStore.state.admin?.pendingDeliveryRevenue)}` });
             setState({...state, reports})
 
         })()

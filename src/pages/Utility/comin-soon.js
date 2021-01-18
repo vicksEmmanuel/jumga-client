@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
 
 //Import Images
-import thank from "../../assets/images/thank-you.jpg";
 
 class ComingSoon extends Component {
     render() {

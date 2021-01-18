@@ -2,7 +2,7 @@ import React, { useEffect, useState }  from 'react';
 import _ from 'lodash';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import stateWrapper from '../../containers/provider';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { withTranslation } from 'react-i18next';
 import './store.scss';
 

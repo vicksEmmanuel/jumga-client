@@ -1,6 +1,5 @@
 import _ from "lodash";
 import firebase from "firebase/app";
-import { v4 as uuidv4 } from 'uuid';
 
 // Add the Firebase products that you want to use
 import "firebase/auth";
@@ -10,7 +9,6 @@ import "firebase/storage";
 import "firebase/remote-config";
 
 import { Container } from "unstated";
-import instance from '../helpers/axiosly';
 import CONSTANTS from "../App.constant";
 
 class MasterContainer extends Container {
@@ -21,6 +19,8 @@ class MasterContainer extends Container {
             categories: [],
             remoteConfigLoading: true,
             cart: [],
+            popularProducts: [],
+            recentProducts: [],
             remoteConfigs: {
                 store_cost: 20,
                 currency: 'USD',
@@ -146,6 +146,53 @@ class MasterContainer extends Container {
       }
     }
 
+    getPopularProducts = async () => {
+      try {
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETPOPULARPRODUCTS);
+        const response = await callable();
+        let newPoPrArry = response.data?.data?.map((i, id) => {
+          return{
+              name: `itemp${id}`,
+              productId: i.productId,
+              images: i.history[0].images[0],
+              productname: i.history[0].productname,
+              pastprice: i.history[0].pastprice,
+              currentprice: i.history[0].currentprice,
+              starRating: i.history[0].starRating
+          }
+        });
+
+        this.setState({popularProducts: newPoPrArry})
+        return newPoPrArry;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
+    getRecentProducts = async () => {
+      try {
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.GETRECENTPRODUCTS);
+        const response = await callable();
+
+        let newRecentProArry = response.data.map((i, id) => {
+            return {
+                name: `itemx${id}`,
+                productId: i.productId,
+                images: i.images[0],
+                productname: i.productname,
+                pastprice: i.pastprice,
+                currentprice: i.currentprice,
+                starRating: i.starRating
+            }
+        });
+        this.setState({recentProducts: newRecentProArry})
+        return newRecentProArry;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
 
     sendToDeliveryTeam = async (order) => {
       const doc = firebase.firestore().doc(`${CONSTANTS.SCHEMA.ORDER}/${order.id}`);

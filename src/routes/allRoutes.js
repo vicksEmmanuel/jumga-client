@@ -1,6 +1,3 @@
-import React from "react";
-import { Redirect } from "react-router-dom";
-
 import Login from "../pages/Authentication/Login";
 import Create from "../pages/Authentication/Create";
 import StoreCheckout from "../pages/Store/store-checkout";

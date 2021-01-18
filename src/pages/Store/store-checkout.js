@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
-import { Route,Redirect,withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { withTranslation } from 'react-i18next';
 import * as _ from 'lodash';
 import ErrorMessage from '../../components/Common/ErrorMessage';

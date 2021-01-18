@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
 import { withRouter, Link } from 'react-router-dom';
-import { Row, Col, CardBody, Card, Alert,Container, Label } from "reactstrap";
+import { Row, Col, CardBody, Card, Container, Label } from "reactstrap";
 import { withTranslation } from 'react-i18next';
-import { AvForm, AvField, AvGroup, AvInput, AvFeedback, AvRadioGroup, AvRadio, AvCheckboxGroup, AvCheckbox } from 'availity-reactstrap-validation';
+import { AvForm, AvGroup, AvInput, AvFeedback} from 'availity-reactstrap-validation';
 import "../../styles/Login.scss";
 import logo from "../../assets/images/jumga logo.png";
 import team1 from "../../assets/images/team1.png";
