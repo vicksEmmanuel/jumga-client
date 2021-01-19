@@ -17,6 +17,11 @@ import ErrorMessage from '../../components/Common/ErrorMessage';
 
 
  const Login = (props) => {
+    useEffect(() => {
+        if (!_.isNull(props.userStore.state.user)) {
+            return props.history.push('/');
+        }
+    }, [props.userStore.state.user]);
     const [state, setState] = useState({
         loading: false,
         doesEmailExists: true,

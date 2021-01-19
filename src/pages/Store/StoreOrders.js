@@ -226,7 +226,7 @@ const StoreOrders = props => {
                                                                             {moment(order.orderDate).format('MMM ddd, YY')}
                                                                         </td>
                                                                         <td>
-                                                                            ${order.totalCostOfSales}
+                                                                            ${props.paymentStore.formatToIntCurrency(order.totalCostOfSales)}
                                                                         </td>
                                                                         <td>
                                                                             <Badge 
@@ -301,17 +301,17 @@ const StoreOrders = props => {
                                                                     }
                                                                 </>
                                                             </h5>
-                                                            <p className="text-muted mb-0">$ {state.currentOrderInModal?.currentprice} x {state.currentOrderInModal?.quantity}</p>
+                                                            <p className="text-muted mb-0">$ {props.paymentStore.formatToIntCurrency(state.currentOrderInModal?.currentprice)} x {state.currentOrderInModal?.quantity}</p>
                                                         </div>
                                                     </td>
-                                                    <td>$ {state.currentOrderInModal?.totalCostOfSales}</td>
+                                                    <td>$ {props.paymentStore.formatToIntCurrency(state.currentOrderInModal?.totalCostOfSales)}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="2">
                                                         <h6 className="m-0 text-right">Sub Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {state.currentOrderInModal?.totalCostOfSales}
+                                                        $ {props.paymentStore.formatToIntCurrency(state.currentOrderInModal?.totalCostOfSales)}
                                                         </td>
                                                 </tr>
                                                 <tr>
@@ -319,7 +319,7 @@ const StoreOrders = props => {
                                                         <h6 className="m-0 text-right">Shipping:</h6>
                                                     </td>
                                                     <td>
-                                                        { state.currentOrderInModal?.totalCostOfDelivery <= 0 ? 'Free' : `$ ${state.currentOrderInModal?.totalCostOfDelivery}`}
+                                                        { state.currentOrderInModal?.totalCostOfDelivery <= 0 ? 'Free' : `$ ${props.paymentStore.formatToIntCurrency(state.currentOrderInModal?.totalCostOfDelivery)}`}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -327,7 +327,7 @@ const StoreOrders = props => {
                                                         <h6 className="m-0 text-right">Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {Number(state.currentOrderInModal?.totalCostOfSales) + Number(state.currentOrderInModal?.totalCostOfDelivery)}
+                                                        $ {props.paymentStore.formatToIntCurrency(Number(state.currentOrderInModal?.totalCostOfSales) + Number(state.currentOrderInModal?.totalCostOfDelivery))}
                                                         </td>
                                                 </tr>
                                             </tbody>

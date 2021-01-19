@@ -45,6 +45,12 @@ import { configParams } from '../../config';
         postSubmitMessage: ''
     });
 
+    useEffect(() => {
+        if (!_.isNull(props.userStore.state.user)) {
+            return props.history.push('/');
+        }
+    }, [props.userStore.state.user]);
+
     const form = useRef();
     const useImageRef = useRef();
     const callImageInput = () => {

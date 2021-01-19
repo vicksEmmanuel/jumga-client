@@ -33,6 +33,7 @@ import AdminOverview from "../pages/Admin/Overview";
 import AdminOrders from '../pages/Admin/AdminOrder';
 // import AdminProducts from '../pages/Admin';
 import AdminDispatchers from '../pages/Admin/AdminDispatchers';
+import ProblemPayments from '../pages/Admin/ProblemPayments';
 import AdminDetails from '../pages/Admin/AdminDetails';
 import GetCategoriesProducts from "../pages/Store/GetCategoriesProducts";
 // import DeliveryOverview from "../pages/Delivery/DeliveryOverview";
@@ -73,6 +74,7 @@ const storeAuthRoutes = [
 
 const adminAuthRoutes = [
 	{ path: "/admin/overview", component: AdminOverview}, //AdminOverview},
+	{ path: "/admin/payment-issues", component: ProblemPayments}, //AdminOverview},
 	{ path: "/admin/buyers", component: ComingSoon}, //AdminOverview}, //TODO:
 	{ path: "/admin/add-delivery", component: ComingSoon},//AdminAddDelivery}, //TODO:
 	{ path: "/admin/analysis", component: ComingSoon}, //TODO: 

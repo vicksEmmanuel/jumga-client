@@ -83,7 +83,6 @@ const StoreCheckout = (props) => {
     // }, [props.masterStore.state.remoteConfigs]);
 
     useEffect(() => {
-        console.log(props.paymentStore);
         (async () => {
             await processCurrency();
         })();
@@ -97,12 +96,23 @@ const StoreCheckout = (props) => {
         });
     }, [props.userStore.state.user])
 
-    useEffect(() => {
-        if (!props.userStore.state.storeLoaded) return;
+    const loadData = async () => {
+       if (!_.isNull(props.userStore.state.user)) {
+        let stores = await props.userStore.getUserStoreExtra();
+        if (!(stores.length > 0))  return props.history.push(`/store/front/`);
         if (!checkIfStoreExists(storeId))  return props.history.push(`/store/front/`);
         if (!checkifApproved(storeId)) return setState({...state, storeCheck: true});
         props.history.push(`/store/front/${storeId}`);
-    }, [props.userStore.state.storeLoaded, props.userStore.state.stores])
+       }
+    }
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    useEffect(() => {
+        loadData();
+    }, [props.userStore.state.stores, props.userStore.state.user])
 
     useEffect(() => {
         if (state.isError) {
@@ -117,6 +127,7 @@ const StoreCheckout = (props) => {
     }
 
     const handlePayment = async () => {
+        console.log(state)
         if (
             !state.currencyLoaded &&
             _.isNull(props.userStore.state.user) &&

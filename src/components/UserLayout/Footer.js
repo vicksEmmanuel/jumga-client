@@ -8,10 +8,17 @@ const Footer = (props) => {
    <React.Fragment>
             <footer style={{
                 backgroundColor: 'black',
+                bottom: 0,
+                position: 'absolute',
+                left: 0,
+                width: '100%',
+                right: 0,
+                color: '#74788d',
+                height: 60
             }} align="center">
-                <div style={{width: '90%'}}>
-                    <Container fluid={true}>
-                        <Row>
+                <div style={{width: '100%', backgroundColor: 'black',}}>
+                    <Container fluid={true} style={{backgroundColor: 'black',}}>
+                        <Row style={{backgroundColor: 'black',}}>
                             <Col md={6}>
                                 {new Date().getFullYear()} © Jumga.
                             </Col>
@@ -21,7 +28,7 @@ const Footer = (props) => {
                                 </div>
                             </Col>
                         </Row>
-                        <Row style={{marginTop: 20}}>
+                        <Row style={{marginTop: 20, backgroundColor: 'black',}}>
                             <Col align="center" lg="6" md="6" style={{paddingLeft: 30}}>
                                 <Row style={{marginTop: 20}} align="left">
                                     <Col md={6}>
@@ -44,8 +51,8 @@ const Footer = (props) => {
                                     </Col>
                                 </Row> 
                             </Col>
-                            <Col lg="6" md="6" style={{cursor: 'pointer'}}>
-                                <Row>
+                            <Col lg="6" md="6" style={{cursor: 'pointer', backgroundColor: 'black',}}>
+                                <Row style={{backgroundColor: 'black',}}>
                                    <Col lg="12">
                                         <i className="bx bx-barcode text-primary" style={{fontSize: 60}}></i> &nbsp;
                                    </Col>

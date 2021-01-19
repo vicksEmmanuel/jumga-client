@@ -259,8 +259,10 @@ import image9 from '../../assets/images/inside-weather-dbH_vy7vICE-unsplash.png'
                 className={`menu-item ${selected ? 'active' : ''}`}
             >
                 <Link to={`/${productId}`}>
-                    <Card>
-                        <CardBody>
+                    <Card
+                        style={{width: '200px', height: '250px', borderRadius: 5}}
+                    >
+                        <CardBody >
                             <div className="product-img position-relative">
                                 {
                                     Number(currentprice) < Number(pastprice)
@@ -450,9 +452,9 @@ import image9 from '../../assets/images/inside-weather-dbH_vy7vICE-unsplash.png'
                                       </Row>
                                       <Row style={{backgroundColor: 'white'}}>
                                         <Col lg="12">
-                                            {state.recentProducts.length > 0 ? (
+                                            {props.masterStore.state.recentProducts.length > 0 ? (
                                                 <ScrollMenu
-                                                    data={Menu(state.recentProducts, 'itemx0')}
+                                                    data={Menu(props.masterStore.state.recentProducts, 'itemx0')}
                                                     arrowLeft={ArrowLeft()}
                                                     arrowRight={ArrowRight()}
                                                     selected={state.selectedx}
@@ -498,9 +500,9 @@ import image9 from '../../assets/images/inside-weather-dbH_vy7vICE-unsplash.png'
                                       </Row>
                                       <Row style={{backgroundColor: 'white'}}>
                                         <Col lg="12">
-                                            {state.popularProducts.length > 0 ? (
+                                            {props.masterStore.state.popularProducts.length > 0 ? (
                                                 <ScrollMenu
-                                                    data={Menu(state.popularProducts, 'itemp0')}
+                                                    data={Menu(props.masterStore.state.popularProducts, 'itemp0')}
                                                     arrowLeft={ArrowLeft()}
                                                     arrowRight={ArrowRight()}
                                                     selected={state.selected}

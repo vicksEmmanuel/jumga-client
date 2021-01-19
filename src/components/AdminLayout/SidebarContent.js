@@ -86,6 +86,12 @@ const SidebarContent = (props) => {
                         </Link>
                      </li>
                      <li>
+                         <Link to={`/admin/payment-issues`} className="waves-effect">
+                            <i className="bx bx-run text-primary"></i>
+                            <span>{props.t('View Payment Issues') }</span>
+                        </Link>
+                     </li>
+                     <li>
                          <Link to={`/admin/add-delivery`} className="waves-effect">
                             <i className="bx bx-add-to-queue text-primary"></i>
                             <span>{props.t('Add Delivery') }</span>

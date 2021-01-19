@@ -15,30 +15,31 @@ import axios from 'axios';
 import CONSTANTS from "../App.constant";
 import { firebaseConfigParams } from '../config';
 
+const defaultState = {
+    user: null,
+    stores: [],
+    storeLoaded: false,
+    noOfProducts: null,
+    delivery: {},
+    series: [],
+    noOfOrders: null,
+    admin: {
+        noOfProducts: null,
+        series: [],
+        noOfOrders: null,
+        walletBalance: 0,
+        pendingBalance: 0,
+        noOfUsers: 0,
+        deliveryWalletBalance: 0,
+        pendingDeliveryRevenue: 0
+    }
+};
 
 class UserContainer extends Container {
     
     constructor(firebaseConfig) {
         super();
-        this.state = {
-            user: null,
-            stores: [],
-            storeLoaded: false,
-            noOfProducts: null,
-            delivery: {},
-            series: [],
-            noOfOrders: null,
-            admin: {
-                noOfProducts: null,
-                series: [],
-                noOfOrders: null,
-                walletBalance: 0,
-                pendingBalance: 0,
-                noOfUsers: 0,
-                deliveryWalletBalance: 0,
-                pendingDeliveryRevenue: 0
-            }
-        }
+        this.state = defaultState;
 
         if (firebaseConfig) {
             // Initialize Firebase
@@ -94,7 +95,8 @@ class UserContainer extends Container {
                     }
                   }, function(error) {
                     // Handle unsuccessful uploads
-                    reject();
+                    console.log(error);
+                    reject(error);
                   }, function() {
                     // Handle successful uploads on complete
                     // For instance, get the download URL: https://firebasestorage.googleapis.com/...
@@ -147,10 +149,10 @@ class UserContainer extends Container {
                     noOfUsers: statistics?.numberOfUsers,
                     noOfOrders: statistics?.numberOfOrders,
                     noOfProducts: statistics?.numOfProducts,
-                    walletBalance: statistics?.walletBalance,
-                    pendingBalance: statistics?.pendingBalance,
-                    pendingDeliveryRevenue: statistics?.pendingDeliveryRevenue,
-                    deliveryWalletBalance: statistics?.deliveryWalletBalance
+                    walletBalance: Number(statistics?.walletBalance).toFixed(2),
+                    pendingBalance: Number(statistics?.pendingBalance).toFixed(2),
+                    pendingDeliveryRevenue: Number(statistics?.pendingDeliveryRevenue).toFixed(2),
+                    deliveryWalletBalance: Number(statistics?.deliveryWalletBalance).toFixed(2)
                 }
             })
 
@@ -314,7 +316,7 @@ class UserContainer extends Container {
         const query = storeDetailsRef.where('userEmail', '==', this.state.user.email);
         const docs = await query.get();
 
-        if (docs.empty) return null;
+        if (docs.empty) return [];
 
         let x = [];
 
@@ -328,6 +330,23 @@ class UserContainer extends Container {
             storeLoaded: true
         }, callback);
 
+        return x;
+    }
+
+    getUserStoreExtra = async (callback = () => {}) => {
+        const storeCollection = CONSTANTS.SCHEMA.STORES;
+        const storeDetailsRef = firebase.firestore().collection(storeCollection);
+        const query = storeDetailsRef.where('userEmail', '==', this.state.user.email);
+        const docs = await query.get();
+
+        if (docs.empty) return [];
+
+        let x = [];
+
+        docs.forEach(doc => {
+            const store = doc.data();
+            x.push(store);
+        });
         return x;
     }
 
@@ -389,7 +408,7 @@ class UserContainer extends Container {
         let user = {...userData.data()};
         user.stores.push(storeId);
         await userDetailsRef.update(user);
-        await this.getUserStore(() => {props.history.push('/store/get-approved')});
+        await this.getUserStore(() => {props.history.push(`/store/get-approved/${storeId}`)});
     }
 
     getUser = () => {
@@ -444,11 +463,7 @@ class UserContainer extends Container {
             let user = await firebase.auth().signOut();
             localStorage.removeItem(CONSTANTS.SESSIONBEARER);
             localStorage.removeItem(CONSTANTS.SESSIONSTORE);
-            this.setState({
-                user: null,
-                stores: [],
-                storeLoaded: false,
-            })
+            this.setState(defaultState)
             props.history.push("/store/login");
         } catch(err) {
             this._handleError(err);
@@ -461,11 +476,7 @@ class UserContainer extends Container {
             let user = await firebase.auth().signOut();
             localStorage.removeItem(CONSTANTS.SESSIONBEARER);
             localStorage.removeItem(CONSTANTS.SESSIONSTORE);
-            this.setState({
-                user: null,
-                stores: [],
-                storeLoaded: false,
-            })
+            this.setState(defaultState)
             props.history.push("/");
         } catch(err) {
             this._handleError(err);

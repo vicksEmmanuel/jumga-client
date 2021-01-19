@@ -36,9 +36,9 @@ const GeneralStoreProducts = props => {
     const loadData = () => {
         (async () => {
             let result = await props.masterStore.searchForCategoriesProducts({
-                id: searchId, //If the value is '' it would return all the products
+                id: String(searchId).replace(/\-/g,' '), //If the value is '' it would return all the products
             });
-            console.log("Here ==", result);
+            console.log("Here ==", String(searchId).replace(/\-/g,' '));
 
             if (_.isEmpty(result) || _.isUndefined(result)) {
                 setProducts([])

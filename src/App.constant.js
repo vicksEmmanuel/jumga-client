@@ -32,6 +32,7 @@ const CONSTANTS = {
         ADMINGETSTORES: 'adminGetStores',
         ADMINGETUSERS: 'adminGetUsers',
         ADMINGETDISPATCHERS: 'adminGetDisptachRider',
+        ADMINPAYMENTISSUES: 'adminGetProblemPayment',
 
         ADMINPROCESSDELIVERY: 'adminProcessDelivery',
 

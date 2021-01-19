@@ -261,6 +261,21 @@ class MasterContainer extends Container {
       }
     }
 
+    getProblemPayment = async (searchDetails = {
+      startAt: 0,
+      limit: 10,
+    }) => {
+      try {
+        if (!_.isObject(searchDetails)) return [];
+        const callable = firebase.functions().httpsCallable(CONSTANTS.FUNCNTIONS.ADMINPAYMENTISSUES);
+        const response = await callable(searchDetails);
+        return response.data;
+      } catch(e) {
+        console.log(e);
+        return [];
+      }
+    }
+
     adminGetDispatchers = async (searchDetails = {
       startAt: 0,
       limit: 10,

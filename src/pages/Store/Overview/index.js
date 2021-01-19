@@ -36,7 +36,8 @@ const Overview  = props => {
             mark: '.',
             thousand: ',',
             prefix: '',
-            suffix: ''
+            suffix: '',
+            decimals: 2
         });
         return formatter.to(number);
     }
