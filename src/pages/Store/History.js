@@ -208,7 +208,7 @@ const UserHistory = props => {
                                                                             {moment(order.orderDate).format('MMM ddd, YY')}
                                                                         </td>
                                                                         <td>
-                                                                            ${order.total}
+                                                                            ${props.paymentStore.formatToIntCurrency(order.total)}
                                                                         </td>
                                                                         <td>
                                                                             <Badge 
@@ -272,17 +272,17 @@ const UserHistory = props => {
                                                     <td>
                                                         <div>
                                                             <h5 className="text-truncate font-size-14">{state.currentOrderInModal?.productname} (Black)</h5>
-                                                            <p className="text-muted mb-0">$ {state.currentOrderInModal?.currentprice} x {state.currentOrderInModal?.quantity}</p>
+                                                            <p className="text-muted mb-0">$ {props.paymentStore.formatToIntCurrency(state.currentOrderInModal?.currentprice)} x {state.currentOrderInModal?.quantity}</p>
                                                         </div>
                                                     </td>
-                                                    <td>$ {state.currentOrderInModal?.total}</td>
+                                                    <td>$ {props.paymentStore.formatToIntCurrency(state.currentOrderInModal?.total)}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="2">
                                                         <h6 className="m-0 text-right">Sub Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {state.currentOrderInModal?.total}
+                                                        $ {props.paymentStore.formatToIntCurrency(state.currentOrderInModal?.total)}
                                                         </td>
                                                 </tr>
                                                 <tr>
@@ -290,7 +290,7 @@ const UserHistory = props => {
                                                         <h6 className="m-0 text-right">Shipping:</h6>
                                                     </td>
                                                     <td>
-                                                        { (state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity) <= 0 ? 'Free' : `$ ${state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity}`}
+                                                        { (state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity) <= 0 ? 'Free' : `$ ${props.paymentStore.formatToIntCurrency(state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity)}`}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -298,7 +298,7 @@ const UserHistory = props => {
                                                         <h6 className="m-0 text-right">Total:</h6>
                                                     </td>
                                                     <td>
-                                                        $ {Number(state.currentOrderInModal?.total) + Number((state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity))}
+                                                        $ {props.paymentStore.formatToIntCurrency(Number(state.currentOrderInModal?.total) + Number((state.currentOrderInModal?.deliverycost * state.currentOrderInModal?.quantity)))}
                                                     </td>
                                                 </tr>
                                             </tbody>
