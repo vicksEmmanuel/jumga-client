@@ -1,5 +1,5 @@
 #Jumga Client
-The online market system ttps://jumga-store.web.app/
+The online market system https://jumga-store.web.app/
 
 ### Run the project locally
 > npm install
